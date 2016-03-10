@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">Fitness</string>
+    <string name="app_name">KeepFit</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="placeholder">Stuff Here!</string>
+    <string name="forward_slash">/</string>
+    <string name="no_goals_for_day">No goals for today</string>
 </resources>
