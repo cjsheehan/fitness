@@ -19,10 +19,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.cjsheehan.fitness.R;
+import com.cjsheehan.fitness.activity.fragment.ActiveGoalProgressFragment;
 import com.cjsheehan.fitness.activity.fragment.BaseFragment;
+import com.cjsheehan.fitness.activity.fragment.GoalsFragment;
+import com.cjsheehan.fitness.activity.fragment.HistoryFragment;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private Calendar _calendar;
     private EditText _editDateText;
     private Toolbar _toolbar;
+    private static final int PAGE_LIMIT = 2;
     private SharedPreferences.OnSharedPreferenceChangeListener _settingsListener;
     private String _dateFormat = "dd MMMM yyyy";
     private SimpleDateFormat _sdf = new SimpleDateFormat(_dateFormat, Locale.ENGLISH);
@@ -50,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     int _stepsToday;
     int _targetToday;
 
-    private SectionsPagerAdapter _sectionsPagerAdapter;
+    private ViewPagerAdapter _viewPagerAdapter;
     private ViewPager _viewPager;
 
     @Override
@@ -65,23 +71,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        Log.d(TAG, "Entered : init()");
         initUI();
-        //_btnSetGoals = (Button) findViewById(R.id.buttonSetGoals);
-        try {
-            _targetToday = 10000;
-            _stepsToday = 5000;
-            _sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-            _viewPager = (ViewPager) findViewById(R.id.view_pager);
-            _viewPager.setAdapter(_sectionsPagerAdapter);
-            _viewPager.setOffscreenPageLimit(2);
-
-            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-            tabLayout.setupWithViewPager(_viewPager);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Log.d(TAG, "Leaving : init()");
+        setupViewPager(_viewPager);
     }
 
     //public void onOpenGoals()
@@ -180,16 +171,7 @@ public class MainActivity extends AppCompatActivity {
 //    return super.onOptionsItemSelected(item);
 //}
 //
-    private class settingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences spref, String key) {
-            //if (key.equals(getString(R.string.enableTestMode))) {
-            //    updateDateColour();
-            //    updateLabel();
-            //}
-        }
-    }
 //
 //private void updateProgressView() {
 //    try
@@ -263,28 +245,74 @@ public class MainActivity extends AppCompatActivity {
 //    editGoalDialog.show();
 //}
 
-    class SectionsPagerAdapter extends FragmentPagerAdapter implements
+
+    private class settingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences spref, String key) {
+            //if (key.equals(getString(R.string.enableTestMode))) {
+            //    updateDateColour();
+            //    updateLabel();
+            //}
+        }
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager.setAdapter(_viewPagerAdapter);
+        viewPager.setOffscreenPageLimit(PAGE_LIMIT);
+        _viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        for(FragmentId fid : FragmentId.values()) {
+            _viewPagerAdapter.addFragment(createFragment(fid), fid.getTitle());
+        }
+        viewPager.setAdapter(_viewPagerAdapter);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
+    public static BaseFragment createFragment (FragmentId fragmentId) {
+        BaseFragment fragment = null;
+        switch (fragmentId) {
+            case ACTIVE_GOAL_PROGRESS:
+                fragment = new ActiveGoalProgressFragment();
+                break;
+            case GOALS:
+                fragment = new GoalsFragment();
+                break;
+            case HISTORY:
+                fragment = new HistoryFragment();
+                break;
+        }
+        return fragment;
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter implements
             ViewPager.OnPageChangeListener {
+        private final List<Fragment> _fragmentList = new ArrayList<>();
+        private final List<String> _fragmentTitleList = new ArrayList<>();
 
-        final private static int PAGE_COUNT = 3;
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
         }
 
         @Override
         public Fragment getItem(int position) {
-            return BaseFragment.newInstance(BaseFragment.FragmentId.values()[position]);
+            return _fragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            return PAGE_COUNT;
+            return _fragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            _fragmentList.add(fragment);
+            _fragmentTitleList.add(title);
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
-            return BaseFragment.FragmentId.values()[position].getTitle();
+        public String getPageTitle(int position) {
+            return _fragmentTitleList.get(position);
         }
 
         @Override
@@ -300,6 +328,27 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPageScrollStateChanged(int state) {
 
+        }
+    }
+
+    public enum FragmentId {
+        ACTIVE_GOAL_PROGRESS(1, "Activity"),
+        GOALS(2, "Goals"),
+        HISTORY(3, "History");
+        private int id;
+        private String title;
+
+        FragmentId(int id, String title) {
+            this.id = id;
+            this.title = title;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getTitle() {
+            return title;
         }
     }
 

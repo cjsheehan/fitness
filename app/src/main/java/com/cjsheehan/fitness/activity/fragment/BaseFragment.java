@@ -19,40 +19,6 @@ import com.cjsheehan.fitness.model.IGoalAction;
 public abstract class BaseFragment extends Fragment implements IGoalAction {
     private static final String TAG = "BaseFragment";
 
-    public enum FragmentId {
-        ACTIVE_GOAL_PROGRESS(1, "Activity"),
-        GOALS(2, "Goals"),
-        HISTORY(3, "History");
-        private int id;
-        private String title;
-
-        FragmentId(int id, String title) {
-            this.id = id;
-            this.title = title;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-    }
-
-    public static BaseFragment newInstance(FragmentId code) {
-        Log.d(TAG, "Entered : newInstance()");
-        switch (code) {
-            case ACTIVE_GOAL_PROGRESS:
-                return new ActiveGoalProgressFragment();
-            case GOALS:
-                return new GoalsFragment();
-            case HISTORY:
-                return new HistoryFragment();
-        }
-        return null;
-    }
-
     protected void registerReceivers() {
         Log.d(TAG, "Entered : registerReceivers()");
         getActivity().registerReceiver(new FragmentReceiver(), new IntentFilter(Action.ADD_GOAL.name()));
