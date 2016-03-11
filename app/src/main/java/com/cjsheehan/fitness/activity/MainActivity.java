@@ -1,6 +1,10 @@
 package com.cjsheehan.fitness.activity;
 
+import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import java.util.prefs.Preferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
@@ -11,19 +15,27 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.ViewConfiguration;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.activity.fragment.ActiveGoalProgressFragment;
 import com.cjsheehan.fitness.activity.fragment.BaseFragment;
 import com.cjsheehan.fitness.activity.fragment.GoalsFragment;
 import com.cjsheehan.fitness.activity.fragment.HistoryFragment;
+import com.cjsheehan.fitness.activity.fragment.SettingsFragment;
+import com.cjsheehan.fitness.activity.SettingsActivity;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,19 +54,8 @@ public class MainActivity extends AppCompatActivity {
     private SimpleDateFormat _sdf = new SimpleDateFormat(_dateFormat, Locale.ENGLISH);
     private Animation _simpleAnim;
     private final static int DAY_IN_MS = 86400000;
-    Button _btnSetGoals;
     //private ProgressListAdapter _adapter;
     //private List<Progress> _progress;
-    private ListView _progListView;
-    EditText _editProgressTarget;
-
-    TextView _steps_today_tv;
-    TextView _goals_today_tv;
-    ProgressBar _steps_progress_bar;
-    TextView _target_today_tv;
-
-    int _stepsToday;
-    int _targetToday;
 
     private ViewPagerAdapter _viewPagerAdapter;
     private ViewPager _viewPager;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //makeActionOverflowMenuShown();
         //PreferenceManager.setDefaultValues(this, R.xml.user_settings, false);
         init();
         //updateProgressView();
@@ -148,29 +150,34 @@ public class MainActivity extends AppCompatActivity {
 //            getResources().getBoolean(R.bool.testModeEnabled_Default));
 //}
 //
-//@Override
-//public boolean onCreateOptionsMenu(Menu menu) {
-//    MenuInflater inflater = getMenuInflater();
-//    inflater.inflate(R.menu.menu, menu);
-//    return true;
-//}
-//
-//@Override
-//public boolean onOptionsItemSelected(MenuItem item) {
-//    switch (item.getItemId()) {
-//        case R.id.settings: {
-//            Intent intent = new Intent(this, Preferences.class);
-//            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, SettingsFragment.class.getName());
-//            intent.putExtra(SettingsActivity.EXTRA_NO_HEADERS, true);
-//            intent.setClassName(this, "com.cjsheehan.fitness.settings.SettingsActivity");
-//            startActivity(intent);
-//            return true;
-//        }
-//    }
-//
-//    return super.onOptionsItemSelected(item);
-//}
-//
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu");
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected");
+        switch (item.getItemId()) {
+            case R.id.action_settings: {
+                Intent intent = new Intent(this, Preferences.class);
+                intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, SettingsFragment.class.getName());
+                intent.putExtra(SettingsActivity.EXTRA_NO_HEADERS, true);
+                intent.setClassName(this, "com.cjsheehan.fitness.activity.SettingsActivity");
+                startActivity(intent);
+                //getFragmentManager().beginTransaction()
+                //        .replace(android.R.id.content, new SettingsFragment()).commit();
+
+                return true;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
 //
 //private void updateProgressView() {
@@ -263,14 +270,19 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setOffscreenPageLimit(PAGE_LIMIT);
         _viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         for(FragmentId fid : FragmentId.values()) {
-            _viewPagerAdapter.addFragment(createFragment(fid), fid.getTitle());
+            Fragment fragment = createFragment(fid);
+            if(fragment != null)
+                _viewPagerAdapter.addFragment(fragment, fid.getTitle());
+            else
+                Log.d(TAG, "ERROR : fragment is null, fragment id : " + fid.getTitle());
         }
+
         viewPager.setAdapter(_viewPagerAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
 
-    public static BaseFragment createFragment (FragmentId fragmentId) {
+    public static Fragment createFragment (FragmentId fragmentId) {
         BaseFragment fragment = null;
         switch (fragmentId) {
             case ACTIVE_GOAL_PROGRESS:
@@ -334,7 +346,8 @@ public class MainActivity extends AppCompatActivity {
     public enum FragmentId {
         ACTIVE_GOAL_PROGRESS(1, "Activity"),
         GOALS(2, "Goals"),
-        HISTORY(3, "History");
+        HISTORY(3, "History"),
+        SETTINGS(4, "Settings");
         private int id;
         private String title;
 

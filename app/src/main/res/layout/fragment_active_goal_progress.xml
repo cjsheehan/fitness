@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/ghostWhiteColor"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -37,11 +37,13 @@
             android:id="@+id/step_progress_bar"
             style="@android:style/Widget.Material.ProgressBar.Horizontal"
             android:layout_width="match_parent"
-            android:layout_height="500dp"
-            android:layout_centerInParent="true"
+            android:layout_height="fill_parent"
             android:layout_weight="0.51"
-            android:progress="100"
-            android:progressDrawable="@drawable/circle_progress"/>
+            android:progress="70"
+            android:progressDrawable="@drawable/circle_progress3"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:indeterminate="false"/>
 
         <ImageView
             android:id="@+id/step_counter_decrement"
@@ -65,8 +67,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <EditText
-                    android:id="@+id/goal_of_day_step_amount"
+                <TextView
+                    android:id="@+id/active_goal_current_progress"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
@@ -74,7 +76,8 @@
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
                     android:text="0"
-                    android:textSize="30dp"/>
+                    android:textSize="30dp"
+                    android:editable="false"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -85,7 +88,7 @@
                     android:textSize="30dp"/>
 
                 <TextView
-                    android:id="@+id/goal_of_day_step_goal"
+                    android:id="@+id/active_goal_target"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="8dp"

@@ -1,6 +1,7 @@
 package com.cjsheehan.fitness.activity.fragment;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -30,6 +31,7 @@ public class GoalsFragment extends BaseFragment {
     private Context context;
     private GoalData _goalData;
     private GoalListAdapter _goalListAdapter;
+    private ListView _goalListView;
     private TextView txtMessage;
 
     @Override
@@ -42,6 +44,7 @@ public class GoalsFragment extends BaseFragment {
     @Override
     protected void init(View view) {
         context = view.getContext();
+
         // TODO : Need to get goals from repo
         //goalRepository = new GoalRepository(context);
         //txtMessage = (TextView) view.findViewById(R.id.goals_message);
@@ -69,24 +72,38 @@ public class GoalsFragment extends BaseFragment {
     private void initGoalList(View view) {
         _goalData = new GoalData(getContext());
         _goalListAdapter = new GoalListAdapter(_goalData.getAll(), getContext());
-        ListView goalList = (ListView) view.findViewById(R.id.goal_list);
+        _goalListView = (ListView) view.findViewById(R.id.goal_list);
 
-        goalList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        _goalListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Goal goal = _goalListAdapter.getItem(i);
-                Toast.makeText(getContext(), goal.toString(), Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                // Select
+
+                Log.d(TAG, "Goal ListView click");
+                for (int i = 0; i < _goalListView.getChildCount(); i++) {
+                    if(position == i) {
+                        _goalListView.getChildAt(i).setBackgroundResource(R.color.teal100);
+                    }else{
+                        _goalListView.getChildAt(i).setBackgroundResource(Color.TRANSPARENT);
+                    }
+                }
+                Goal goal = _goalListAdapter.getItem(position);
+                Toast.makeText(getContext(), "Selected goal : " + goal.getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
-        goalList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        _goalListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Goal goal = _goalListAdapter.getItem(i);
-                Toast.makeText(getContext(), goal.toString(), Toast.LENGTH_SHORT).show();
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+                // TODO : RESTRICT editing of active goals
+                // Edit
+                Log.d(TAG, "Goal ListView longclick");
+                Goal goal = _goalListAdapter.getItem(position);
+                Toast.makeText(getContext(), "Edited goal : " + goal.getTitle(), Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
-        goalList.setAdapter(_goalListAdapter);
+
+        _goalListView.setAdapter(_goalListAdapter);
     }
 
     //private void initLoader() {

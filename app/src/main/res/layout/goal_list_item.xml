@@ -14,8 +14,9 @@
         android:id="@+id/goal_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:src="@drawable/ic_trophie_green" />
+        android:src="@drawable/ic_trophie_green"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"/>
 
     <TextView
         android:id="@+id/goal_title"
