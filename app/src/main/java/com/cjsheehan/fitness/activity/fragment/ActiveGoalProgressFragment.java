@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -187,14 +188,14 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         layout.setOrientation(LinearLayout.VERTICAL);
 
         // Progress to Target
-        final EditText editTarget = new EditText(_context);
-        editTarget.setText("");
-        editTarget.setRawInputType(Configuration.KEYBOARD_QWERTY);
-        layout.addView(editTarget);
+        final EditText editProgressText = new EditText(_context);
+        editProgressText.setText(_sharedPreferences.getString(getString(R.string.progress_increment_amount), "10"));
+        editProgressText.setSelectAllOnFocus(true);
+        editProgressText.setRawInputType(Configuration.KEYBOARD_QWERTY);
+        layout.addView(editProgressText);
 
         // Alert
-        AlertDialog.Builder editProgressDialog = new AlertDialog.Builder(_context);
-        editProgressDialog.setNegativeButton(android.R.string.cancel, null);
+        final AlertDialog.Builder editProgressDialog = new AlertDialog.Builder(_context);
 
         // Icon
         editProgressDialog.setIcon(R.drawable.ic_icon_walk_green);
@@ -205,18 +206,37 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         editProgressDialog.setView(layout);
         editProgressDialog.create();
 
+        editProgressDialog.setNegativeButton(android.R.string.cancel,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(editProgressText.getWindowToken(), 0);
+                        dialog.cancel();
+                    }
+                });
+
         editProgressDialog.setPositiveButton("Add",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        String strProgressAdded = editTarget.getText().toString();
-                        Integer progressAdded = Integer.parseInt(strProgressAdded);
-                        addProgress(progressAdded);
-                        Toast.makeText(_context, "Added " + progressAdded + " to progress", Toast.LENGTH_SHORT).show();
+                        InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(editProgressText.getWindowToken(), 0);
+                        String strProgressAdded = editProgressText.getText().toString();
+                        try {
+                            Integer progressAdded = Integer.parseInt(strProgressAdded);
+                            addProgress(progressAdded);
+                            Toast.makeText(_context, "Added " + progressAdded + " to progress", Toast.LENGTH_SHORT).show();
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(_context, "Input a number please", Toast.LENGTH_SHORT).show();
+                            editProgressDialog();
+                        }
                     }
                 });
 
         // Showing Alert Message
         editProgressDialog.show();
+        editProgressText.requestFocus();
+        InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 
 
