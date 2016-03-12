@@ -50,7 +50,7 @@
     android:layout_gravity="bottom|end"
     android:layout_margin="@dimen/fab_margin"
     android:scaleType="center"
-    android:src="@drawable/ic_tool_white"
+    android:src="@drawable/ic_create_white"
     app:backgroundTint="@color/teal500"/>
 
 </android.support.design.widget.CoordinatorLayout>

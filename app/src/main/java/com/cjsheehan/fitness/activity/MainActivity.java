@@ -26,6 +26,7 @@ import android.view.animation.Animation;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.activity.fragment.ActiveGoalProgressFragment;
@@ -40,6 +41,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import static com.cjsheehan.fitness.activity.MainActivity.FragmentId.ACTIVE_GOAL_PROGRESS;
+import static com.cjsheehan.fitness.activity.MainActivity.FragmentId.getIdByInt;
+
 public class MainActivity extends AppCompatActivity {
     private String TAG = "MainActivity";
     private SharedPreferences _sharedPreferences;
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText _editDateText;
     private TextView _progressTextView;
     private Toolbar _toolbar;
+    private FloatingActionButton _fab;
     private static final int PAGE_LIMIT = 2;
     private SharedPreferences.OnSharedPreferenceChangeListener _settingsListener;
     private String _dateFormat = "dd MMMM yyyy";
@@ -79,6 +84,33 @@ public class MainActivity extends AppCompatActivity {
         setupViewPager(_viewPager);
         setupSharedPreferences();
     }
+
+    //private void setupFloatActionBtn() {
+    //    _fab = (FloatingActionButton) findViewById(R.id.fab);
+    //    _fab.setOnClickListener(new View.OnClickListener() {
+    //        @Override
+    //        public void onClick(View view) {
+    //            BaseFragment currentFragment = getFragmentManager().findFragmentById(R.id.);
+    //            String strFragId = currentFragment.getTag();
+    //            FragmentId fid = FragmentId.ge
+    //            switch (fragmentId) {
+    //                case FragmentId.ACTIVE_GOAL_PROGRESS :
+    //                    Snackbar.make(view, "Task creation is...under construction", Snackbar.LENGTH_LONG).show();
+    //                    break;
+    //                case FRAGMENT_TURNS:
+    //                    ((TurnFragment) currentFragment).takeTurn(view);
+    //                    break;
+    //                case FRAGMENT_EDIT:
+    //                    ((EditTaskFragment) currentFragment).saveTask();
+    //                    break;
+    //                default:
+    //                    Log.e(TAG, "Unhandled FAB fragment tag " + tag);
+    //                    Snackbar.make(view, "Not sure what to do...my bad", Snackbar.LENGTH_SHORT).show();
+    //                    break;
+    //            }
+    //        }
+    //    });
+    //}
 
     //public void onOpenGoals()
     //{
@@ -263,6 +295,33 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
+    //
+    //private void setFabGoalProgress() {
+    //    _fab.setOnClickListener(new View.OnClickListener() {
+    //        public void onClick(final View view) {
+    //            Toast.makeText(getContext(), "FAB clicked for edit goals", Toast.LENGTH_SHORT).show();
+    //            //editProgressDialog();
+    //        }
+    //    });
+    //}
+    //
+    //private void setGoals() {
+    //    _fab.setOnClickListener(new View.OnClickListener() {
+    //        public void onClick(final View view) {
+    //            Toast.makeText(getContext(), "FAB clicked for edit goals", Toast.LENGTH_SHORT).show();
+    //            //editProgressDialog();
+    //        }
+    //    });
+    //}
+    //
+    //private void setFabGoalHistory() {
+    //    _fab.setOnClickListener(new View.OnClickListener() {
+    //        public void onClick(final View view) {
+    //            Toast.makeText(getContext(), "FAB clicked for edit goals", Toast.LENGTH_SHORT).show();
+    //            //editProgressDialog();
+    //        }
+    //    });
+    //}
 
     public static Fragment createFragment (FragmentId fragmentId) {
         BaseFragment fragment = null;
@@ -326,18 +385,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public enum FragmentId {
-        ACTIVE_GOAL_PROGRESS(1, "Activity"),
-        GOALS(2, "Goals"),
-        HISTORY(3, "History"),
-        SETTINGS(4, "Settings");
+        ACTIVE_GOAL_PROGRESS(0, "Activity"),
+        GOALS(1, "Goals"),
+        HISTORY(2, "History"),
+        SETTINGS(3, "Settings");
         private int id;
         private String title;
 
         FragmentId(int id, String title) {
             this.id = id;
             this.title = title;
-
-
         }
 
         public int getId() {
@@ -346,6 +403,21 @@ public class MainActivity extends AppCompatActivity {
 
         public String getTitle() {
             return title;
+        }
+
+        public static FragmentId getIdByInt(int id) {
+            switch (id) {
+                case 0 :
+                    return ACTIVE_GOAL_PROGRESS;
+                case 1 :
+                    return GOALS;
+                case 2 :
+                    return HISTORY;
+                case 4 :
+                    return SETTINGS;
+            }
+
+            return null;
         }
     }
 

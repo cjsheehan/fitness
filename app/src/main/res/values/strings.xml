@@ -10,4 +10,6 @@
     <string name="enableTestMode">enableTestMode_Preference</string>
     <string name="allowOverwrite">allowOverwrite_Preference</string>
     <string name="progress_increment_amount">Progress Increment Amount</string>
+    <string name="add_progress">Add Progress</string>
+    <string name="add_goal">Add Goal</string>
 </resources>
