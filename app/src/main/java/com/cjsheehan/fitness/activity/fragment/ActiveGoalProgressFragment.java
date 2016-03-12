@@ -1,26 +1,35 @@
 package com.cjsheehan.fitness.activity.fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.model.Goal;
 
 public class ActiveGoalProgressFragment extends BaseFragment {
     private static final String TAG = "ActiveGoalProgressFragment";
+    private FloatingActionButton _fab;
     private Context context;
     private RelativeLayout content;
+    Context _context;
     private TextView _progressTextView;
     private TextView _targetTextView;
     private ProgressBar _progressBar;
@@ -40,10 +49,11 @@ public class ActiveGoalProgressFragment extends BaseFragment {
 
     @Override
     protected void init(View view) {
-        context = view.getContext();
-        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        _context = view.getContext();
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
 
-        _simpleAnim = AnimationUtils.loadAnimation(context, R.animator.simple_animation);
+        _simpleAnim = AnimationUtils.loadAnimation(_context, R.animator.simple_animation);
+        setupFloatActionBtn();
         setupProgressIndicators(view);
         setupIncrButton(view);
         setupDecrButton(view);
@@ -72,13 +82,24 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         //registerReceivers();
     }
 
+    private void setupFloatActionBtn() {
+        _fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        _fab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(final View view) {
+
+                editProgressDialog();
+            }
+        }); // fab.setOnClickListener(new View.OnClickListener()
+    }
+
+
     private void setupProgressIndicators(View view) {
         _progressTextView = (TextView) view.findViewById(R.id.active_goal_current_progress);
         _targetTextView = (TextView) view.findViewById(R.id.active_goal_target);
         _progressBar = (ProgressBar) view.findViewById(R.id.active_goal_progress_bar);
 
         setTarget(1000);
-        setProgress(10);
+        addProgress(10);
     }
 
     private void setupIncrButton(View view) {
@@ -122,8 +143,8 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         updateProgressView();
     }
 
-    public void setProgress(Integer progress) {
-        _currentProgress = progress;
+    public void addProgress(Integer progress) {
+        _currentProgress += progress;
         updateProgressView();
     }
 
@@ -158,6 +179,44 @@ public class ActiveGoalProgressFragment extends BaseFragment {
     @Override
     public void updateGoal(Goal goal) {
 
+    }
+
+    public void editProgressDialog() {
+
+        LinearLayout layout = new LinearLayout(_context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        // Progress to Target
+        final EditText editTarget = new EditText(_context);
+        editTarget.setText("");
+        editTarget.setRawInputType(Configuration.KEYBOARD_QWERTY);
+        layout.addView(editTarget);
+
+        // Alert
+        AlertDialog.Builder editProgressDialog = new AlertDialog.Builder(_context);
+        editProgressDialog.setNegativeButton(android.R.string.cancel, null);
+
+        // Icon
+        editProgressDialog.setIcon(R.drawable.ic_icon_walk_green);
+
+        // Setting Dialog Title
+        editProgressDialog.setTitle("Add Goal Progress");
+
+        editProgressDialog.setView(layout);
+        editProgressDialog.create();
+
+        editProgressDialog.setPositiveButton("Add",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String strProgressAdded = editTarget.getText().toString();
+                        Integer progressAdded = Integer.parseInt(strProgressAdded);
+                        addProgress(progressAdded);
+                        Toast.makeText(_context, "Added " + progressAdded + " to progress", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // Showing Alert Message
+        editProgressDialog.show();
     }
 
 

@@ -1,6 +1,8 @@
 package com.cjsheehan.fitness.model;
 
-public class Goal {
+import java.io.Serializable;
+
+public class Goal implements Serializable {
 
     private String title;
     private int id = 0;

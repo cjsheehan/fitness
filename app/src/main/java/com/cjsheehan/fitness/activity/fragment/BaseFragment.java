@@ -4,12 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 
-import com.cjsheehan.fitness.util.Action;
+import com.cjsheehan.fitness.broadcast.Action;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.IGoalAction;
 

@@ -1,16 +1,20 @@
 package com.cjsheehan.fitness.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 
 import java.util.prefs.Preferences;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,9 +23,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cjsheehan.fitness.R;
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPagerAdapter _viewPagerAdapter;
     private ViewPager _viewPager;
+    private int _selectedPagePosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -228,46 +232,7 @@ public class MainActivity extends AppCompatActivity {
 //    }
 //}
 //
-//public void editProgressDialog() {
-//
-//    LinearLayout layout = new LinearLayout(MainActivity.this);
-//    layout.setOrientation(LinearLayout.VERTICAL);
-//
-//    // Progress to Target
-//    final EditText editTarget = new EditText(MainActivity.this);
-//    editTarget.setText("");
-//    editTarget.setRawInputType(Configuration.KEYBOARD_QWERTY);
-//    layout.addView(editTarget);
-//
-//    // Cache
-//    _editProgressTarget = editTarget;
-//
-//    // Alert
-//    AlertDialog.Builder editGoalDialog = new AlertDialog.Builder(MainActivity.this);
-//    editGoalDialog.setNegativeButton(android.R.string.cancel, null);
-//
-//    // Icon
-//    editGoalDialog.setIcon(R.drawable.ic_icon_walk_green);
-//
-//    // Setting Dialog Title
-//    editGoalDialog.setTitle("Add steps walked");
-//
-//    editGoalDialog.setView(layout);
-//    editGoalDialog.create();
-//
-//    editGoalDialog.setPositiveButton("Add",
-//            new DialogInterface.OnClickListener() {
-//                public void onClick(DialogInterface dialog, int which) {
-//
-//                    //if (editGoal(position)) {
-//                    //    Toast.makeText(getApplicationContext(), "Added steps to progress", Toast.LENGTH_SHORT).show();
-//                    //}
-//                }
-//            });
-//
-//    // Showing Alert Message
-//    editGoalDialog.show();
-//}
+
 
 
     private class settingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -351,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPageSelected(int position) {
-
+            _selectedPagePosition = position;
         }
 
         @Override
@@ -383,5 +348,15 @@ public class MainActivity extends AppCompatActivity {
             return title;
         }
     }
+
+    //private void initFloatActBtn() {
+    //    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+    //    fab.setOnClickListener(new View.OnClickListener() {
+    //        public void onClick(final View view) {
+    //
+    //            openGoalDialog(GoalDialog.EDIT);
+    //        }
+    //    }); // fab.setOnClickListener(new View.OnClickListener()
+    //}
 
 }

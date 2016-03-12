@@ -3,6 +3,7 @@ package com.cjsheehan.fitness.activity.fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -33,6 +34,7 @@ public class GoalsFragment extends BaseFragment {
     private GoalListAdapter _goalListAdapter;
     private ListView _goalListView;
     private TextView txtMessage;
+    private FloatingActionButton _fab;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

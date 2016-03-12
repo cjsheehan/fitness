@@ -1,4 +1,4 @@
-package com.cjsheehan.fitness.util;
+package com.cjsheehan.fitness.broadcast;
 
 /**
  * Created by Chris on 10/03/2016.
