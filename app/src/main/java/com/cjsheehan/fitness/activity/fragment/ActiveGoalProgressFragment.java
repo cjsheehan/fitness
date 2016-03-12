@@ -4,13 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,8 +22,12 @@ public class ActiveGoalProgressFragment extends BaseFragment {
     private Context context;
     private RelativeLayout content;
     private TextView _progressTextView;
+    private TextView _targetTextView;
+    private ProgressBar _progressBar;
     private Animation _simpleAnim;
     private SharedPreferences _sharedPreferences;
+    int _currentProgress;
+    int _currentTarget;
 
     enum ProgressChangeDirection { INCREMENT, DECREMENT };
 
@@ -38,9 +42,9 @@ public class ActiveGoalProgressFragment extends BaseFragment {
     protected void init(View view) {
         context = view.getContext();
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        _progressTextView = (TextView) view.findViewById(R.id.active_goal_current_progress);
-        _progressTextView.setText(String.valueOf("10"));
+
         _simpleAnim = AnimationUtils.loadAnimation(context, R.animator.simple_animation);
+        setupProgressIndicators(view);
         setupIncrButton(view);
         setupDecrButton(view);
         //initDateText();
@@ -68,47 +72,73 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         //registerReceivers();
     }
 
+    private void setupProgressIndicators(View view) {
+        _progressTextView = (TextView) view.findViewById(R.id.active_goal_current_progress);
+        _targetTextView = (TextView) view.findViewById(R.id.active_goal_target);
+        _progressBar = (ProgressBar) view.findViewById(R.id.active_goal_progress_bar);
+
+        setTarget(1000);
+        setProgress(10);
+    }
+
     private void setupIncrButton(View view) {
-        ImageView imageViewIncr = (ImageView) view.findViewById(R.id.step_counter_incr);
+        ImageView imageViewIncr = (ImageView) view.findViewById(R.id.active_goal_progress_incr);
         imageViewIncr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 view.startAnimation(_simpleAnim);
-                updateProgress(ProgressChangeDirection.INCREMENT);
+                incrementProgress(ProgressChangeDirection.INCREMENT);
             }
         });
     }
 
     private void setupDecrButton(View view) {
-        ImageView imageViewDecr = (ImageView) view.findViewById(R.id.step_counter_decr);
+        ImageView imageViewDecr = (ImageView) view.findViewById(R.id.active_goal_progress_decr);
         imageViewDecr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 view.startAnimation(_simpleAnim);
-                updateProgress(ProgressChangeDirection.DECREMENT);
+                incrementProgress(ProgressChangeDirection.DECREMENT);
             }
         });
     }
 
-    public void updateProgress(ProgressChangeDirection direction) {
+    public void incrementProgress(ProgressChangeDirection direction) {
         String current = _progressTextView.getText().toString();
-        Integer progress = Integer.parseInt(current);
+        _currentProgress = Integer.parseInt(current);
         String incrementStr = _sharedPreferences.getString(getString(R.string.progress_increment_amount), "10");
         Integer incrementBy = Integer.parseInt(incrementStr);
         switch (direction) {
             case DECREMENT:
-                progress -= incrementBy;
+                _currentProgress -= incrementBy;
                 break;
             case INCREMENT:
-                progress += incrementBy;
+                _currentProgress += incrementBy;
                 break;
         }
 
-        if(progress <= 0)
-            progress = 0;
-        int currentSteps = 0;
-        _progressTextView.setText(String.valueOf(progress));
+        if(_currentProgress <= 0)
+            _currentProgress = 0;
+        updateProgressView();
     }
+
+    public void setProgress(Integer progress) {
+        _currentProgress = progress;
+        updateProgressView();
+    }
+
+    public void setTarget(Integer target) {
+        _currentTarget = target;
+        updateProgressView();
+    }
+
+    public void updateProgressView() {
+        _progressTextView.setText(String.valueOf(_currentProgress));
+        _targetTextView.setText(String.valueOf(_currentTarget));
+        _progressBar.setMax(_currentTarget);
+        _progressBar.setProgress(_currentProgress);
+    }
+
 
     //@Override
     //protected void addGoalActionReceived(Goal goal) {

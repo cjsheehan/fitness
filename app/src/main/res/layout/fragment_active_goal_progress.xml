@@ -18,35 +18,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/active_goal_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="marquee"
-            android:gravity="center"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:padding="10dp"
-            android:scrollHorizontally="true"
-            android:singleLine="true"
-            android:text="@string/placeholder"
-            android:textSize="30dp"
-            android:layout_alignTop="@+id/step_progress_bar"
-            android:layout_alignParentStart="true"/>
-
         <android.support.v4.widget.ContentLoadingProgressBar
-            android:id="@+id/step_progress_bar"
+            android:id="@+id/active_goal_progress_bar"
             style="@android:style/Widget.Material.ProgressBar.Horizontal"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="200dp"
             android:layout_weight="0.51"
             android:progress="70"
             android:progressDrawable="@drawable/circle_progress3"
-            android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
-            android:indeterminate="false"/>
+            android:indeterminate="false"
+            android:layout_above="@+id/active_goal_progress_decr"
+            android:layout_below="@+id/space"
+            android:layout_alignParentEnd="true"/>
 
         <ImageView
-            android:id="@+id/step_counter_decr"
+            android:id="@+id/active_goal_progress_decr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
@@ -55,17 +42,22 @@
             android:layout_alignParentStart="true"/>
 
         <LinearLayout
-            android:id="@+id/step_counter"
+            android:id="@+id/active_goal_progress_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:orientation="vertical"
             android:paddingBottom="10dp"
-            android:paddingTop="10dp">
+            android:paddingTop="10dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/active_goal_progress_bar"
+                android:layout_alignTop="@id/active_goal_progress_bar"
+                android:layout_alignRight="@id/active_goal_progress_bar"
+                android:layout_alignBottom="@id/active_goal_progress_bar">
 
                 <TextView
                     android:id="@+id/active_goal_current_progress"
@@ -77,7 +69,8 @@
                     android:paddingRight="8dp"
                     android:text="0"
                     android:textSize="30dp"
-                    android:editable="false"/>
+                    android:editable="false"
+/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -99,13 +92,29 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/step_counter_incr"
+            android:id="@+id/active_goal_progress_incr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
             android:src="@drawable/ic_plus_icon_teal200"
             android:layout_alignParentBottom="true"
-            android:layout_toStartOf="@+id/step_counter"/>
+            android:layout_toStartOf="@+id/space"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/textView"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"/>
+
+        <Space
+            android:layout_width="20px"
+            android:layout_height="50dp"
+            android:id="@+id/space"
+            android:layout_below="@+id/textView"
+            android:layout_alignStart="@+id/textView"
+            android:layout_alignEnd="@+id/textView"/>
 
     </RelativeLayout>
 </RelativeLayout>
