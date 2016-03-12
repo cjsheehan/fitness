@@ -137,5 +137,4 @@ public class GoalsFragment extends BaseFragment {
     //    _goalListAdapter.setGroups(new ArrayList<Goal>());
     //}
 
-
 }

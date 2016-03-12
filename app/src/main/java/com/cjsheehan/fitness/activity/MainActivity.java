@@ -3,10 +3,9 @@ package com.cjsheehan.fitness.activity;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+
 import java.util.prefs.Preferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,14 +17,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ViewConfiguration;
+import android.view.View;
 import android.view.animation.Animation;
-import android.widget.Button;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.activity.fragment.ActiveGoalProgressFragment;
@@ -33,9 +30,7 @@ import com.cjsheehan.fitness.activity.fragment.BaseFragment;
 import com.cjsheehan.fitness.activity.fragment.GoalsFragment;
 import com.cjsheehan.fitness.activity.fragment.HistoryFragment;
 import com.cjsheehan.fitness.activity.fragment.SettingsFragment;
-import com.cjsheehan.fitness.activity.SettingsActivity;
 
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,13 +42,14 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences _sharedPreferences;
     private Calendar _calendar;
     private EditText _editDateText;
+    private TextView _progressTextView;
     private Toolbar _toolbar;
     private static final int PAGE_LIMIT = 2;
     private SharedPreferences.OnSharedPreferenceChangeListener _settingsListener;
     private String _dateFormat = "dd MMMM yyyy";
     private SimpleDateFormat _sdf = new SimpleDateFormat(_dateFormat, Locale.ENGLISH);
-    private Animation _simpleAnim;
     private final static int DAY_IN_MS = 86400000;
+    private Animation _simpleAnim;
     //private ProgressListAdapter _adapter;
     //private List<Progress> _progress;
 
@@ -72,9 +68,12 @@ public class MainActivity extends AppCompatActivity {
         //updateProgressView();
     }
 
+    enum ProgressChangeDirection { INCREMENT, DECREMENT };
+
     private void init() {
         initUI();
         setupViewPager(_viewPager);
+        setupSharedPreferences();
     }
 
     //public void onOpenGoals()
@@ -88,15 +87,33 @@ public class MainActivity extends AppCompatActivity {
     //}
 
     private void initUI() {
-        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        _settingsListener = new settingsChangedListener();
-        _sharedPreferences.registerOnSharedPreferenceChangeListener(_settingsListener);
+
+        //_progressTextView = (TextView) findViewById(R.id.active_goal_current_progress);
+        //_progressTextView.setText(String.valueOf("10"));
+        ////initDateText();
+        //_simpleAnim = AnimationUtils.loadAnimation(this, R.animator.simple_animation);
+        //
+        //ImageView imageViewPlus = (ImageView) findViewById(R.id.step_counter_incr);
+        //imageViewPlus.setOnClickListener(new View.OnClickListener() {
+        //    @Override
+        //    public void onClick(View view) {
+        //        view.startAnimation(_simpleAnim);
+        //        updateProgress(ProgressChangeDirection.INCREMENT);
+        //    }
+        //});
+
         //_toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         _calendar = Calendar.getInstance();
         //_editDateText = (EditText) findViewById(R.id.editDateText);
         //setSupportActionBar(_toolbar);
         //initDateText();
         //_simpleAnim = AnimationUtils.loadAnimation(this, R.animator.simple_animation);
+    }
+
+    private void setupSharedPreferences() {
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        _settingsListener = new settingsChangedListener();
+        _sharedPreferences.registerOnSharedPreferenceChangeListener(_settingsListener);
     }
 
     //private void initDateText() {
