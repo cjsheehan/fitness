@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="Test Mode">
+    android:title="Test Mode">
 
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/enableTestMode"
-            android:summary="Test Mode enables fast creation of user fitness data for test purposes"
-            android:title="Enable Test Mode"/>
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/enableTestMode"
+        android:summary="Test Mode enables fast creation of user fitness data for test purposes"
+        android:title="Enable Test Mode"/>
 
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="@string/enableTestMode"
-            android:key="@string/allowOverwrite"
-            android:summary="Allow test mode data to overwrite existing user data"
-            android:title="Allow Overwrite"/>
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="@string/enableTestMode"
+        android:key="@string/allowOverwrite"
+        android:summary="Allow test mode data to overwrite existing user data"
+        android:title="Allow Overwrite"/>
+
+</PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="User Interface">
+
+        <EditTextPreference
+            android:defaultValue="10"
+            android:key="@string/progress_increment_amount"
+            android:title="Increment Value"
+            android:summary="Edit the amount that the plus/minus buttons change your goal progress"/>
 
     </PreferenceCategory>
 

@@ -354,6 +354,8 @@ public class MainActivity extends AppCompatActivity {
         FragmentId(int id, String title) {
             this.id = id;
             this.title = title;
+
+
         }
 
         public int getId() {
@@ -366,4 +368,3 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
-

@@ -9,4 +9,5 @@
     <!-- SETTINGS KEYS -->
     <string name="enableTestMode">enableTestMode_Preference</string>
     <string name="allowOverwrite">allowOverwrite_Preference</string>
+    <string name="progress_increment_amount">Progress Increment Amount</string>
 </resources>

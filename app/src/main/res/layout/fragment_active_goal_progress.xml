@@ -50,9 +50,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:src="@android:drawable/ic_delete"
-            android:layout_above="@+id/space"
-            android:layout_toStartOf="@+id/step_counter"/>
+            android:src="@drawable/ic_minus_icon_teal200"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"/>
 
         <LinearLayout
             android:id="@+id/step_counter"
@@ -103,9 +103,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:src="@android:drawable/ic_menu_add"
-            android:layout_above="@+id/space"
-            android:layout_toEndOf="@+id/step_counter"/>
+            android:src="@drawable/ic_plus_icon_teal200"
+            android:layout_above="@+id/step_counter_decrement"
+            android:layout_alignParentStart="true"/>
 
         <Space
             android:layout_width="20px"
