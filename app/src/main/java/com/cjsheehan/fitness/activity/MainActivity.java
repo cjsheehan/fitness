@@ -1,5 +1,7 @@
 package com.cjsheehan.fitness.activity;
 
+import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
@@ -21,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -40,7 +43,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     private String TAG = "MainActivity";
     private SharedPreferences _sharedPreferences;
-    private Calendar _calendar;
+
     private EditText _editDateText;
     private TextView _progressTextView;
     private Toolbar _toolbar;
@@ -51,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     private SimpleDateFormat _sdf = new SimpleDateFormat(_dateFormat, Locale.ENGLISH);
     private final static int DAY_IN_MS = 86400000;
     private Animation _simpleAnim;
+    private Calendar _calendar;
+    private MenuItem _calendarMenuItem;
     //private ProgressListAdapter _adapter;
     //private List<Progress> _progress;
 
@@ -72,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        initUI();
         setupViewPager(_viewPager);
         setupSharedPreferences();
         _simpleAnim = AnimationUtils.loadAnimation(this, R.animator.simple_animation);
@@ -80,14 +84,32 @@ public class MainActivity extends AppCompatActivity {
         setupFloatActBtn();
     }
 
-    private void initUI() {
-
-        //_toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+    private void initCalendarMenuItem(MenuItem calendarMenuItem) {
         _calendar = Calendar.getInstance();
-        //_editDateText = (EditText) findViewById(R.id.editDateText);
-        //setSupportActionBar(_toolbar);
-        //initDateText();
-        //_simpleAnim = AnimationUtils.loadAnimation(this, R.animator.simple_animation);
+        final Activity activity = this;
+
+        calendarMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                          int dayOfMonth) {
+                        _calendar.set(Calendar.YEAR, year);
+                        _calendar.set(Calendar.MONTH, monthOfYear);
+                        _calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    }
+                };
+
+                new DatePickerDialog(MainActivity.this, date, _calendar
+                        .get(Calendar.YEAR),
+                        _calendar.get(Calendar.MONTH),
+                        _calendar.get(Calendar.DAY_OF_MONTH)).show();
+                return true;
+            }
+        });
+
+        setCalendarMenuItemVisibilty();
     }
 
     private void setupSharedPreferences() {
@@ -96,64 +118,36 @@ public class MainActivity extends AppCompatActivity {
         _sharedPreferences.registerOnSharedPreferenceChangeListener(_settingsListener);
     }
 
-    //private void initDateText() {
-    //    _editDateText.setGravity(Gravity.CENTER);
-    //    updateDateColour();
-    //    updateLabel();
-    //    final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-    //
-    //        @Override
-    //        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-    //            _calendar.set(Calendar.YEAR, year);
-    //            _calendar.set(Calendar.MONTH, monthOfYear);
-    //            _calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-    //            updateLabel();
-    //        }
-    //    };
-    //
-    //    _editDateText.setOnClickListener(new View.OnClickListener() {
-    //
-    //        @Override
-    //        public void onClick(View v) {
-    //            if (isTestModeEnabled()) {
-    //                // TODO : Fix animation
-    //                _editDateText.startAnimation(_simpleAnim);
-    //                DatePickerDialog dpd = new DatePickerDialog(MainActivity.this, date, _calendar
-    //                        .get(Calendar.YEAR), _calendar.get(Calendar.MONTH),
-    //                        _calendar.get(Calendar.DAY_OF_MONTH));
-    //                // TODO : BUG - setMaxDate won't allow to select today, hacked with +1 day
-    //                dpd.getDatePicker().setMaxDate(System.currentTimeMillis() + DAY_IN_MS);
-    //                dpd.show();
-    //            }
-    //        }
-    //    });
-//}
+    private void updateDateLabel() {
+        _editDateText.setText(_sdf.format(_calendar.getTime()));
+    }
 
     //private void updateDateColour() {
-//    if (isTestModeEnabled()) {
-//        _editDateText.setTextColor(getResources().getColor(R.color.colorAccent));
-//    } else {
-//        _editDateText.setTextColor(getResources().getColor(R.color.colorPrimary));
-//    }
-//}
-//
-//private void updateLabel() {
-//    _editDateText.setText(_sdf.format(_calendar.getTime()));
-//}
-//
-//private boolean isTestModeEnabled() {
-//    return _sharedPreferences.getBoolean(
-//            getString(R.string.enableTestMode),
-//            getResources().getBoolean(R.bool.testModeEnabled_Default));
-//}
-//
+    //    if (isTestModeEnabled()) {
+    //        _editDateText.setTextColor(getResources().getColor(R.color.colorAccent));
+    //    } else {
+    //        _editDateText.setTextColor(getResources().getColor(R.color.colorPrimary));
+    //    }
+    //}
+    //
+
+    private boolean isTestModeEnabled() {
+        return _sharedPreferences.getBoolean(
+                getString(R.string.enableTestMode),
+                getResources().getBoolean(R.bool.testModeEnabled_Default));
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.d(TAG, "onCreateOptionsMenu");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
+        _calendarMenuItem = menu.findItem(R.id.menu_select_date);
+        initCalendarMenuItem(_calendarMenuItem);
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -179,11 +173,17 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences spref, String key) {
-            //if (key.equals(getString(R.string.enableTestMode))) {
-            //    updateDateColour();
-            //    updateLabel();
-            //}
+            if (key.equals(getString(R.string.enableTestMode))) {
+                setCalendarMenuItemVisibilty();
+            }
         }
+    }
+
+    private void setCalendarMenuItemVisibilty() {
+        if(isTestModeEnabled())
+            _calendarMenuItem.setVisible(true);
+        else
+            _calendarMenuItem.setVisible(false);
     }
 
     private void setupViewPager(ViewPager viewPager) {

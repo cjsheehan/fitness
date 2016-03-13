@@ -1,4 +1,9 @@
 <resources>
+    <!-- SETTINGS KEYS -->
+    <string name="enableTestMode">enableTestMode_Preference</string>
+    <string name="allowOverwrite">allowOverwrite_Preference</string>
+
+    <!-- EVERYTHING ELSE -->
     <string name="app_name">MyKeepFit</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_settings">Settings</string>
@@ -6,11 +11,10 @@
     <string name="forward_slash">/</string>
     <string name="no_goals_for_day">No goals for today</string>
 
-    <!-- SETTINGS KEYS -->
-    <string name="enableTestMode">enableTestMode_Preference</string>
-    <string name="allowOverwrite">allowOverwrite_Preference</string>
     <string name="progress_increment_amount">Progress Increment Amount</string>
     <string name="add_progress">Add Progress</string>
+    <string name="units">Units</string>
     <string name="add_goal">Add Goal</string>
     <string name="delete_label">Delete</string>
+    <string name="select_date">Set Date (Test Mode)</string>
 </resources>

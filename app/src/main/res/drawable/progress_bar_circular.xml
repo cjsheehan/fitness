@@ -20,7 +20,7 @@
                 android:shape="ring"
                 android:thickness="@dimen/progress_circle_thickness"
                 android:useLevel="true">
-                <solid android:color="@color/teal200"/>
+                <solid android:color="@color/teal100"/>
             </shape>
         </item>
     </layer-list>

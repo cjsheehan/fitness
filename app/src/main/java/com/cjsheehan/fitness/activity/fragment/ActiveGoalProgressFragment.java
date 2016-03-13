@@ -95,7 +95,6 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         //registerReceivers();
     }
 
-
     private void setupProgressIndicators(View view) {
         _progressTextView = (TextView) view.findViewById(R.id.active_goal_current_progress);
         _targetTextView = (TextView) view.findViewById(R.id.active_goal_target);

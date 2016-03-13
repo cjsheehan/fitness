@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#009688</color>
+    <color name="colorPrimary">#2e9391</color>
     <color name="colorPrimaryDark">#004D40</color>
     <color name="colorAccent">#A23B72</color>
     <color name="colorLightText">#FFFFFF</color>
@@ -8,10 +8,12 @@
     <color name="colorSnow">#FFFAFA</color>
     <color name="teal50">#e0f2f1</color>
     <color name="teal100">#b2dfdb</color>
+    <color name="teal150">#84ccc5</color>
     <color name="teal200">#80cbc4</color>
     <color name="teal300">#4db6ac</color>
     <color name="teal400">#26a69a</color>
     <color name="teal500">#009688</color>
+    <color name="teal450">#2e9391</color>
     <color name="teal600">#00897b</color>
     <color name="teal700">#00796b</color>
     <color name="teal800">#00695c</color>

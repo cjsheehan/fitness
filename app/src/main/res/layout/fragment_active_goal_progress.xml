@@ -22,23 +22,24 @@
             android:id="@+id/active_goal_progress_bar"
             style="@android:style/Widget.Material.ProgressBar.Horizontal"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="match_parent"
             android:layout_weight="0.51"
             android:progress="70"
-            android:progressDrawable="@drawable/circle_progress3"
-            android:layout_alignParentStart="true"
+            android:padding="16dp"
+            android:elevation="20dp"
+            android:progressDrawable="@drawable/progress_bar_circular"
             android:indeterminate="false"
-            android:layout_above="@+id/active_goal_progress_decr"
-            android:layout_below="@+id/space"
-            android:layout_alignParentEnd="true"/>
+            android:layout_below="@+id/active_goal_progress_decr"
+            android:layout_alignParentStart="true"/>
 
         <ImageView
             android:id="@+id/active_goal_progress_decr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:src="@drawable/ic_minus_icon_teal200"
-            android:layout_alignParentBottom="true"
+            android:padding="16dp"
+            android:elevation="20dp"
+            android:background="@drawable/ic_minus_icon_teal300"
+            android:layout_alignTop="@+id/active_goal_progress_incr"
             android:layout_alignParentStart="true"/>
 
         <LinearLayout
@@ -95,10 +96,11 @@
             android:id="@+id/active_goal_progress_incr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:src="@drawable/ic_plus_icon_teal200"
-            android:layout_alignParentBottom="true"
-            android:layout_toStartOf="@+id/space"/>
+            android:padding="16dp"
+            android:elevation="20dp"
+            android:background="@drawable/ic_plus_icon_teal300"
+            android:layout_below="@+id/space"
+            android:layout_alignParentEnd="true"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -110,7 +112,7 @@
 
         <Space
             android:layout_width="20px"
-            android:layout_height="50dp"
+            android:layout_height="20dp"
             android:id="@+id/space"
             android:layout_below="@+id/textView"
             android:layout_alignStart="@+id/textView"

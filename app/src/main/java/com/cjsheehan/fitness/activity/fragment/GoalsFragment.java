@@ -160,6 +160,7 @@ public class GoalsFragment extends BaseFragment {
                 break;
             case FAIL_TARGET_NAN:
                 Toast.makeText(_context, "Target must be a number", Toast.LENGTH_SHORT).show();
+                break;
             case FAIL_TARGET_LTE0:
                 Toast.makeText(_context, "Target must be greater than 1", Toast.LENGTH_SHORT).show();
                 break;
