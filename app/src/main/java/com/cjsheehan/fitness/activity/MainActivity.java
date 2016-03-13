@@ -85,58 +85,7 @@ public class MainActivity extends AppCompatActivity {
         setupSharedPreferences();
     }
 
-    //private void setupFloatActionBtn() {
-    //    _fab = (FloatingActionButton) findViewById(R.id.fab);
-    //    _fab.setOnClickListener(new View.OnClickListener() {
-    //        @Override
-    //        public void onClick(View view) {
-    //            BaseFragment currentFragment = getFragmentManager().findFragmentById(R.id.);
-    //            String strFragId = currentFragment.getTag();
-    //            FragmentId fid = FragmentId.ge
-    //            switch (fragmentId) {
-    //                case FragmentId.ACTIVE_GOAL_PROGRESS :
-    //                    Snackbar.make(view, "Task creation is...under construction", Snackbar.LENGTH_LONG).show();
-    //                    break;
-    //                case FRAGMENT_TURNS:
-    //                    ((TurnFragment) currentFragment).takeTurn(view);
-    //                    break;
-    //                case FRAGMENT_EDIT:
-    //                    ((EditTaskFragment) currentFragment).saveTask();
-    //                    break;
-    //                default:
-    //                    Log.e(TAG, "Unhandled FAB fragment tag " + tag);
-    //                    Snackbar.make(view, "Not sure what to do...my bad", Snackbar.LENGTH_SHORT).show();
-    //                    break;
-    //            }
-    //        }
-    //    });
-    //}
-
-    //public void onOpenGoals()
-    //{
-    //    openGoals(null);
-    //}
-
-    //public void openGoals(View view) {
-    //    Intent intent = new Intent(this, GoalActivity.class);
-    //    startActivity(intent);
-    //}
-
     private void initUI() {
-
-        //_progressTextView = (TextView) findViewById(R.id.active_goal_current_progress);
-        //_progressTextView.setText(String.valueOf("10"));
-        ////initDateText();
-        //_simpleAnim = AnimationUtils.loadAnimation(this, R.animator.simple_animation);
-        //
-        //ImageView imageViewPlus = (ImageView) findViewById(R.id.step_counter_incr);
-        //imageViewPlus.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View view) {
-        //        view.startAnimation(_simpleAnim);
-        //        updateProgress(ProgressChangeDirection.INCREMENT);
-        //    }
-        //});
 
         //_toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         _calendar = Calendar.getInstance();
@@ -231,42 +180,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-//
-//private void updateProgressView() {
-//    try
-//    {
-//        //LinearLayout ll = (LinearLayout) findViewById(R.id.progress_linear);
-//        //ll .setVisibility(View.VISIBLE);
-//        ImageView progress_image = (ImageView) findViewById(R.id.progress_image);
-//        _steps_today_tv = (TextView) findViewById(R.id.steps_today);
-//        _steps_progress_bar = (ProgressBar) findViewById(R.id.steps_progress_bar);
-//        _target_today_tv = (TextView) findViewById(R.id.target_today);
-//
-//        _goals_today_tv = (TextView ) findViewById(R.id.todays_challenge);
-//
-//        _steps_today_tv.setOnTouchListener(new View.OnTouchListener() {
-//
-//            @Override
-//            public boolean onTouch(View view, MotionEvent arg1) {
-//                editProgressDialog();
-//                return true;
-//            }
-//        });
-//
-//        _steps_today_tv.setText("" + _stepsToday);
-//        _target_today_tv.setText(_targetToday);
-//
-//    }
-//    catch (Exception e)
-//    {
-//        int a = 5;
-//    }
-//}
-//
-
-
-
     private class settingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {
 
         @Override
@@ -295,33 +208,7 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
-    //
-    //private void setFabGoalProgress() {
-    //    _fab.setOnClickListener(new View.OnClickListener() {
-    //        public void onClick(final View view) {
-    //            Toast.makeText(getContext(), "FAB clicked for edit goals", Toast.LENGTH_SHORT).show();
-    //            //editProgressDialog();
-    //        }
-    //    });
-    //}
-    //
-    //private void setGoals() {
-    //    _fab.setOnClickListener(new View.OnClickListener() {
-    //        public void onClick(final View view) {
-    //            Toast.makeText(getContext(), "FAB clicked for edit goals", Toast.LENGTH_SHORT).show();
-    //            //editProgressDialog();
-    //        }
-    //    });
-    //}
-    //
-    //private void setFabGoalHistory() {
-    //    _fab.setOnClickListener(new View.OnClickListener() {
-    //        public void onClick(final View view) {
-    //            Toast.makeText(getContext(), "FAB clicked for edit goals", Toast.LENGTH_SHORT).show();
-    //            //editProgressDialog();
-    //        }
-    //    });
-    //}
+
 
     public static Fragment createFragment (FragmentId fragmentId) {
         BaseFragment fragment = null;
@@ -420,15 +307,5 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
     }
-
-    //private void initFloatActBtn() {
-    //    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-    //    fab.setOnClickListener(new View.OnClickListener() {
-    //        public void onClick(final View view) {
-    //
-    //            openGoalDialog(GoalDialog.EDIT);
-    //        }
-    //    }); // fab.setOnClickListener(new View.OnClickListener()
-    //}
 
 }

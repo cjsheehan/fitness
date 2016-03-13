@@ -91,10 +91,9 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         _fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         _fab.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View view) {
-
                 editProgressDialog();
             }
-        }); // fab.setOnClickListener(new View.OnClickListener()
+        });
     }
 
 
@@ -261,7 +260,6 @@ public class ActiveGoalProgressFragment extends BaseFragment {
                 return super.onOptionsItemSelected(item);
 
         }
-
     }
 
 }

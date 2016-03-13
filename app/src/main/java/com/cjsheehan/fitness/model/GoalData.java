@@ -20,6 +20,10 @@ public class GoalData {
         _goals = fillGoalList();
     }
 
+    public int size() {
+        return _goals.size();
+    }
+
 
     public void add(Goal goal) {
         Log.d(TAG, "Entered : create(Goal goal()");
@@ -34,6 +38,15 @@ public class GoalData {
         //if(idx >= 0)
         //    _goals.get(idx) = goal;
         return _goals;
+
+    }
+
+    public Goal get(int idx) {
+        // TODO : implement GoalData.read()
+        //int idx = _goals.indexOf(goal);
+        if(idx >= 0)
+           return _goals.get(idx);
+        return null;
 
     }
 
@@ -72,6 +85,17 @@ public class GoalData {
             Log.d(TAG, "Deleted goal : " + goal.getTitle());
         } else {
             Log.d(TAG, "Cannot delete goal : " + goal.getTitle());
+        }
+    }
+
+    public void remove(int idx) {
+        // TODO : implement GoalData.delete(Goal goal)
+        String title = _goals.get(idx).getTitle();
+        if (idx < _goals.size()) {
+            Log.d(TAG, "Deleted goal : " + title);
+            _goals.remove(idx);
+        } else {
+            Log.d(TAG, "Cannot delete goal : " + title);
         }
     }
 }
