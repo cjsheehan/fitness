@@ -3,11 +3,20 @@ package com.cjsheehan.fitness.activity.fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.LightingColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -152,6 +161,23 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         _targetTextView.setText(String.valueOf(_currentTarget));
         _progressBar.setMax(_currentTarget);
         _progressBar.setProgress(_currentProgress);
+        updateProgressAppearance(_currentProgress, _currentTarget);
+    }
+
+    private void updateProgressAppearance(int currentProgress, int targetProgress) {
+        if (currentProgress >= targetProgress) {
+            //_progressBar.setProgressTintMode(PorterDuff.Mode.SRC_IN);
+            //_progressBar.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(_context, R.color.brickRedColor)));
+            _progressBar.setElevation(10f);
+            //Drawable drawable = _progressBar.getProgressDrawable();
+            //drawable.setColorFilter(new LightingColorFilter(0xFF888888, 0x00111111));
+            //_progressBar.setProgressDrawable(ContextCompat.getDrawable(_context, R.drawable.progress_bar_circular_complete));
+        } else {
+            //_progressBar.setProgressDrawable(ContextCompat.getDrawable(_context, R.drawable.progress_bar_circular));
+            //Drawable drawable = _progressBar.getProgressDrawable();
+            //drawable.setColorFilter(null);
+            ////_progressBar.setProgressTintList(null);
+        }
     }
 
 
@@ -234,6 +260,7 @@ public class ActiveGoalProgressFragment extends BaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_change_unit, menu);
         inflater.inflate(R.menu.menu_add_progress, menu);
     }
 
@@ -242,6 +269,10 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         switch (item.getItemId()) {
             case R.id.menu_add_progress:
                 editProgressDialog();
+                return true;
+
+            case R.id.menu_change_unit:
+                Toast.makeText(_context, "Change Unit", Toast.LENGTH_SHORT).show();
                 return true;
 
             default:
