@@ -1,8 +1,6 @@
 package com.cjsheehan.fitness.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 
@@ -14,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,9 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.activity.fragment.ActiveGoalProgressFragment;
@@ -40,9 +35,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-
-import static com.cjsheehan.fitness.activity.MainActivity.FragmentId.ACTIVE_GOAL_PROGRESS;
-import static com.cjsheehan.fitness.activity.MainActivity.FragmentId.getIdByInt;
 
 public class MainActivity extends AppCompatActivity {
     private String TAG = "MainActivity";
@@ -64,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPagerAdapter _viewPagerAdapter;
     private ViewPager _viewPager;
     private int _selectedPagePosition;
+    private boolean _isCounterRecording;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +70,12 @@ public class MainActivity extends AppCompatActivity {
         //updateProgressView();
     }
 
-    enum ProgressChangeDirection { INCREMENT, DECREMENT };
-
     private void init() {
         initUI();
         setupViewPager(_viewPager);
         setupSharedPreferences();
+        _isCounterRecording = false;
+        setupFloatActBtn();
     }
 
     private void initUI() {
@@ -306,6 +299,21 @@ public class MainActivity extends AppCompatActivity {
 
             return null;
         }
+    }
+
+    private void setupFloatActBtn() {
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(final View view) {
+                if(_isCounterRecording) {
+                    fab.setImageResource(R.drawable.ic_record_steps);
+                    _isCounterRecording = false;
+                } else {
+                    fab.setImageResource(R.drawable.ic_stop_white);
+                    _isCounterRecording = true;
+                }
+            }
+        });
     }
 
 }

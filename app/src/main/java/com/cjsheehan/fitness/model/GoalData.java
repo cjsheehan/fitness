@@ -77,7 +77,6 @@ public class GoalData {
             _goals.set(idx, goal);
     }
 
-
     public void remove(Goal goal) {
         Log.d(TAG, "Entered : delete(Goal goal)");
         // TODO : implement GoalData.delete(Goal goal)

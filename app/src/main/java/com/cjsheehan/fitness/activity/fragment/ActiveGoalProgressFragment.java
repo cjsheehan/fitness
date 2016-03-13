@@ -58,7 +58,6 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
 
         _simpleAnim = AnimationUtils.loadAnimation(_context, R.animator.simple_animation);
-        setupFloatActionBtn();
         setupProgressIndicators(view);
         setupIncrButton(view);
         setupDecrButton(view);
@@ -85,15 +84,6 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         //checkForGoalOfDay();
         //
         //registerReceivers();
-    }
-
-    private void setupFloatActionBtn() {
-        _fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        _fab.setOnClickListener(new View.OnClickListener() {
-            public void onClick(final View view) {
-                editProgressDialog();
-            }
-        });
     }
 
 
