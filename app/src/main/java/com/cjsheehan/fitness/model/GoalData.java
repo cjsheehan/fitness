@@ -24,6 +24,23 @@ public class GoalData {
         return _goals.size();
     }
 
+    public void setActive(int idx) {
+        for (int i = 0; i < _goals.size() ; i++) {
+            if(i == idx)
+                _goals.get(i).setGoalState(GoalState.ACTIVE);
+            else
+                _goals.get(i).setGoalState(GoalState.INACTIVE);
+        }
+    }
+
+    public Goal getActive() {
+        for (Goal g : _goals) {
+            if (g.getGoalState() == GoalState.ACTIVE)
+                return g;
+        }
+        return null;
+    }
+
 
     public void add(Goal goal) {
         Log.d(TAG, "Entered : create(Goal goal()");

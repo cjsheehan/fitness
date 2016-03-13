@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,6 +26,8 @@ import com.cjsheehan.fitness.adapter.GoalListAdapter;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.GoalData;
 import com.cjsheehan.fitness.model.GoalState;
+import com.cjsheehan.fitness.util.GoalValidation;
+import com.cjsheehan.fitness.util.GoalValidationCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +36,8 @@ import java.util.Random;
 public class GoalsFragment extends BaseFragment {
     private static final String TAG = "BaseGoalsFragment";
     private final int LOADER_ID = new Random().nextInt(1000);
-    private enum GoalDialog{EDIT, ADD};
-    private TextView _editGoalTitle;
-    private EditText _editGoalTarget;
+    private TextView _goalTitle;
+    private EditText _goalTarget;
     private Context context;
     private GoalData _goalData;
     private GoalListAdapter _goalListAdapter;
@@ -93,23 +93,20 @@ public class GoalsFragment extends BaseFragment {
                 // Select
                 Log.d(TAG, "Goal ListView click");
                 for (int i = 0; i < _goalListView.getChildCount(); i++) {
-                    if(position == i) {
+                    if (position == i) {
                         setGoalActive(position);
                         _goalListView.getChildAt(i).setBackgroundResource(R.color.teal100);
-                    }else{
+                    } else {
                         _goalListView.getChildAt(i).setBackgroundResource(Color.TRANSPARENT);
                     }
                 }
                 Goal goal = _goalListAdapter.getItem(position);
-                Toast.makeText(getContext(), "Selected goal : " + goal.getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
 
         _goalListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // TODO : RESTRICT editing of active goals
-                // Edit
                 editGoalDialog(position);
                 return true;
             }
@@ -118,39 +115,7 @@ public class GoalsFragment extends BaseFragment {
         _goalListView.setAdapter(_goalListAdapter);
     }
 
-
-    //private void initLoader() {
-    //    Log.d(TAG, "### Calling initLoader! ###");
-    //    if (getActivity().getSupportLoaderManager().getLoader(LOADER_ID) == null)
-    //        Log.d(TAG, "### Initializing a new Loader... ###");
-    //    else
-    //        Log.d(TAG, "### Reconnecting with existing Loader (id " + LOADER_ID + ")... ###");
-    //    getLoaderManager().initLoader(LOADER_ID, null, this).forceLoad();
-    //}
-
-    //@Override
-    //public Loader<List<Goal>> onCreateLoader(int id, Bundle args) {
-    //    Log.d(TAG, "Enetered :  onCreateLoader(int id, Bundle args). Create Loader with id : " + id);
-    //    _dbGoal = new DbGoal(context);
-    //    _goalListAdapter.setLoader(loader);
-    //    return loader;
-    //}
-    //
-    //@Override
-    //public void onLoadFinished(Loader<List<Goal>> loader, List<Goal> data) {
-    //    _goalListAdapter.setGroups(data);
-    //    if (data.isEmpty())
-    //        txtMessage.setVisibility(View.VISIBLE);
-    //    else
-    //        txtMessage.setVisibility(View.GONE);
-    //}
-
-    //@Override
-    //public void onLoaderReset(Loader<List<Goal>> loader) {
-    //    _goalListAdapter.setGroups(new ArrayList<Goal>());
-    //}
-
-    public void addGoalDialog(GoalDialog gd) {
+    public void addGoalDialog() {
         LinearLayout layout = new LinearLayout(_context);
         layout.setOrientation(LinearLayout.VERTICAL);
 
@@ -166,19 +131,13 @@ public class GoalsFragment extends BaseFragment {
         layout.addView(editTarget);
 
         // Cache
-        _editGoalTitle = editName;
-        _editGoalTarget = editTarget;
+        _goalTitle = editName;
+        _goalTarget = editTarget;
 
-        // Alert
         AlertDialog.Builder addGoalDialog = new AlertDialog.Builder(_context);
         addGoalDialog.setNegativeButton(android.R.string.cancel, null);
-
-        // Icon
         addGoalDialog.setIcon(R.drawable.ic_trophie_green);
-
-        // Setting Dialog Title
         addGoalDialog.setTitle("Add New Goal");
-
         addGoalDialog.setView(layout);
         addGoalDialog.create();
 
@@ -189,79 +148,47 @@ public class GoalsFragment extends BaseFragment {
                     }
                 });
 
-        // Showing Alert Message
         addGoalDialog.show();
-
-        // TODO : Resolve problems when trying to keep dialog open
-
     }
 
-    public boolean isGoalValid(String title, String target) {
-        boolean result = true;
-
-        // Check for empty strings
-        if (title.isEmpty() || target.isEmpty()) {
-            result = false;
-            Toast.makeText(_context, "All data must be entered", Toast.LENGTH_SHORT).show();
+    public GoalValidationCode isGoalValid(String title, String target) {
+        GoalValidationCode validationCode = GoalValidation.checkInput(title, target);
+        switch (validationCode) {
+            case FAIL_TITLE_IS_EMPTY:
+            case FAIL_TARGET_IS_EMPTY:
+                Toast.makeText(_context, "All data must be entered", Toast.LENGTH_SHORT).show();
+                break;
+            case FAIL_TARGET_NAN:
+                Toast.makeText(_context, "Target must be a number", Toast.LENGTH_SHORT).show();
+            case FAIL_TARGET_LTE0:
+                Toast.makeText(_context, "Target must be greater than 1", Toast.LENGTH_SHORT).show();
+                break;
         }
 
-        // Check numSteps is a number
-        String stepsErrMsg = "Number of Steps must be a number greater than zero";
-        int numSteps;
-        try
-        {
-            numSteps = Integer.parseInt(target);
-            if(numSteps < 1) {
-                result = false;
-                _editGoalTarget.setText("");
-                Toast.makeText(_context, stepsErrMsg, Toast.LENGTH_SHORT).show();
-            }
-        }
-        catch(NumberFormatException nfe)
-        {
-            result = false;
-            Toast.makeText(_context, stepsErrMsg, Toast.LENGTH_SHORT).show();
-        }
-
-        return result;
+        return validationCode;
     }
 
-    public void addNewGoal()
-    {
-        String goalTitle = _editGoalTitle.getText().toString();
-        String goalTarget = _editGoalTarget.getText().toString();
+    public void addNewGoal() {
+        String goalTitle = _goalTitle.getText().toString();
+        String goalTarget = _goalTarget.getText().toString();
 
-        if(isGoalValid(goalTitle, goalTarget)) {
-            Goal goal = new Goal(goalTitle, 0, Integer.valueOf(goalTarget), GoalState.INACTIVE);
+        if (isGoalValid(goalTitle, goalTarget) == GoalValidationCode.OK) {
+            Goal goal = new Goal(goalTitle, 0, Integer.parseInt(goalTarget), GoalState.INACTIVE);
             _goalData.add(goal);
             _goalListAdapter.notifyDataSetChanged();
-            if(_goalData.size() == 1)
-            {
-                // Make it active
+            if (_goalData.size() == 1) {
                 setGoalActive(0);
             }
-            Toast.makeText(_context, "Added Goal", Toast.LENGTH_SHORT).show();
-
-            //try {
-            //    dbCreateGoal(new Goal(goalTitle, 0, Integer.parseInt(goalTarget), goalState));
-            //}
-            //catch(Exception e) {_goalData
-            //    int a = 5;
-            //    Toast.makeText(getApplicationContext(), "ERROR while attempting to write goal to db" + e.getMessage(), Toast.LENGTH_SHORT).show();
-            //}
-
+            Toast.makeText(_context, "Added " + goal.getTitle(), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        _editGoalTitle.setText("");
-        _editGoalTarget.setText("");
-
-        return;
+        _goalTitle.setText("");
+        _goalTarget.setText("");
     }
 
-    public void editGoalDialog(final int position)
-    {
-        if(_goalData.get(position).getGoalState() == GoalState.ACTIVE) {
+    public void editGoalDialog(final int position) {
+        if (_goalData.get(position).getGoalState() == GoalState.ACTIVE) {
             Toast.makeText(_context, "Cannot edit active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -272,19 +199,19 @@ public class GoalsFragment extends BaseFragment {
         layout.setOrientation(LinearLayout.VERTICAL);
 
         // Goal Name
-        final EditText editName = new EditText(_context);
-        editName.setText(selectedGoal.getTitle());
-        layout.addView(editName);
+        final EditText goalTitle = new EditText(_context);
+        goalTitle.setText(selectedGoal.getTitle());
+        layout.addView(goalTitle);
 
         // Goal Target
-        final EditText editTarget = new EditText(_context);
-        editTarget.setText("" + selectedGoal.getTarget());
-        editTarget.setRawInputType(Configuration.KEYBOARD_QWERTY);
-        layout.addView(editTarget);
+        final EditText goalTarget = new EditText(_context);
+        goalTarget.setText("" + selectedGoal.getTarget());
+        goalTarget.setRawInputType(Configuration.KEYBOARD_QWERTY);
+        layout.addView(goalTarget);
 
         // Cache
-        _editGoalTitle = editName;
-        _editGoalTarget = editTarget;
+        _goalTitle = goalTitle;
+        _goalTarget = goalTarget;
 
         // Alert
         AlertDialog.Builder editGoalDialog = new AlertDialog.Builder(_context);
@@ -309,7 +236,7 @@ public class GoalsFragment extends BaseFragment {
                     public void onClick(DialogInterface dialog, int which) {
 
                         if (editGoal(position)) {
-                            Toast.makeText(_context, "Editing Goal", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(_context, "Edited Goal", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -318,17 +245,14 @@ public class GoalsFragment extends BaseFragment {
         editGoalDialog.show();
     }
 
-    public boolean editGoal(int position)
-    {
-        //TODO : Add to _db
-        String goalTitle = _editGoalTitle.getText().toString();
-        String goalTarget = _editGoalTarget.getText().toString();
+    public boolean editGoal(int position) {
+        String goalTitle = _goalTitle.getText().toString();
+        String goalTarget = _goalTarget.getText().toString();
 
         // Only edit inactive, valid goals
-        if(_goalData.get(position).getGoalState() == GoalState.ACTIVE) {
+        if (_goalData.get(position).getGoalState() == GoalState.ACTIVE) {
             Toast.makeText(_context, "Cannot edit active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
-        }
-        else if(isGoalValid(goalTitle, goalTarget)) {
+        } else if (isGoalValid(goalTitle, goalTarget) == GoalValidationCode.OK) {
             _goalData.get(position).setTitle(goalTitle);
             _goalData.get(position).setTarget(Integer.parseInt(goalTarget));
             _goalListAdapter.notifyDataSetChanged();
@@ -337,74 +261,24 @@ public class GoalsFragment extends BaseFragment {
         return false;
     }
 
-    public void removeGoal(int position)
-    {
-        //TODO : Add to _db
-        if(_goalData.get(position).getGoalState() == GoalState.ACTIVE)
-        {
+    public void removeGoal(int position) {
+        if (_goalData.get(position).getGoalState() == GoalState.ACTIVE) {
             Toast.makeText(_context, "Cannot remove active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
+        } else {
             _goalData.remove(position);
             _goalListAdapter.notifyDataSetChanged();
             Toast.makeText(_context, "Goal removed", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public boolean setGoalActive(int position)
-    {
-        //TODO : Add to _db
-        boolean isActive = false;
-        if(_goalData.get(position).getGoalState() != GoalState.ACTIVE) {
-            if(checkGoalStatesValid() <= 1) {
-                Goal activeGoal = _goalData.get(position);
-                Toast.makeText(_context, "Setting goal active : " + activeGoal.getTitle(), Toast.LENGTH_SHORT).show();
-                _goalData.get(position).setGoalState(GoalState.ACTIVE);
-                updateGoalActiveStates(position);
-            }
-            else {
-                Toast.makeText(_context, "Warning: more than 1 goal is active", Toast.LENGTH_SHORT).show();
-            }
-            isActive = true;
-        }
-        else {
+    public void setGoalActive(int position) {
+        if (_goalData.get(position).getGoalState() != GoalState.ACTIVE) {
+            _goalData.setActive(position);
+            _goalListAdapter.notifyDataSetChanged();
+            Toast.makeText(_context, _goalData.getActive().getTitle() + " is now active", Toast.LENGTH_SHORT).show();
+        } else {
             Toast.makeText(_context, "Goal is already active", Toast.LENGTH_SHORT).show();
         }
-
-        return isActive;
-    }
-
-    private void updateGoalActiveStates(int activeIdx)
-    {
-        //TODO : Add to _db
-        for(int i = 0; i < _goalData.size(); i++)
-        {
-            // Only 1 goal can be active at a time
-            if(i != activeIdx)
-                _goalData.get(i).setGoalState(GoalState.INACTIVE);
-        }
-
-        if(checkGoalStatesValid() > 1)
-            Toast.makeText(_context, "Warning: more than 1 goal is active", Toast.LENGTH_SHORT).show();
-    }
-
-    private int checkGoalStatesValid()
-    {
-        if(_goalData.size() > 0)
-        {
-            List<Integer> activeIdxs = new ArrayList<>();
-            int numActive = 0;
-            int activeIdx = 0;
-            for(int i = 0; i < _goalData.size(); i++)  {
-                if(_goalData.get(i).getGoalState() == GoalState.ACTIVE)
-                    activeIdxs .add(i);
-            }
-
-            return activeIdxs.size();
-        }
-
-        return 0;
     }
 
     @Override
@@ -416,7 +290,7 @@ public class GoalsFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add_goal:
-                addGoalDialog(GoalDialog.ADD);
+                addGoalDialog();
                 return true;
 
             default:
