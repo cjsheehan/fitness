@@ -11,7 +11,7 @@
                 android:shape="ring"
                 android:thickness="@dimen/progress_circle_bkg_thickness"
                 android:useLevel="false">
-                <solid android:color="@color/teal50"/>
+                <solid android:color="@color/teal500"/>
             </shape>
         </item>
         <item android:id="@android:id/progress">
@@ -20,8 +20,15 @@
                 android:shape="ring"
                 android:thickness="@dimen/progress_circle_thickness"
                 android:useLevel="true">
-                <solid android:color="@color/teal200"/>
+                <gradient
+                    android:startColor="@color/teal400"
+                    android:centerColor="@color/teal50"
+                    android:centerY="1.0"
+                    android:endColor="@color/teal400"
+                    android:type="sweep"
+                    />
             </shape>
         </item>
     </layer-list>
 </rotate>
+
