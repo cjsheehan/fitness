@@ -50,6 +50,8 @@
     android:layout_gravity="bottom|end"
     android:layout_margin="@dimen/fab_margin"
     android:scaleType="center"
+    app:borderWidth="0dp"
+    app:elevation="10dp"
     android:src="@drawable/ic_record_steps"
     app:backgroundTint="@color/teal500"/>
 

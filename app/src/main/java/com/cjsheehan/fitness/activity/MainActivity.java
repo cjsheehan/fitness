@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         initUI();
         setupViewPager(_viewPager);
         setupSharedPreferences();
+        _simpleAnim = AnimationUtils.loadAnimation(this, R.animator.simple_animation);
         _isCounterRecording = false;
         setupFloatActBtn();
     }
@@ -305,6 +307,7 @@ public class MainActivity extends AppCompatActivity {
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View view) {
+                view.startAnimation(_simpleAnim);
                 if(_isCounterRecording) {
                     fab.setImageResource(R.drawable.ic_record_steps);
                     _isCounterRecording = false;
