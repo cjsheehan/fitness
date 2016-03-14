@@ -1,7 +1,9 @@
 <resources>
     <!-- SETTINGS KEYS -->
-    <string name="enableTestMode">enableTestMode_Preference</string>
-    <string name="allowOverwrite">allowOverwrite_Preference</string>
+    <string name="enable_test_mode_key">enable_test_mode_pref_key</string>
+    <string name="allow_overwrite_key">allow_overwrite_pref_key</string>
+    <string name="user_stride_length_key">user_stride_length_pref_key</string>
+    <string name="default_view_key">default_view_pref_key</string>
 
     <!-- EVERYTHING ELSE -->
     <string name="app_name">MyKeepFit</string>
@@ -11,10 +13,30 @@
     <string name="forward_slash">/</string>
     <string name="no_goals_for_day">No goals for today</string>
 
-    <string name="progress_increment_amount">Progress Increment Amount</string>
+    <!-- SETTINGS LABELS -->
+    <string name="user_stride_length_header">Length of stride (metres)</string>
+
+    <string name="progress_increment_amount">Progress increment amount</string>
     <string name="add_progress">Add Progress</string>
     <string name="units">Units</string>
     <string name="add_goal">Add Goal</string>
     <string name="delete_label">Delete</string>
     <string name="select_date">Set Date (Test Mode)</string>
+
+    <!-- TABS -->
+    <string name="activity_tab">ACTIVITY</string>
+    <string name="goals_tab">GOALS</string>
+    <string name="history_tab">HISTORY</string>
+    <string name="stats_tab">STATS</string>
+
+
+    <!-- UNITS -->
+    <string name="steps">steps</string>
+    <string name="yards">yds</string>
+    <string name="metres">m</string>
+    <string name="kilometres">km</string>
+    <string name="miles">mls</string>
+
+
+
 </resources>

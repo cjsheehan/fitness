@@ -33,6 +33,7 @@ import com.cjsheehan.fitness.activity.fragment.BaseFragment;
 import com.cjsheehan.fitness.activity.fragment.GoalsFragment;
 import com.cjsheehan.fitness.activity.fragment.HistoryFragment;
 import com.cjsheehan.fitness.activity.fragment.SettingsFragment;
+import com.cjsheehan.fitness.event.GoalProgressListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoalProgressListener {
     private String TAG = "MainActivity";
     private SharedPreferences _sharedPreferences;
 
@@ -77,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        setupViewPager(_viewPager);
         setupSharedPreferences();
+        setupViewPager(_viewPager);
         _simpleAnim = AnimationUtils.loadAnimation(this, R.animator.simple_animation);
         _isCounterRecording = false;
         setupFloatActBtn();
@@ -114,8 +115,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupSharedPreferences() {
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        _settingsListener = new settingsChangedListener();
+        _settingsListener = new SettingsChangedListener();
         _sharedPreferences.registerOnSharedPreferenceChangeListener(_settingsListener);
+    }
+
+    private class SettingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences spref, String key) {
+            if (key.equals(getString(R.string.enable_test_mode_key))) {
+                setCalendarMenuItemVisibilty();
+            }
+        }
     }
 
     private void updateDateLabel() {
@@ -133,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isTestModeEnabled() {
         return _sharedPreferences.getBoolean(
-                getString(R.string.enableTestMode),
+                getString(R.string.enable_test_mode_key),
                 getResources().getBoolean(R.bool.testModeEnabled_Default));
     }
 
@@ -169,15 +180,12 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class settingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {
-
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences spref, String key) {
-            if (key.equals(getString(R.string.enableTestMode))) {
-                setCalendarMenuItemVisibilty();
-            }
-        }
+    @Override
+    public void onGoalProgressChanged(Double progress) {
+        // TODO : Call frags with data
     }
+
+
 
     private void setCalendarMenuItemVisibilty() {
         if(isTestModeEnabled())
@@ -191,7 +199,10 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(_viewPagerAdapter);
         viewPager.setOffscreenPageLimit(PAGE_LIMIT);
         _viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        for(FragmentId fid : FragmentId.values()) {
+
+        // Page order is a user setting
+        FragmentId [] fidOrder = getFragmentOrder();
+        for(FragmentId fid : fidOrder) {
             Fragment fragment = createFragment(fid);
             if(fragment != null)
                 _viewPagerAdapter.addFragment(fragment, fid.getTitle());
@@ -204,11 +215,23 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
     }
 
+    private FragmentId[] getFragmentOrder() {
+        String[] defaultOrder = getResources().getStringArray(R.array.default_view_preference_values);
+        String userOrderCat = _sharedPreferences.getString(getString(R.string.default_view_key), defaultOrder[0]);
+        String[] userOrder = userOrderCat.split("\\|");
+        FragmentId[] fids = new FragmentId[userOrder.length];
+        for (int i = 0; i < userOrder.length; i++) {
+            userOrder[i] = userOrder[i].trim();
+            fids[i] = FragmentId.getIdByString(userOrder[i].trim());
+        }
+        return fids;
+    }
+
 
     public static Fragment createFragment (FragmentId fragmentId) {
         BaseFragment fragment = null;
         switch (fragmentId) {
-            case ACTIVE_GOAL_PROGRESS:
+            case ACTIVITY:
                 fragment = new ActiveGoalProgressFragment();
                 break;
             case GOALS:
@@ -267,10 +290,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public enum FragmentId {
-        ACTIVE_GOAL_PROGRESS(0, "Activity"),
+        ACTIVITY(0, "Activity"),
         GOALS(1, "Goals"),
         HISTORY(2, "History"),
-        SETTINGS(3, "Settings");
+        STATS(2, "Stats");
         private int id;
         private String title;
 
@@ -290,17 +313,45 @@ public class MainActivity extends AppCompatActivity {
         public static FragmentId getIdByInt(int id) {
             switch (id) {
                 case 0 :
-                    return ACTIVE_GOAL_PROGRESS;
+                    return ACTIVITY;
                 case 1 :
                     return GOALS;
                 case 2 :
                     return HISTORY;
-                case 4 :
-                    return SETTINGS;
+                case 3 :
+                    return STATS;
             }
 
             return null;
         }
+
+        public static FragmentId getIdByString(String id) {
+            switch (id) {
+                case "ACTIVITY" :
+                    return ACTIVITY;
+                case "GOALS" :
+                    return GOALS;
+                case "HISTORY" :
+                    return HISTORY;
+                case "STATS" :
+                    return STATS;
+            }
+
+            return null;
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        // Activity being restarted from stopped state
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     private void setupFloatActBtn() {

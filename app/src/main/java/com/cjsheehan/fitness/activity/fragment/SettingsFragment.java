@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 import com.cjsheehan.fitness.R;
+import com.cjsheehan.fitness.util.Util;
+
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
@@ -39,6 +41,9 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         updatePreference(findPreference(key), key);
+        if(key == getString(R.string.default_view_key)) {
+            Util.restartApplication(getActivity());
+        }
     }
 
     private void updatePreference(Preference preference, String key) {
@@ -49,7 +54,17 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         //    return;
         //}
         SharedPreferences sharedPrefs = getPreferenceManager().getSharedPreferences();
-        if(key == getString(R.string.progress_increment_amount))
-            preference.setSummary(sharedPrefs.getString(key, "Default"));
+
+        if(key == getString(R.string.progress_increment_amount)) {
+            preference.setSummary(sharedPrefs.getString(key, ""));
+        }
+        else if(key == getString(R.string.user_stride_length_key)) {
+            preference.setSummary(sharedPrefs.getString(key, ""));
+        }
+        else if(key == getString(R.string.default_view_key)) {
+            //String defaultViewValue = sharedPrefs.getString(key, "");
+            //if(defaultViewValue == "1")
+            preference.setSummary(sharedPrefs.getString(key, ""));
+        }
     }
 }

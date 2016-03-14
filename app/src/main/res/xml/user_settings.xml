@@ -1,33 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-    android:title="Test Mode">
+        android:title="User Profile">
 
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="@string/enableTestMode"
-        android:summary="Test Mode enables fast creation of user fitness data for test purposes"
-        android:title="Enable Test Mode"/>
+        <EditTextPreference
+            android:defaultValue="1"
+            android:inputType="numberDecimal"
+            android:key="@string/user_stride_length_key"
+            android:title="Length of stride (metres)"
+            android:summary="1"/>
 
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:dependency="@string/enableTestMode"
-        android:key="@string/allowOverwrite"
-        android:summary="Allow test mode data to overwrite existing user data"
-        android:title="Allow Overwrite"/>
-
-</PreferenceCategory>
+    </PreferenceCategory>
 
     <PreferenceCategory
         android:title="User Interface">
 
         <EditTextPreference
             android:defaultValue="10"
-            android:key="@string/progress_increment_amount"
             android:inputType="numberDecimal"
-            android:title="Increment Progress Control"
-            android:summary="Set the amount that the plus/minus buttons change your goal progress"/>
+            android:key="@string/progress_increment_amount"
+            android:summary="10"
+            android:title="Edit +/- increment value"/>
+
+        <ListPreference
+            android:defaultValue="ACTIVITY | GOALS    | HISTORY  | STATS"
+            android:key="@string/default_view_key"
+            android:entries="@array/default_view_preference_array"
+            android:entryValues="@array/default_view_preference_values"
+            android:summary="ACTIVITY | GOALS    | HISTORY  | STATS"
+            android:title="Edit tab order (requires restart)"/>
 
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Test Mode">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/enable_test_mode_key"
+            android:summary="Test Mode enables fast creation of user fitness data for test purposes"
+            android:title="Enable Test Mode"/>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/enable_test_mode_key"
+            android:key="@string/allow_overwrite_key"
+            android:summary="Allow test mode data to overwrite existing user data"
+            android:title="Allow Overwrite"/>
+
+    </PreferenceCategory>
+
+
 
 </PreferenceScreen>
