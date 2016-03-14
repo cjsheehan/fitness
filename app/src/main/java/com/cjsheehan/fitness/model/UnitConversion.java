@@ -28,7 +28,7 @@ public class UnitConversion {
     private double STEPS_PER_MILE = 2112;
 
     // PER STEP
-    private double METRES_PER_STEP = 0.762;
+    private double METRES_PER_STEP = 0.762; // COMMONLY USED FACTOR
     private double YARDS_PER_STEP = 1 / STEPS_PER_YARD;
     private double KILOMETRES_PER_STEP = 1 / STEPS_PER_KILOMETRE;
     private double MILES_PER_STEP = 1 / STEPS_PER_MILE;
@@ -160,7 +160,7 @@ public class UnitConversion {
                 factor = MILES_PER_METRE;
                 break;
             case KILOMETRE:
-                factor = KILOMETRE_PER_MILE;
+                factor = MILES_PER_KILOMETRE;
                 break;
             case MILE:
                 factor = 1;
