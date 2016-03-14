@@ -14,23 +14,14 @@
     tools:context=".activity.MainActivity">
 
     <RelativeLayout
-        android:id="@+id/active_goal_progress_content"
+        android:id="@+id/active_goal_progress_content2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <android.support.v4.widget.ContentLoadingProgressBar
-            android:id="@+id/active_goal_progress_bar"
-            style="@android:style/Widget.Material.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.51"
-            android:progress="70"
-            android:padding="16dp"
-            android:elevation="20dp"
-            android:progressDrawable="@drawable/progress_bar_circular"
-            android:indeterminate="false"
-            android:layout_below="@+id/active_goal_progress_decr"
-            android:layout_alignParentStart="true"/>
+        <include android:id="@+id/active_goal_progress_display"
+                 layout="@layout/active_goal_progress_display"
+                 android:layout_width="fill_parent"
+                 android:layout_height="fill_parent"/>
 
         <ImageView
             android:id="@+id/active_goal_progress_decr"
@@ -42,55 +33,6 @@
             android:layout_alignTop="@+id/active_goal_progress_incr"
             android:layout_alignParentStart="true"/>
 
-        <LinearLayout
-            android:id="@+id/active_goal_progress_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@id/active_goal_progress_bar"
-                android:layout_alignTop="@id/active_goal_progress_bar"
-                android:layout_alignRight="@id/active_goal_progress_bar"
-                android:layout_alignBottom="@id/active_goal_progress_bar">
-
-                <TextView
-                    android:id="@+id/active_goal_current_progress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/transparent"
-                    android:inputType="number"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:text="0"
-                    android:textSize="30dp"
-                    android:editable="false"
-/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:text="@string/forward_slash"
-                    android:textSize="30dp"/>
-
-                <TextView
-                    android:id="@+id/active_goal_target"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:text="0"
-                    android:textSize="30dp"/>
-            </LinearLayout>
-        </LinearLayout>
 
         <ImageView
             android:id="@+id/active_goal_progress_incr"
@@ -99,24 +41,10 @@
             android:padding="16dp"
             android:elevation="20dp"
             android:background="@drawable/ic_plus_icon_teal300"
-            android:layout_below="@+id/space"
-            android:layout_alignParentEnd="true"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/textView"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"/>
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="50dp"/>
 
-        <Space
-            android:layout_width="20px"
-            android:layout_height="20dp"
-            android:id="@+id/space"
-            android:layout_below="@+id/textView"
-            android:layout_alignStart="@+id/textView"
-            android:layout_alignEnd="@+id/textView"/>
 
     </RelativeLayout>
 </RelativeLayout>

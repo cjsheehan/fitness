@@ -65,7 +65,7 @@ public class ActiveGoalProgressFragment extends BaseFragment {
     protected void init(View view) {
         _context = view.getContext();
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
-
+        content = (RelativeLayout) view.findViewById(R.id.active_goal_progress_content2);
         _simpleAnim = AnimationUtils.loadAnimation(_context, R.animator.simple_animation);
         setupProgressIndicators(view);
         setupIncrButton(view);
@@ -81,7 +81,7 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         //// Clear focus from EditText
         //getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         //
-        content = (RelativeLayout) view.findViewById(R.id.active_goal_progress_content);
+
         //actionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         //
         //initializeStepCountButtons(view);

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/active_goal_current_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:inputType="number"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:text="11111110.00"
+        android:textSize="30dp"
+        android:editable="false"
+        android:layout_gravity="center_horizontal"
+        android:layout_above="@+id/textView2"
+        android:layout_alignEnd="@+id/active_goal_target"/>
+
+    <View
+        android:layout_width="250dp"
+        android:layout_height="2dp"
+        android:background="@color/colorAccent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView2"/>
+
+    <TextView
+        android:id="@+id/active_goal_target"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:text="999999.00"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:textSize="30dp"/>
+
+    <TextView
+        android:id="@+id/active_goal_unit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16dp"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:text="@string/miles"
+        android:textStyle="italic"
+        android:layout_below="@+id/active_goal_target"
+        android:layout_toEndOf="@+id/active_goal_target"/>
+
+</RelativeLayout>
