@@ -15,12 +15,18 @@
     <PreferenceCategory
         android:title="User Interface">
 
+        <CheckBoxPreference
+            android:defaultValue="@bool/enable_edit_goal_default"
+            android:key="@string/enable_edit_goal_key"
+            android:title="Enable edit goals"/>
+
         <EditTextPreference
             android:defaultValue="10"
             android:inputType="numberDecimal"
             android:key="@string/progress_increment_amount"
             android:summary="10"
             android:title="Edit +/- increment value"/>
+
 
         <ListPreference
             android:defaultValue="ACTIVITY | GOALS    | HISTORY  | STATS"
@@ -36,13 +42,13 @@
         android:title="Test Mode">
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="@bool/testModeEnabled_Default"
             android:key="@string/enable_test_mode_key"
             android:summary="Test Mode enables fast creation of user fitness data for test purposes"
-            android:title="Enable Test Mode"/>
+            android:title="Enable test mode"/>
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="enable_allow_overwrite_default"
             android:dependency="@string/enable_test_mode_key"
             android:key="@string/allow_overwrite_key"
             android:summary="Allow test mode data to overwrite existing user data"

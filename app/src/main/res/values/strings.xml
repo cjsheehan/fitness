@@ -4,6 +4,7 @@
     <string name="allow_overwrite_key">allow_overwrite_pref_key</string>
     <string name="user_stride_length_key">user_stride_length_pref_key</string>
     <string name="default_view_key">default_view_pref_key</string>
+    <string name="enable_edit_goal_key">enable_edit_goal_pref_key</string>
 
     <!-- EVERYTHING ELSE -->
     <string name="app_name">MyKeepFit</string>

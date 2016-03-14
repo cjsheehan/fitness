@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <bool name="testModeEnabled_Default">false</bool>
+    <bool name="enable_edit_goal_default">true</bool>
+    <bool name="enable_allow_overwrite_default">true</bool>
 </resources>

@@ -2,9 +2,11 @@ package com.cjsheehan.fitness.activity.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -45,6 +47,7 @@ public class GoalsFragment extends BaseFragment {
     private TextView txtMessage;
     private FloatingActionButton _fab;
     Context _context;
+    private SharedPreferences _sharedPreferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,7 +60,7 @@ public class GoalsFragment extends BaseFragment {
     @Override
     protected void init(View view) {
         _context = view.getContext();
-
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
         // TODO : Need to get goals from repo
         //goalRepository = new GoalRepository(context);
         //txtMessage = (TextView) view.findViewById(R.id.goals_message);
@@ -107,7 +110,11 @@ public class GoalsFragment extends BaseFragment {
         _goalListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-                editGoalDialog(position);
+                if(true == _sharedPreferences.getBoolean(getString(R.string.enable_edit_goal_key), false)) {
+                    editGoalDialog(position);
+                } else {
+                    Toast.makeText(_context, "To edit goals, please enable the feature in settings", Toast.LENGTH_SHORT).show();
+                }
                 return true;
             }
         });
