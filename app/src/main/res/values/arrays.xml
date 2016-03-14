@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="default_view_preference_array">
+        <item>1. ACTIVITY\n2. GOALS\n3. HISTORY\n4. STATS\n</item>
+        <item>1. GOALS\n2. ACTIVITY\n3. HISTORY\n4. STATS\n</item>
+        <item>1. STATS\n2. HISTORY\n3. ACTIVITY\n4. GOALS\n</item>
+        <item>1. HISTORY\n2. STATS\n3. GOALS\n4. ACTIVITY\n</item>
+    </string-array>
+    <string-array name="default_view_preference_values">
+        <item>ACTIVITY | GOALS    | HISTORY  | STATS</item>
+        <item>GOALS    | ACTIVITY | HISTORY  | STATS</item>
+        <item>STATS    | HISTORY  | ACTIVITY | GOALS</item>
+        <item>HISTORY  | STATS    | GOALS    | ACTIVITY</item>
+    </string-array>
+</resources>
