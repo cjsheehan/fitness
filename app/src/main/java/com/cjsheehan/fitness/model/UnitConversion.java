@@ -22,16 +22,28 @@ public class UnitConversion {
     private static final double MILES_PER_KILOMETRE = 1 / KILOMETRE_PER_MILE;
 
     // STEPS
-    private double STEPS_PER_METRE = 1;
-    private double STEPS_PER_YARD = STEPS_PER_METRE ;
-    private double STEPS_PER_KILOMETRE = 762;
-    private double STEPS_PER_MILE = 2112;
+    private double STEPS_PER_METRE = 0.762; // COMMONLY USED FACTOR;
+    private double METRES_PER_STEP = 1 / STEPS_PER_METRE;
 
-    // PER STEP
-    private double METRES_PER_STEP = 0.762; // COMMONLY USED FACTOR
-    private double YARDS_PER_STEP = 1 / STEPS_PER_YARD;
-    private double KILOMETRES_PER_STEP = 1 / STEPS_PER_KILOMETRE;
-    private double MILES_PER_STEP = 1 / STEPS_PER_MILE;
+    private double YARDS_PER_STEP = METRES_PER_STEP * YARDS_PER_METRE;
+    private double STEPS_PER_YARD = 1 / YARDS_PER_STEP;
+
+    private double KILOMETRES_PER_STEP = METRES_PER_STEP * KILOMETRES_PER_METRE;
+    private double STEPS_PER_KILOMETRE = 1 / KILOMETRES_PER_STEP;
+
+    private double MILES_PER_STEP = METRES_PER_STEP * MILES_PER_METRE;
+    private double STEPS_PER_MILE = 1 / MILES_PER_STEP;
+    //// STEPS - initialised based on METRES_PER_STEP = 0.762;
+    //private double STEPS_PER_METRE = 1;
+    //private double STEPS_PER_YARD = STEPS_PER_METRE * METRES_PER_STEP;
+    //private double STEPS_PER_KILOMETRE = 762;
+    //private double STEPS_PER_MILE = 2112;
+    //
+    //// PER STEP - initialised based on METRES_PER_STEP = 0.762;
+    //private double METRES_PER_STEP = 0.762; // COMMONLY USED FACTOR
+    //private double YARDS_PER_STEP = 1 / STEPS_PER_YARD;
+    //private double KILOMETRES_PER_STEP = 1 / STEPS_PER_KILOMETRE;
+    //private double MILES_PER_STEP = 1 / STEPS_PER_MILE;
 
     public UnitConversion (double metresPerStep) {
         setMetresPerStep(metresPerStep);
@@ -66,16 +78,16 @@ public class UnitConversion {
                 factor = 1;
                 break;
             case YARD:
-                factor = YARDS_PER_STEP;
+                factor = STEPS_PER_YARD;
                 break;
             case METRE:
-                factor = KILOMETRES_PER_STEP;
+                factor = STEPS_PER_METRE;
                 break;
             case KILOMETRE:
-                factor = KILOMETRES_PER_STEP;
+                factor = STEPS_PER_KILOMETRE;
                 break;
             case MILE:
-                factor = MILES_PER_STEP;
+                factor = STEPS_PER_MILE;
                 break;
         }
         return factor;
@@ -173,20 +185,24 @@ public class UnitConversion {
         if(factor <= 0)
             throw new IllegalArgumentException("metres per step factor must be > 0");
         STEPS_PER_METRE = factor;
-        updateYardsPerStep();
-        updateKilometresPerStep();
-        updateMilesPerStep();
+        METRES_PER_STEP = 1 / STEPS_PER_METRE;
+        updateYardsFactors();
+        updateKilometresFactors();
+        updateMilesFactors();
     }
 
-    private void updateYardsPerStep() {
+    private void updateYardsFactors() {
         YARDS_PER_STEP = METRES_PER_STEP * YARDS_PER_METRE;
+        STEPS_PER_YARD = 1 / YARDS_PER_STEP;
     }
 
-    private void updateKilometresPerStep() {
+    private void updateKilometresFactors() {
         KILOMETRES_PER_STEP = METRES_PER_STEP * KILOMETRES_PER_METRE;
+        STEPS_PER_KILOMETRE = 1 / KILOMETRES_PER_STEP;
     }
 
-    private void updateMilesPerStep() {
+    private void updateMilesFactors() {
         MILES_PER_STEP = METRES_PER_STEP * MILES_PER_METRE;
+        STEPS_PER_MILE = 1 / MILES_PER_STEP;
     }
 }
