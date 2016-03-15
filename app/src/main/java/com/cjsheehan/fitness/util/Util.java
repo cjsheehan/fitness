@@ -3,6 +3,8 @@ package com.cjsheehan.fitness.util;
 import android.app.Activity;
 import android.content.Intent;
 
+import com.cjsheehan.fitness.R;
+
 import java.text.DecimalFormat;
 
 public class Util {
@@ -22,4 +24,6 @@ public class Util {
         intent.putExtra("Exiting application", true);
         activity.startActivity(intent);
     }
+
+
 }

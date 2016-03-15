@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/goal_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:inputType="number"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:text="111110.00"
+        android:textSize="24dp"
+        android:editable="false"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="viewEnd"
+        android:layout_above="@+id/separator_progress_to_target"
+        android:layout_toStartOf="@+id/goal_unit_text"/>
+
+    <View
+        android:layout_width="125dp"
+        android:layout_height="2dp"
+        android:background="@color/colorAccent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/separator_progress_to_target"/>
+
+    <TextView
+        android:id="@+id/goal_target"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:text="999999.00"
+        android:layout_gravity="center_horizontal"
+        android:textSize="24dp"
+        android:textAlignment="viewEnd"
+        android:layout_below="@+id/separator_progress_to_target"
+        android:layout_toStartOf="@+id/goal_unit_text"/>
+
+    <TextView
+        android:id="@+id/goal_unit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16dp"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:text="@string/miles"
+        android:textStyle="italic"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/separator_progress_to_target"
+        android:layout_marginLeft="16dp"/>
+
+</RelativeLayout>

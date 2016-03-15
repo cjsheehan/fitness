@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity
     //}
     //
 
-    private boolean isTestModeEnabled() {
+    public boolean isTestModeEnabled() {
         return _sharedPreferences.getBoolean(
                 getString(R.string.enable_test_mode_key),
                 getResources().getBoolean(R.bool.testModeEnabled_Default));
@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View view) {
                 view.startAnimation(_simpleAnim);
-                if(_isCounterRecording) {
+                if (_isCounterRecording) {
                     fab.setImageResource(R.drawable.ic_record_steps);
                     _isCounterRecording = false;
                 } else {

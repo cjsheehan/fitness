@@ -27,15 +27,15 @@ public class GoalData {
     public void setActive(int idx) {
         for (int i = 0; i < _goals.size() ; i++) {
             if(i == idx)
-                _goals.get(i).setGoalState(GoalState.ACTIVE);
+                _goals.get(i).setGoalState(ActiveState.ACTIVE);
             else
-                _goals.get(i).setGoalState(GoalState.INACTIVE);
+                _goals.get(i).setGoalState(ActiveState.INACTIVE);
         }
     }
 
     public Goal getActive() {
         for (Goal g : _goals) {
-            if (g.getGoalState() == GoalState.ACTIVE)
+            if (g.getGoalState() == ActiveState.ACTIVE)
                 return g;
         }
         return null;
@@ -71,9 +71,9 @@ public class GoalData {
 
         List<Goal> data = new ArrayList<>();
 
-        data.add(new Goal("High", 0, 10000, GoalState.INACTIVE));
-        data.add(new Goal("Medium", 1, 5000, GoalState.ACTIVE));
-        data.add(new Goal("Low", 2, 1000, GoalState.INACTIVE));
+        data.add(new Goal("High", 0, 500, 10000, Unit.STEP, ActiveState.INACTIVE));
+        data.add(new Goal("Medium", 0, 500, 1, Unit.MILE,ActiveState.ACTIVE));
+        data.add(new Goal("Low", 0, 500, 99999, Unit.KILOMETRE, ActiveState.INACTIVE));
         return data;
     }
 

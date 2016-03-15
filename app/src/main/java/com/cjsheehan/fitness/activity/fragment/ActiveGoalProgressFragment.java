@@ -28,8 +28,9 @@ import android.widget.Toast;
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.event.date.DateListener;
+import com.cjsheehan.fitness.util.Util;
 
-public class ActiveGoalProgressFragment extends BaseFragment implements DateListener {
+public class ActiveGoalProgressFragment extends BaseFragment implements DateListener{
     private static final String TAG = "ActiveGoalProgressFragment";
     private FloatingActionButton _fab;
     private Context context;

@@ -28,12 +28,11 @@ import com.cjsheehan.fitness.adapter.GoalListAdapter;
 import com.cjsheehan.fitness.event.date.DateListener;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.GoalData;
-import com.cjsheehan.fitness.model.GoalState;
+import com.cjsheehan.fitness.model.ActiveState;
+import com.cjsheehan.fitness.model.Unit;
 import com.cjsheehan.fitness.util.GoalValidation;
 import com.cjsheehan.fitness.util.GoalValidationCode;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class GoalsFragment extends BaseFragment implements DateListener {
@@ -104,7 +103,7 @@ public class GoalsFragment extends BaseFragment implements DateListener {
                 for (int i = 0; i < _goalListView.getChildCount(); i++) {
                     if (position == i) {
                         setGoalActive(position);
-                        _goalListView.getChildAt(i).setBackgroundResource(R.color.teal100);
+                        _goalListView.getChildAt(i).setBackgroundResource(R.color.teal50);
                     } else {
                         _goalListView.getChildAt(i).setBackgroundResource(Color.TRANSPARENT);
                     }
@@ -187,7 +186,7 @@ public class GoalsFragment extends BaseFragment implements DateListener {
         String goalTarget = _goalTarget.getText().toString();
 
         if (isGoalValid(goalTitle, goalTarget) == GoalValidationCode.OK) {
-            Goal goal = new Goal(goalTitle, 0, Integer.parseInt(goalTarget), GoalState.INACTIVE);
+            Goal goal = new Goal(goalTitle, 0, 0, Integer.parseInt(goalTarget), Unit.STEP, ActiveState.INACTIVE);
             _goalData.add(goal);
             _goalListAdapter.notifyDataSetChanged();
             if (_goalData.size() == 1) {
@@ -202,7 +201,7 @@ public class GoalsFragment extends BaseFragment implements DateListener {
     }
 
     public void editGoalDialog(final int position) {
-        if (_goalData.get(position).getGoalState() == GoalState.ACTIVE) {
+        if (_goalData.get(position).getGoalState() == ActiveState.ACTIVE) {
             Toast.makeText(_context, "Cannot edit active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -264,7 +263,7 @@ public class GoalsFragment extends BaseFragment implements DateListener {
         String goalTarget = _goalTarget.getText().toString();
 
         // Only edit inactive, valid goals
-        if (_goalData.get(position).getGoalState() == GoalState.ACTIVE) {
+        if (_goalData.get(position).getGoalState() == ActiveState.ACTIVE) {
             Toast.makeText(_context, "Cannot edit active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
         } else if (isGoalValid(goalTitle, goalTarget) == GoalValidationCode.OK) {
             _goalData.get(position).setTitle(goalTitle);
@@ -276,7 +275,7 @@ public class GoalsFragment extends BaseFragment implements DateListener {
     }
 
     public void removeGoal(int position) {
-        if (_goalData.get(position).getGoalState() == GoalState.ACTIVE) {
+        if (_goalData.get(position).getGoalState() == ActiveState.ACTIVE) {
             Toast.makeText(_context, "Cannot remove active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
         } else {
             _goalData.remove(position);
@@ -286,7 +285,7 @@ public class GoalsFragment extends BaseFragment implements DateListener {
     }
 
     public void setGoalActive(int position) {
-        if (_goalData.get(position).getGoalState() != GoalState.ACTIVE) {
+        if (_goalData.get(position).getGoalState() != ActiveState.ACTIVE) {
             _goalData.setActive(position);
             _goalListAdapter.notifyDataSetChanged();
             Toast.makeText(_context, _goalData.getActive().getTitle() + " is now active", Toast.LENGTH_SHORT).show();

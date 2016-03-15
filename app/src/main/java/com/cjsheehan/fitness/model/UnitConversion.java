@@ -33,17 +33,6 @@ public class UnitConversion {
 
     private double MILES_PER_STEP = METRES_PER_STEP * MILES_PER_METRE;
     private double STEPS_PER_MILE = 1 / MILES_PER_STEP;
-    //// STEPS - initialised based on METRES_PER_STEP = 0.762;
-    //private double STEPS_PER_METRE = 1;
-    //private double STEPS_PER_YARD = STEPS_PER_METRE * METRES_PER_STEP;
-    //private double STEPS_PER_KILOMETRE = 762;
-    //private double STEPS_PER_MILE = 2112;
-    //
-    //// PER STEP - initialised based on METRES_PER_STEP = 0.762;
-    //private double METRES_PER_STEP = 0.762; // COMMONLY USED FACTOR
-    //private double YARDS_PER_STEP = 1 / STEPS_PER_YARD;
-    //private double KILOMETRES_PER_STEP = 1 / STEPS_PER_KILOMETRE;
-    //private double MILES_PER_STEP = 1 / STEPS_PER_MILE;
 
     public UnitConversion (double metresPerStep) {
         setMetresPerStep(metresPerStep);

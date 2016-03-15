@@ -12,4 +12,12 @@
         <item>STATS    | HISTORY  | ACTIVITY | GOALS</item>
         <item>HISTORY  | STATS    | GOALS    | ACTIVITY</item>
     </string-array>
+
+    <string-array name="units_array">
+        <item>Steps</item>
+        <item>Yards</item>
+        <item>Metres</item>
+        <item>Kilometres</item>
+        <item>Miles</item>
+    </string-array>
 </resources>

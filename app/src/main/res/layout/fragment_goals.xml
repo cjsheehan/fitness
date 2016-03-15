@@ -19,7 +19,9 @@
             android:layout_below="@+id/date_display_goals"
             android:nestedScrollingEnabled="true"
             android:transcriptMode="disabled"
-            android:elevation="0dp"/>
+            android:elevation="0dp"
+            android:focusable="false"
+            android:layout_marginBottom="48dp"/>
 
         <include
             android:id="@+id/date_display_goals"

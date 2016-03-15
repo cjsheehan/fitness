@@ -11,7 +11,7 @@
     tools:context=".GoalsActivity" >
 
     <ImageView
-        android:id="@+id/goal_image"
+        android:id="@+id/goal_image11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_trophie_green"
@@ -19,7 +19,7 @@
         android:layout_alignParentStart="true"/>
 
     <TextView
-        android:id="@+id/goal_title"
+        android:id="@+id/goal_title1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -30,7 +30,7 @@
         android:textSize="20dp" />
 
     <TextView
-        android:id="@+id/goal_target"
+        android:id="@+id/goal_target1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
