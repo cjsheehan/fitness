@@ -16,7 +16,7 @@
         android:textSize="30dp"
         android:editable="false"
         android:layout_gravity="center_horizontal"
-        android:layout_above="@+id/textView2"
+        android:layout_above="@+id/separator_progress_to_target"
         android:layout_alignEnd="@+id/active_goal_target"/>
 
     <View
@@ -25,7 +25,7 @@
         android:background="@color/colorAccent"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/textView2"/>
+        android:id="@+id/separator_progress_to_target"/>
 
     <TextView
         android:id="@+id/active_goal_target"
@@ -35,7 +35,7 @@
         android:paddingRight="8dp"
         android:text="999999.00"
         android:layout_gravity="center_horizontal"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/separator_progress_to_target"
         android:layout_centerHorizontal="true"
         android:textSize="30dp"/>
 
