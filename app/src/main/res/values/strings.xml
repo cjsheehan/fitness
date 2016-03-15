@@ -6,6 +6,9 @@
     <string name="default_view_key">default_view_pref_key</string>
     <string name="enable_edit_goal_key">enable_edit_goal_pref_key</string>
 
+    <!-- BUNDLE KEYS -->
+    <string name="date_bundle_key">date</string>
+
     <!-- EVERYTHING ELSE -->
     <string name="app_name">MyKeepFit</string>
     <string name="title_activity_main">MainActivity</string>

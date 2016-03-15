@@ -16,12 +16,14 @@
     <RelativeLayout
         android:id="@+id/active_goal_progress_content2"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
 
         <include android:id="@+id/active_goal_progress_display"
                  layout="@layout/active_goal_progress_display"
                  android:layout_width="fill_parent"
-                 android:layout_height="fill_parent"/>
+                 android:layout_height="fill_parent"
+                 android:layout_below="@+id/date_display_activity"/>
 
         <ImageView
             android:id="@+id/active_goal_progress_decr"
@@ -44,6 +46,14 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="50dp"/>
+
+
+        <include android:id="@+id/date_display_activity"
+                 layout="@layout/date_display"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_centerHorizontal="true"
+                 android:layout_alignParentTop="true"/>
 
 
     </RelativeLayout>

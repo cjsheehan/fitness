@@ -1,11 +1,11 @@
 package com.cjsheehan.fitness.activity;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 
+import java.text.DateFormat;
 import java.util.prefs.Preferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -33,6 +33,7 @@ import com.cjsheehan.fitness.activity.fragment.BaseFragment;
 import com.cjsheehan.fitness.activity.fragment.GoalsFragment;
 import com.cjsheehan.fitness.activity.fragment.HistoryFragment;
 import com.cjsheehan.fitness.activity.fragment.SettingsFragment;
+import com.cjsheehan.fitness.event.date.DateListener;
 import com.cjsheehan.fitness.event.GoalProgressListener;
 
 import java.text.SimpleDateFormat;
@@ -41,22 +42,20 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements GoalProgressListener {
+public class MainActivity extends AppCompatActivity
+        implements GoalProgressListener {
     private String TAG = "MainActivity";
     private SharedPreferences _sharedPreferences;
 
-    private EditText _editDateText;
     private TextView _progressTextView;
     private Toolbar _toolbar;
     private FloatingActionButton _fab;
     private static final int PAGE_LIMIT = 2;
     private SharedPreferences.OnSharedPreferenceChangeListener _settingsListener;
-    private String _dateFormat = "dd MMMM yyyy";
-    private SimpleDateFormat _sdf = new SimpleDateFormat(_dateFormat, Locale.ENGLISH);
-    private final static int DAY_IN_MS = 86400000;
+
     private Animation _simpleAnim;
-    private Calendar _calendar;
     private MenuItem _calendarMenuItem;
+    private String _date;
     //private ProgressListAdapter _adapter;
     //private List<Progress> _progress;
 
@@ -64,6 +63,14 @@ public class MainActivity extends AppCompatActivity implements GoalProgressListe
     private ViewPager _viewPager;
     private int _selectedPagePosition;
     private boolean _isCounterRecording;
+
+
+    // DATE
+    private Calendar _calendar;
+    List<DateListener> _dateListeners;
+    private String _dateFormat = "dd MMMM yyyy";
+    DateFormat _dateFormatter = new SimpleDateFormat(_dateFormat, Locale.ENGLISH);
+    private final static int DAY_IN_MS = 86400000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,16 +86,17 @@ public class MainActivity extends AppCompatActivity implements GoalProgressListe
 
     private void init() {
         setupSharedPreferences();
+        _dateListeners = new ArrayList<>();
+        setupDate();
         setupViewPager(_viewPager);
         _simpleAnim = AnimationUtils.loadAnimation(this, R.animator.simple_animation);
         _isCounterRecording = false;
+        //setupCalendar();
         setupFloatActBtn();
+        updateDateListeners(_date);
     }
 
     private void initCalendarMenuItem(MenuItem calendarMenuItem) {
-        _calendar = Calendar.getInstance();
-        final Activity activity = this;
-
         calendarMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -99,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements GoalProgressListe
                         _calendar.set(Calendar.YEAR, year);
                         _calendar.set(Calendar.MONTH, monthOfYear);
                         _calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        _date = _dateFormatter.format(_calendar.getTime());
+                        updateDateListeners(_date);
                     }
                 };
 
@@ -113,24 +123,37 @@ public class MainActivity extends AppCompatActivity implements GoalProgressListe
         setCalendarMenuItemVisibilty();
     }
 
+    private void setupDate() {
+        _calendar = Calendar.getInstance();
+        _date = _dateFormatter.format(_calendar.getTime());
+        updateDateListeners(_date);
+    }
+
     private void setupSharedPreferences() {
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         _settingsListener = new SettingsChangedListener();
         _sharedPreferences.registerOnSharedPreferenceChangeListener(_settingsListener);
     }
 
-    private class SettingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public void notifyDateChanged(long date) {
+        // Notify subscribe fragments of date change
+    }
 
+
+    private class SettingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences spref, String key) {
             if (key.equals(getString(R.string.enable_test_mode_key))) {
                 setCalendarMenuItemVisibilty();
+
             }
         }
     }
 
-    private void updateDateLabel() {
-        _editDateText.setText(_sdf.format(_calendar.getTime()));
+    private void updateDateListeners(String date) {
+        for(DateListener dl : _dateListeners) {
+            dl.onDateChanged(date);
+        }
     }
 
     //private void updateDateColour() {
@@ -228,14 +251,23 @@ public class MainActivity extends AppCompatActivity implements GoalProgressListe
     }
 
 
-    public static Fragment createFragment (FragmentId fragmentId) {
+    public Fragment createFragment (FragmentId fragmentId) {
         BaseFragment fragment = null;
+        Bundle bundle= null;
         switch (fragmentId) {
             case ACTIVITY:
+                bundle = new Bundle();
+                bundle.putString(getString(R.string.date_bundle_key), _date);
                 fragment = new ActiveGoalProgressFragment();
+                fragment.setArguments(bundle);
+                _dateListeners.add((DateListener) fragment);
                 break;
             case GOALS:
+                bundle = new Bundle();
+                bundle.putString(getString(R.string.date_bundle_key), _date);
                 fragment = new GoalsFragment();
+                fragment.setArguments(bundle);
+                _dateListeners.add((DateListener) fragment);
                 break;
             case HISTORY:
                 fragment = new HistoryFragment();
@@ -340,14 +372,6 @@ public class MainActivity extends AppCompatActivity implements GoalProgressListe
             return null;
         }
     }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-
-        // Activity being restarted from stopped state
-    }
-
 
     @Override
     protected void onStop() {

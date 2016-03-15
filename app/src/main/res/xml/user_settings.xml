@@ -34,7 +34,7 @@
             android:entries="@array/default_view_preference_array"
             android:entryValues="@array/default_view_preference_values"
             android:summary="ACTIVITY | GOALS    | HISTORY  | STATS"
-            android:title="Edit tab order (requires restart)"/>
+            android:title="Edit tab order (forces restart)"/>
 
     </PreferenceCategory>
 

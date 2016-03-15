@@ -3,20 +3,11 @@ package com.cjsheehan.fitness.activity.fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.graphics.LightingColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,8 +27,9 @@ import android.widget.Toast;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.model.Goal;
+import com.cjsheehan.fitness.event.date.DateListener;
 
-public class ActiveGoalProgressFragment extends BaseFragment {
+public class ActiveGoalProgressFragment extends BaseFragment implements DateListener {
     private static final String TAG = "ActiveGoalProgressFragment";
     private FloatingActionButton _fab;
     private Context context;
@@ -45,11 +37,18 @@ public class ActiveGoalProgressFragment extends BaseFragment {
     Context _context;
     private TextView _progressTextView;
     private TextView _targetTextView;
+    private TextView _dateTextView;
     private ProgressBar _progressBar;
     private Animation _simpleAnim;
     private SharedPreferences _sharedPreferences;
     int _currentProgress;
     int _currentTarget;
+
+    @Override
+    public void onDateChanged(String date) {
+        if(_dateTextView != null)
+            _dateTextView.setText(date);
+    }
 
     enum ProgressChangeDirection { INCREMENT, DECREMENT };
 
@@ -57,9 +56,13 @@ public class ActiveGoalProgressFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_active_goal_progress, container, false);
         init(view);
+        String date = getArguments().getString(getString(R.string.date_bundle_key));
+        _dateTextView = (TextView) view.findViewById(R.id.date_display);
+        onDateChanged(date);
         setHasOptionsMenu(true);
         return view;
     }
+
 
     @Override
     protected void init(View view) {
@@ -67,6 +70,7 @@ public class ActiveGoalProgressFragment extends BaseFragment {
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
         content = (RelativeLayout) view.findViewById(R.id.active_goal_progress_content2);
         _simpleAnim = AnimationUtils.loadAnimation(_context, R.animator.simple_animation);
+
         setupProgressIndicators(view);
         setupIncrButton(view);
         setupDecrButton(view);

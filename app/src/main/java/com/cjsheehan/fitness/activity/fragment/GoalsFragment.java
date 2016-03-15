@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.adapter.GoalListAdapter;
+import com.cjsheehan.fitness.event.date.DateListener;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.GoalData;
 import com.cjsheehan.fitness.model.GoalState;
@@ -35,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class GoalsFragment extends BaseFragment {
+public class GoalsFragment extends BaseFragment implements DateListener {
     private static final String TAG = "BaseGoalsFragment";
     private final int LOADER_ID = new Random().nextInt(1000);
     private TextView _goalTitle;
@@ -48,10 +49,14 @@ public class GoalsFragment extends BaseFragment {
     private FloatingActionButton _fab;
     Context _context;
     private SharedPreferences _sharedPreferences;
+    private TextView _dateTextView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_goals, container, false);
+        _dateTextView = (TextView) view.findViewById(R.id.date_display);
+        String date = getArguments().getString(getString(R.string.date_bundle_key));
+        onDateChanged(date);
         init(view);
         setHasOptionsMenu(true);
         return view;
@@ -61,6 +66,7 @@ public class GoalsFragment extends BaseFragment {
     protected void init(View view) {
         _context = view.getContext();
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
+        _dateTextView = (TextView) view.findViewById(R.id.date_display);
         // TODO : Need to get goals from repo
         //goalRepository = new GoalRepository(context);
         //txtMessage = (TextView) view.findViewById(R.id.goals_message);
@@ -308,4 +314,9 @@ public class GoalsFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public void onDateChanged(String date) {
+        if(_dateTextView != null)
+            _dateTextView.setText(date);
+    }
 }
