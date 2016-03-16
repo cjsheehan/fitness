@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity
     private Animation _simpleAnim;
     private MenuItem _calendarMenuItem;
     private String _date;
+    private GoalsFragment _goalsFragment;
     //private ProgressListAdapter _adapter;
     //private List<Progress> _progress;
 
@@ -125,6 +126,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         setCalendarMenuItemVisibilty();
+        _goalsFragment.selectActiveGoal();
     }
 
     private void setupDate() {
@@ -251,7 +253,8 @@ public class MainActivity extends AppCompatActivity
             case GOALS:
                 bundle = new Bundle();
                 bundle.putString(getString(R.string.date_bundle_key), _date);
-                fragment = new GoalsFragment();
+                _goalsFragment = new GoalsFragment();
+                fragment = _goalsFragment;
                 fragment.setArguments(bundle);
                 _dateListeners.add((DateListener) fragment);
                 _goalListeners.add((GoalListener) fragment);

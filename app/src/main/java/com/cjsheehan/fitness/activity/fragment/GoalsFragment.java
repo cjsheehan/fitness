@@ -60,6 +60,16 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         public void onActiveGoalChanged(int position);
     }
 
+    public void selectActiveGoal() {
+        if(_goalData != null) {
+            int activeIdx = _goalData.getActiveIdx();
+            if (activeIdx >= 0) {
+                _goalListView.performItemClick(_goalListView.getChildAt(activeIdx), activeIdx, _goalListAdapter.getItemId(activeIdx));
+                //_goalListAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_goals, container, false);
@@ -82,7 +92,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
         initGoalData(view);
         //initLoader();
-        registerReceivers();
+        //registerReceivers();
     }
 
     @Override
@@ -109,17 +119,18 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Select
-                Log.d(TAG, "Goal ListView click");
-                for (int i = 0; i < _goalListView.getChildCount(); i++) {
-                    if (position == i) {
-                        setGoalActive(position);
-                        _goalListView.getChildAt(i).setBackgroundResource(R.color.colorAccentAlternate);
-                    } else {
-                        _goalListView.getChildAt(i).setBackgroundResource(Color.TRANSPARENT);
-                    }
+            Log.d(TAG, "Goal ListView click");
+            int childCount = _goalListView.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                if (position == i) {
+                    setGoalActive(position);
+                    _goalListView.getChildAt(i).setBackgroundResource(R.color.colorAccentAlternate);
+                } else {
+                    _goalListView.getChildAt(i).setBackgroundResource(Color.TRANSPARENT);
                 }
-                Goal goal = _goalListAdapter.getItem(position);
             }
+            Goal goal = _goalListAdapter.getItem(position);
+        }
         });
 
         _goalListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -135,10 +146,6 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         });
 
         _goalListView.setAdapter(_goalListAdapter);
-        int activeIdx = _goalData.getActiveIdx();
-        if(activeIdx >= 0) {
-            _goalListView.setSelection(activeIdx);
-        }
     }
 
     public void addGoalDialog() {
@@ -305,7 +312,9 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             raiseActiveGoalChanged(_goalData.getActive());
             Toast.makeText(_context, _goalData.getActive().getTitle() + " is now active", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(_context, "Goal is already active", Toast.LENGTH_SHORT).show();
+            // Commented out as hack call to select ite at init is repeatedly called due to
+            // MainACtivity onCreate being called between tab slides
+            //Toast.makeText(_context, "Goal is already active", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -341,8 +350,11 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
     @Override
     public void onGoalProgressChanged(double progress) {
-        if(_goalData != null)
+        if(_goalData != null) {
             _goalData.getActive().setProgress(progress);
+            // Update view
+            _goalListAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

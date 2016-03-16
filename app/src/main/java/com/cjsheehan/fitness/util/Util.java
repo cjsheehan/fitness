@@ -19,6 +19,14 @@ public class Util {
         return to0dp.format(number);
     }
 
+    public static String format(int number) {
+        return formatTo0dp(number);
+    }
+
+    public static String format(double number) {
+        return formatTo2dp(number);
+    }
+
     public static void restartApplication(final Activity activity) {
         Intent intent = new Intent(activity, com.cjsheehan.fitness.activity.MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

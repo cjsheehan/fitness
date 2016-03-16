@@ -12,10 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cjsheehan.fitness.R;
-import com.cjsheehan.fitness.model.ActiveState;
 import com.cjsheehan.fitness.model.Goal;
-import com.cjsheehan.fitness.model.Unit;
 import com.cjsheehan.fitness.util.Util;
+import com.cjsheehan.fitness.view.GoalView;
 
 public class GoalListAdapter extends ArrayAdapter<Goal> {
 
@@ -23,6 +22,8 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
     private List<Goal> goals;
     protected Context context;
     protected LayoutInflater _inflater;
+    Goal _activeGoal;
+    GoalView _goalView;
 
     public GoalListAdapter(List<Goal> goals, Context context) {
         super(context, R.layout.goal_list_item);
@@ -33,39 +34,25 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
-        GoalHolder holder = new GoalHolder();
+        _goalView = new GoalView();
         if (view == null) {
             // This a new view we inflate the new layout
             _inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = _inflater.inflate(R.layout.goal_progress_list_item, parent, false);
             // Now we can fill the layout with the right values
-            holder.titleTV = (TextView) view.findViewById(R.id.goal_title);
-            holder.progressTV = (TextView) view.findViewById(R.id.goal_progress);
-            holder.targetTV = (TextView) view.findViewById(R.id.goal_target);
-            holder.goalProgressBar = (ProgressBar) view.findViewById(R.id.goal_progress_bar);
-            holder.unitTV = (TextView) view.findViewById(R.id.goal_unit_text);
-            view.setTag(holder);
+            _goalView.setTitle((TextView) view.findViewById(R.id.goal_title));
+            _goalView.setProgress((TextView) view.findViewById(R.id.goal_progress));
+            _goalView.setTarget((TextView) view.findViewById(R.id.goal_target));
+            _goalView.setTargetProgress((ProgressBar) view.findViewById(R.id.goal_progress_bar));
+            _goalView.setUnit((TextView) view.findViewById(R.id.goal_unit_text));
+            view.setTag(_goalView);
         }
         else {
-            holder = (GoalHolder) view.getTag();
+            _goalView = (GoalView) view.getTag();
         }
 
-        Goal goal = goals.get(position);
-        holder.titleTV.setText(goal.getTitle());
-
-        String strTarget = null;
-        String strProgress = null;
-        if(goal.getUnit() == Unit.STEP) {
-            strTarget = Util.formatTo0dp(goal.getTarget());
-            strProgress = Util.formatTo0dp(goal.getProgress());
-        } else {
-            strTarget = Util.formatTo2dp(goal.getTarget());
-            strProgress = Util.formatTo2dp(goal.getProgress());
-        }
-        holder.targetTV.setText(strTarget);
-        holder.progressTV.setText(strProgress);
-        holder.unitTV.setText(Util.unitToString(goal.getUnit()));
-        holder.goalProgressBar.setProgress(Util.toInt(goal.getProgress() / goal.getTarget()));
+        Goal active = goals.get(position);
+        _goalView.updateView(active);
         return view;
     }
 
@@ -92,13 +79,4 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
     public void reset() {
         goals = new ArrayList<>();
     }
-
-    private static class GoalHolder {
-        public TextView titleTV;
-        public TextView targetTV;
-        public TextView progressTV;
-        public TextView unitTV;
-        public ProgressBar goalProgressBar;
-    }
-
 }

@@ -151,35 +151,14 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         return 0;
     }
 
-
     public void updateProgressView() {
-        String strProgress, strTarget = null;
         double progress = getProgress();
         double target = getTarget();
-
-        if (_activeGoal.getUnit() == Unit.STEP) {
-            strTarget = Util.formatTo0dp(target);
-            if (progress <= 0) {
-                strProgress = Util.formatTo0dp(0);
-            } else {
-                strProgress = Util.formatTo0dp(progress);
-            }
-        } else {
-            strTarget = Util.formatTo2dp(target);
-            if (progress <= 0) {
-                strProgress = Util.formatTo2dp(0);
-            } else {
-                strProgress = Util.formatTo2dp(progress);
-            }
-        }
-
+        String strTarget = Util.format(target);
+        String strProgress = Util.format(progress);
         setTargetTextView(strTarget);
         setProgressTextView(strProgress);
-
-        int progressAsInt = Util.toInt(_activeGoal.getProgress());
-        int targetAsInt = Util.toInt(_activeGoal.getTarget());
-        _progressBar.setMax(targetAsInt);
-        _progressBar.setProgress(progressAsInt);
+        updateProgressBar(target, progress);
     }
 
     private void setTargetTextView(String target) {
@@ -188,6 +167,13 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
 
     private void setProgressTextView(String progress) {
         _progressTextView.setText(progress);
+    }
+
+    private void updateProgressBar(double target, double progress) {
+        int progressAsInt = Util.toInt(progress);
+        int targetAsInt = Util.toInt(target);
+        _progressBar.setMax(targetAsInt);
+        _progressBar.setProgress(progressAsInt);
     }
 
     @Override
