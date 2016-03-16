@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cjsheehan.fitness.R;
+import com.cjsheehan.fitness.model.ActiveState;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.Unit;
 import com.cjsheehan.fitness.util.Util;
@@ -52,10 +52,20 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
 
         Goal goal = goals.get(position);
         holder.titleTV.setText(goal.getTitle());
-        holder.targetTV.setText(Integer.toString(goal.getTarget()));
-        holder.progressTV.setText(Integer.toString(goal.getProgress()));
-        holder.unitTV.setText("MLS");
-        holder.goalProgressBar.setProgress(goal.getProgress()/ goal.getTarget());
+
+        String strTarget = null;
+        String strProgress = null;
+        if(goal.getUnit() == Unit.STEP) {
+            strTarget = Util.formatTo0dp(goal.getTarget());
+            strProgress = Util.formatTo0dp(goal.getProgress());
+        } else {
+            strTarget = Util.formatTo2dp(goal.getTarget());
+            strProgress = Util.formatTo2dp(goal.getProgress());
+        }
+        holder.targetTV.setText(strTarget);
+        holder.progressTV.setText(strProgress);
+        holder.unitTV.setText(Util.unitToString(goal.getUnit()));
+        holder.goalProgressBar.setProgress(Util.toInt(goal.getProgress() / goal.getTarget()));
         return view;
     }
 

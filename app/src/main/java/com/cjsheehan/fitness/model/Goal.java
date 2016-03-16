@@ -7,15 +7,15 @@ public class Goal implements Serializable {
     private int id = 0;
     private String title;
     private String date;
-    private int target;
-    private int progress;
+    private double target;
+    private double progress;
     private Unit unit;
-    private ActiveState goalState;
+    private ActiveState _activeState;
 
     private void setUnit(Unit unit) {
         this.unit = unit;
     }
-    public Goal(String title, int id, int progress, int target, Unit unit, ActiveState goalState) {
+    public Goal(String title, int id, double progress, double target, Unit unit, ActiveState _activeState) {
 
         if(target < 1) throw new IllegalArgumentException("ERROR: Goal target should be more than 0");
         if(id < 0) throw new IllegalArgumentException("ERROR: ID must be greater than 0");
@@ -24,17 +24,16 @@ public class Goal implements Serializable {
         this.target = target;
         this.progress = progress;
         this.unit = unit;
-        this.goalState = goalState;
+        this._activeState = _activeState;
     }
 
-    public Goal(String title, int target, int progress, Unit unit, ActiveState goalState) {
+    public Goal(String title, double target, double progress, Unit unit, ActiveState _activeState) {
         if(target < 1) throw new IllegalArgumentException("ERROR: Goal target should be more than 0");
         this.title = title;
-        this.id = id;
         this.target = target;
         this.progress = progress;
         this.unit = unit;
-        this.goalState = goalState;
+        this._activeState = _activeState;
     }
 
     public String getTitle() {
@@ -45,11 +44,11 @@ public class Goal implements Serializable {
         this.title = title;
     }
 
-    public int getTarget() {
+    public double getTarget() {
         return target;
     }
 
-    public void setTarget(int target) {
+    public void setTarget(double target) {
         this.target = target;
     }
 
@@ -61,12 +60,12 @@ public class Goal implements Serializable {
         this.id = id;
     }
 
-    public ActiveState getGoalState() {
-        return goalState;
+    public ActiveState getActiveState() {
+        return _activeState;
     }
 
-    public void setGoalState(ActiveState goalState) {
-        this.goalState = goalState;
+    public void setActiveState(ActiveState activeState) {
+        this._activeState = activeState;
     }
 
     public String getDate() {
@@ -77,11 +76,11 @@ public class Goal implements Serializable {
         this.date = date;
     }
 
-    public int getProgress() {
+    public double getProgress() {
         return progress;
     }
 
-    public void setProgress(int progress) {
+    public void setProgress(double progress) {
         this.progress = progress;
     }
 

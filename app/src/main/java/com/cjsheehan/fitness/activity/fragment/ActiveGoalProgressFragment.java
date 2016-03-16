@@ -1,5 +1,6 @@
 package com.cjsheehan.fitness.activity.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -26,11 +27,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cjsheehan.fitness.R;
+import com.cjsheehan.fitness.event.goal.GoalListener;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.event.date.DateListener;
+import com.cjsheehan.fitness.model.Unit;
 import com.cjsheehan.fitness.util.Util;
 
-public class ActiveGoalProgressFragment extends BaseFragment implements DateListener{
+public class ActiveGoalProgressFragment extends BaseFragment implements DateListener, GoalListener {
     private static final String TAG = "ActiveGoalProgressFragment";
     private FloatingActionButton _fab;
     private Context context;
@@ -42,14 +45,14 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
     private ProgressBar _progressBar;
     private Animation _simpleAnim;
     private SharedPreferences _sharedPreferences;
-    int _currentProgress;
-    int _currentTarget;
+    double _currentProgress;
+    double _currentTarget;
+    private Unit _currentUnit = Unit.STEP;
+    Goal _activeGoal;
+    Activity _activity;
 
-    @Override
-    public void onDateChanged(String date) {
-        if(_dateTextView != null)
-            _dateTextView.setText(date);
-    }
+    // MAIN ACTIVITY callback to distribute events
+    GoalListener _cbkGoalListener;
 
     enum ProgressChangeDirection { INCREMENT, DECREMENT };
 
@@ -75,38 +78,12 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         setupProgressIndicators(view);
         setupIncrButton(view);
         setupDecrButton(view);
-        //initDateText();
-        //goalRepository = new GoalRepository(view.getContext());
-        //addGoalView = (AddGoalView) view.findViewById(R.id.add_goal_view);
-        //
-        //goalOfDayName = (TextView) view.findViewById(R.id.goal_of_day_name);
-        //editGoalOfDayStepAmount = (EditText) view.findViewById(R.id.goal_of_day_step_amount);
-        //goalOfDayStepGoal = (TextView) view.findViewById(R.id.goal_of_day_step_goal);
-        //txtEditDate = (TextView) view.findViewById(R.id.edit_date);
-        //// Clear focus from EditText
-        //getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        //
-
-        //actionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        //
-        //initializeStepCountButtons(view);
-        //
-        //progressBar = (ProgressBar) view.findViewById(R.id.step_progress_bar);
-        //progressBar.setProgress(0);
-        //
-        //toggleContent(editable);
-        //checkForGoalOfDay();
-        //
-        //registerReceivers();
     }
 
     private void setupProgressIndicators(View view) {
         _progressTextView = (TextView) view.findViewById(R.id.active_goal_current_progress);
         _targetTextView = (TextView) view.findViewById(R.id.active_goal_target);
         _progressBar = (ProgressBar) view.findViewById(R.id.active_goal_progress_bar);
-
-        setTarget(1000);
-        addProgress(10);
     }
 
     private void setupIncrButton(View view) {
@@ -132,63 +109,86 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
     }
 
     public void incrementProgress(ProgressChangeDirection direction) {
-        String current = _progressTextView.getText().toString();
-        _currentProgress = Integer.parseInt(current);
-        String incrementStr = _sharedPreferences.getString(getString(R.string.progress_increment_amount), "10");
-        Integer incrementBy = Integer.parseInt(incrementStr);
-        switch (direction) {
-            case DECREMENT:
-                _currentProgress -= incrementBy;
-                break;
-            case INCREMENT:
-                _currentProgress += incrementBy;
-                break;
+        try {
+            String incrementStr = _sharedPreferences.getString(getString(R.string.progress_increment_amount), "10");
+            Integer incrementBy = Integer.parseInt(incrementStr);
+            switch (direction) {
+                case DECREMENT:
+                    incrementProgress(-1 * incrementBy);
+                    break;
+                case INCREMENT:
+                    incrementProgress(incrementBy);
+                    break;
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
-
-        if(_currentProgress <= 0)
-            _currentProgress = 0;
-        updateProgressView();
     }
 
-    public void addProgress(Integer progress) {
-        _currentProgress += progress;
-        updateProgressView();
+    public void incrementProgress(double progress) {
+        setProgress(getProgress() + progress);
     }
 
-    public void setTarget(Integer target) {
-        _currentTarget = target;
-        updateProgressView();
+    public void setProgress(double progress) {
+        if(_activeGoal != null) {
+            _activeGoal.setProgress(progress);
+            raiseOnGoalProgressChanged(getProgress()); // callback activity
+            updateProgressView();
+        }
     }
+
+    private double getProgress() {
+        if(_activeGoal != null) {
+            return _activeGoal.getProgress();
+        }
+        return 0;
+    }
+
+    private double getTarget() {
+        if(_activeGoal != null) {
+            return _activeGoal.getTarget();
+        }
+        return 0;
+    }
+
 
     public void updateProgressView() {
-        _progressTextView.setText(String.valueOf(_currentProgress));
-        _targetTextView.setText(String.valueOf(_currentTarget));
-        _progressBar.setMax(_currentTarget);
-        _progressBar.setProgress(_currentProgress);
-        updateProgressAppearance(_currentProgress, _currentTarget);
-    }
+        String strProgress, strTarget = null;
+        double progress = getProgress();
+        double target = getTarget();
 
-    private void updateProgressAppearance(int currentProgress, int targetProgress) {
-        if (currentProgress >= targetProgress) {
-            //_progressBar.setProgressTintMode(PorterDuff.Mode.SRC_IN);
-            //_progressBar.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(_context, R.color.brickRedColor)));
-            _progressBar.setElevation(10f);
-            //Drawable drawable = _progressBar.getProgressDrawable();
-            //drawable.setColorFilter(new LightingColorFilter(0xFF888888, 0x00111111));
-            //_progressBar.setProgressDrawable(ContextCompat.getDrawable(_context, R.drawable.progress_bar_circular_complete));
+        if (_activeGoal.getUnit() == Unit.STEP) {
+            strTarget = Util.formatTo0dp(target);
+            if (progress <= 0) {
+                strProgress = Util.formatTo0dp(0);
+            } else {
+                strProgress = Util.formatTo0dp(progress);
+            }
         } else {
-            //_progressBar.setProgressDrawable(ContextCompat.getDrawable(_context, R.drawable.progress_bar_circular));
-            //Drawable drawable = _progressBar.getProgressDrawable();
-            //drawable.setColorFilter(null);
-            ////_progressBar.setProgressTintList(null);
+            strTarget = Util.formatTo2dp(target);
+            if (progress <= 0) {
+                strProgress = Util.formatTo2dp(0);
+            } else {
+                strProgress = Util.formatTo2dp(progress);
+            }
         }
+
+        setTargetTextView(strTarget);
+        setProgressTextView(strProgress);
+
+        int progressAsInt = Util.toInt(_activeGoal.getProgress());
+        int targetAsInt = Util.toInt(_activeGoal.getTarget());
+        _progressBar.setMax(targetAsInt);
+        _progressBar.setProgress(progressAsInt);
     }
 
+    private void setTargetTextView(String target) {
+        _targetTextView.setText(target);
+    }
 
-    //@Override
-    //protected void addGoalActionReceived(Goal goal) {
-    //    Log.d(TAG, "Entered : addGoalActionReceived(Goal goal)");
-    //}
+    private void setProgressTextView(String progress) {
+        _progressTextView.setText(progress);
+    }
 
     @Override
     public void addGoal(Goal goal) {
@@ -246,7 +246,7 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
                         String strProgressAdded = editProgressText.getText().toString();
                         try {
                             Integer progressAdded = Integer.parseInt(strProgressAdded);
-                            addProgress(progressAdded);
+                            incrementProgress(progressAdded);
                             Toast.makeText(_context, "Added " + progressAdded + " to progress", Toast.LENGTH_SHORT).show();
                         } catch (NumberFormatException e) {
                             Toast.makeText(_context, "Input a number please", Toast.LENGTH_SHORT).show();
@@ -285,6 +285,42 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    @Override
+    public void onDateChanged(String date) {
+        if(_dateTextView != null)
+            _dateTextView.setText(date);
+    }
+
+    @Override
+    public void onActiveGoalChanged(Goal goal) {
+        _activeGoal = goal;
+        updateProgressView();
+    }
+
+    @Override
+    public void onGoalProgressChanged(double progress) {
+        // Progress updates occur here, no need to handle
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        _activity = getActivity();
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            _cbkGoalListener = (GoalListener) _activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(_activity.toString()
+                    + " must implement OnActiveGoalChangedListener");
+        }
+    }
+
+    protected void raiseOnGoalProgressChanged(double progress) {
+        _cbkGoalListener.onGoalProgressChanged(progress); // callback main activity to disrtibute event
     }
 
 }

@@ -1,5 +1,6 @@
 package com.cjsheehan.fitness.activity.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.adapter.GoalListAdapter;
 import com.cjsheehan.fitness.event.date.DateListener;
+import com.cjsheehan.fitness.event.goal.GoalListener;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.GoalData;
 import com.cjsheehan.fitness.model.ActiveState;
@@ -35,7 +37,7 @@ import com.cjsheehan.fitness.util.GoalValidationCode;
 
 import java.util.Random;
 
-public class GoalsFragment extends BaseFragment implements DateListener {
+public class GoalsFragment extends BaseFragment implements DateListener, GoalListener {
     private static final String TAG = "BaseGoalsFragment";
     private final int LOADER_ID = new Random().nextInt(1000);
     private TextView _goalTitle;
@@ -49,6 +51,14 @@ public class GoalsFragment extends BaseFragment implements DateListener {
     Context _context;
     private SharedPreferences _sharedPreferences;
     private TextView _dateTextView;
+    Activity _activity;
+
+    GoalListener _cbkGoalListener;
+
+    // Container Activity must implement this interface
+    public interface OnActiveGoalChangedListener {
+        public void onActiveGoalChanged(int position);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,7 +113,7 @@ public class GoalsFragment extends BaseFragment implements DateListener {
                 for (int i = 0; i < _goalListView.getChildCount(); i++) {
                     if (position == i) {
                         setGoalActive(position);
-                        _goalListView.getChildAt(i).setBackgroundResource(R.color.teal50);
+                        _goalListView.getChildAt(i).setBackgroundResource(R.color.colorAccentAlternate);
                     } else {
                         _goalListView.getChildAt(i).setBackgroundResource(Color.TRANSPARENT);
                     }
@@ -115,7 +125,7 @@ public class GoalsFragment extends BaseFragment implements DateListener {
         _goalListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-                if(true == _sharedPreferences.getBoolean(getString(R.string.enable_edit_goal_key), false)) {
+                if (true == _sharedPreferences.getBoolean(getString(R.string.enable_edit_goal_key), false)) {
                     editGoalDialog(position);
                 } else {
                     Toast.makeText(_context, "To edit goals, please enable the feature in settings", Toast.LENGTH_SHORT).show();
@@ -125,6 +135,10 @@ public class GoalsFragment extends BaseFragment implements DateListener {
         });
 
         _goalListView.setAdapter(_goalListAdapter);
+        int activeIdx = _goalData.getActiveIdx();
+        if(activeIdx >= 0) {
+            _goalListView.setSelection(activeIdx);
+        }
     }
 
     public void addGoalDialog() {
@@ -201,7 +215,7 @@ public class GoalsFragment extends BaseFragment implements DateListener {
     }
 
     public void editGoalDialog(final int position) {
-        if (_goalData.get(position).getGoalState() == ActiveState.ACTIVE) {
+        if (_goalData.get(position).getActiveState() == ActiveState.ACTIVE) {
             Toast.makeText(_context, "Cannot edit active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -263,7 +277,7 @@ public class GoalsFragment extends BaseFragment implements DateListener {
         String goalTarget = _goalTarget.getText().toString();
 
         // Only edit inactive, valid goals
-        if (_goalData.get(position).getGoalState() == ActiveState.ACTIVE) {
+        if (_goalData.get(position).getActiveState() == ActiveState.ACTIVE) {
             Toast.makeText(_context, "Cannot edit active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
         } else if (isGoalValid(goalTitle, goalTarget) == GoalValidationCode.OK) {
             _goalData.get(position).setTitle(goalTitle);
@@ -275,7 +289,7 @@ public class GoalsFragment extends BaseFragment implements DateListener {
     }
 
     public void removeGoal(int position) {
-        if (_goalData.get(position).getGoalState() == ActiveState.ACTIVE) {
+        if (_goalData.get(position).getActiveState() == ActiveState.ACTIVE) {
             Toast.makeText(_context, "Cannot remove active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
         } else {
             _goalData.remove(position);
@@ -285,9 +299,10 @@ public class GoalsFragment extends BaseFragment implements DateListener {
     }
 
     public void setGoalActive(int position) {
-        if (_goalData.get(position).getGoalState() != ActiveState.ACTIVE) {
+        if (_goalData.get(position).getActiveState() != ActiveState.ACTIVE) {
             _goalData.setActive(position);
             _goalListAdapter.notifyDataSetChanged();
+            raiseActiveGoalChanged(_goalData.getActive());
             Toast.makeText(_context, _goalData.getActive().getTitle() + " is now active", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(_context, "Goal is already active", Toast.LENGTH_SHORT).show();
@@ -318,4 +333,35 @@ public class GoalsFragment extends BaseFragment implements DateListener {
         if(_dateTextView != null)
             _dateTextView.setText(date);
     }
+
+    @Override
+    public void onActiveGoalChanged(Goal goal) {
+        // Not needed as active goals are changed locally and emitted to others
+    }
+
+    @Override
+    public void onGoalProgressChanged(double progress) {
+        if(_goalData != null)
+            _goalData.getActive().setProgress(progress);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        _activity = getActivity();
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            _cbkGoalListener = (GoalListener) _activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(_activity.toString()
+                    + " must implement OnActiveGoalChangedListener");
+        }
+    }
+
+    protected void raiseActiveGoalChanged(Goal goal) {
+        _cbkGoalListener.onActiveGoalChanged(goal); // callback main activity to disrtibute event
+    }
+
 }

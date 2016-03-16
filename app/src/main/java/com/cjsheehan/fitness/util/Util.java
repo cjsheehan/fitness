@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 import com.cjsheehan.fitness.R;
+import com.cjsheehan.fitness.model.Unit;
 
 import java.text.DecimalFormat;
 
@@ -25,5 +26,38 @@ public class Util {
         activity.startActivity(intent);
     }
 
+    public static int toInt(double number) {
+        return (int) Math.round(number);
+    }
 
+    public static String toString(double number) {
+        return formatTo2dp(number);
+    }
+
+    public static String toString(int number) {
+        return formatTo0dp(number);
+    }
+
+
+    public static String unitToString(Unit unit) {
+        String strUnit = null;
+        switch (unit) {
+            case METRE:
+                strUnit = "m";
+            break;
+            case KILOMETRE:
+                strUnit = "km";
+            break;
+            case MILE:
+                strUnit ="mls";
+            break;
+            case YARD:
+                strUnit ="yds";
+            break;
+            case STEP:
+                strUnit ="step";
+            break;
+        }
+        return strUnit;
+    }
 }

@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.cjsheehan.fitness.R;
@@ -34,7 +33,8 @@ import com.cjsheehan.fitness.activity.fragment.GoalsFragment;
 import com.cjsheehan.fitness.activity.fragment.HistoryFragment;
 import com.cjsheehan.fitness.activity.fragment.SettingsFragment;
 import com.cjsheehan.fitness.event.date.DateListener;
-import com.cjsheehan.fitness.event.GoalProgressListener;
+import com.cjsheehan.fitness.event.goal.GoalListener;
+import com.cjsheehan.fitness.model.Goal;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
-        implements GoalProgressListener {
+        implements GoalListener {
     private String TAG = "MainActivity";
     private SharedPreferences _sharedPreferences;
 
@@ -72,6 +72,9 @@ public class MainActivity extends AppCompatActivity
     DateFormat _dateFormatter = new SimpleDateFormat(_dateFormat, Locale.ENGLISH);
     private final static int DAY_IN_MS = 86400000;
 
+    // GOALS
+    List<GoalListener> _goalListeners;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +90,7 @@ public class MainActivity extends AppCompatActivity
     private void init() {
         setupSharedPreferences();
         _dateListeners = new ArrayList<>();
+        _goalListeners = new ArrayList<>();
         setupDate();
         setupViewPager(_viewPager);
         _simpleAnim = AnimationUtils.loadAnimation(this, R.animator.simple_animation);
@@ -135,11 +139,6 @@ public class MainActivity extends AppCompatActivity
         _sharedPreferences.registerOnSharedPreferenceChangeListener(_settingsListener);
     }
 
-    public void notifyDateChanged(long date) {
-        // Notify subscribe fragments of date change
-    }
-
-
     private class SettingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences spref, String key) {
@@ -155,15 +154,6 @@ public class MainActivity extends AppCompatActivity
             dl.onDateChanged(date);
         }
     }
-
-    //private void updateDateColour() {
-    //    if (isTestModeEnabled()) {
-    //        _editDateText.setTextColor(getResources().getColor(R.color.colorAccent));
-    //    } else {
-    //        _editDateText.setTextColor(getResources().getColor(R.color.colorPrimary));
-    //    }
-    //}
-    //
 
     public boolean isTestModeEnabled() {
         return _sharedPreferences.getBoolean(
@@ -201,11 +191,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onGoalProgressChanged(Double progress) {
-        // TODO : Call frags with data
     }
 
 
@@ -261,6 +246,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new ActiveGoalProgressFragment();
                 fragment.setArguments(bundle);
                 _dateListeners.add((DateListener) fragment);
+                _goalListeners.add((GoalListener) fragment);
                 break;
             case GOALS:
                 bundle = new Bundle();
@@ -268,6 +254,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new GoalsFragment();
                 fragment.setArguments(bundle);
                 _dateListeners.add((DateListener) fragment);
+                _goalListeners.add((GoalListener) fragment);
                 break;
             case HISTORY:
                 fragment = new HistoryFragment();
@@ -392,6 +379,24 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    public void onActiveGoalChanged(Goal goal) {
+        if(goal != null) {
+            for (GoalListener gl : _goalListeners) {
+                if(gl != null)
+                    gl.onActiveGoalChanged(goal);
+            }
+        }
+    }
+
+    @Override
+    public void onGoalProgressChanged(double progress) {
+        for (GoalListener gl : _goalListeners) {
+            if (gl != null)
+                gl.onGoalProgressChanged(progress);
+        }
     }
 
 }

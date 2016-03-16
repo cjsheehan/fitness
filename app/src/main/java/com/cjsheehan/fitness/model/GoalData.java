@@ -11,6 +11,7 @@ public class GoalData {
 
     private static final String TAG = "GoalData";
     private List<Goal> _goals;
+    private Goal _active;
 
     public GoalData(Context context) {
         //super(context);
@@ -18,6 +19,7 @@ public class GoalData {
         // TODO : db access
         _goals = new ArrayList<>();
         _goals = fillGoalList();
+        _active = getActive();
     }
 
     public int size() {
@@ -26,21 +28,32 @@ public class GoalData {
 
     public void setActive(int idx) {
         for (int i = 0; i < _goals.size() ; i++) {
-            if(i == idx)
-                _goals.get(i).setGoalState(ActiveState.ACTIVE);
-            else
-                _goals.get(i).setGoalState(ActiveState.INACTIVE);
+            if (i == idx) {
+                _active = _goals.get(i);
+                _goals.get(i).setActiveState(ActiveState.ACTIVE);
+            } else {
+                _goals.get(i).setActiveState(ActiveState.INACTIVE);
+            }
         }
     }
 
     public Goal getActive() {
+        _active = null;
         for (Goal g : _goals) {
-            if (g.getGoalState() == ActiveState.ACTIVE)
+            if (g.getActiveState() == ActiveState.ACTIVE) {
                 return g;
+            }
         }
         return null;
     }
 
+    public int getActiveIdx() {
+        for (int i = 0; i < _goals.size(); i++) {
+            if (_goals.get(i).getActiveState() == ActiveState.ACTIVE)
+                return i;
+        }
+        return -1;
+    }
 
     public void add(Goal goal) {
         Log.d(TAG, "Entered : create(Goal goal()");
@@ -72,7 +85,7 @@ public class GoalData {
         List<Goal> data = new ArrayList<>();
 
         data.add(new Goal("High", 0, 500, 10000, Unit.STEP, ActiveState.INACTIVE));
-        data.add(new Goal("Medium", 0, 500, 1, Unit.MILE,ActiveState.ACTIVE));
+        data.add(new Goal("Medium", 0, 500, 600.5, Unit.MILE, ActiveState.ACTIVE));
         data.add(new Goal("Low", 0, 500, 99999, Unit.KILOMETRE, ActiveState.INACTIVE));
         return data;
     }
@@ -86,9 +99,6 @@ public class GoalData {
     //}
 
     public void update(Goal goal) {
-        Log.d(TAG, "Entered : update(Goal goal)");
-        // TODO : implement GoalData.update(Goal goal)
-
         int idx = _goals.indexOf(goal);
         if (idx >= 0)
             _goals.set(idx, goal);
