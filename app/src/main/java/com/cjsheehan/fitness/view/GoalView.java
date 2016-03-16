@@ -13,15 +13,28 @@ public class GoalView {
     private TextView unit;
     private ProgressBar targetProgress;
 
-    public void updateView(Goal goal) {
+    public void update(Goal goal) {
         double progress = goal.getProgress();
         double target = goal.getTarget();
         String strTarget = Util.format(target);
         String strProgress = Util.format(progress);
-        this.title.setText(goal.getTitle());
-        this.target.setText(strTarget);
-        this.progress.setText(strProgress);
-        setProgressBarView(target, progress);
+        String strUnit = Util.unitToString(goal.getUnit());
+
+
+        if(this.title != null)
+            this.title.setText(goal.getTitle());
+
+        if(this.target != null)
+             this.target.setText(strTarget);
+
+        if(this.progress != null)
+            this.progress.setText(strProgress);
+
+        if(this.targetProgress != null)
+            setProgressBarView(progress, target);
+
+        if(this.unit != null)
+             this.unit.setText(strUnit);
     }
 
     public void setProgressBarView(double progress, double target) {

@@ -13,7 +13,6 @@ import java.util.List;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.model.Goal;
-import com.cjsheehan.fitness.util.Util;
 import com.cjsheehan.fitness.view.GoalView;
 
 public class GoalListAdapter extends ArrayAdapter<Goal> {
@@ -52,7 +51,7 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
         }
 
         Goal active = goals.get(position);
-        _goalView.updateView(active);
+        _goalView.update(active);
         return view;
     }
 

@@ -32,6 +32,7 @@ import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.event.date.DateListener;
 import com.cjsheehan.fitness.model.Unit;
 import com.cjsheehan.fitness.util.Util;
+import com.cjsheehan.fitness.view.GoalView;
 
 public class ActiveGoalProgressFragment extends BaseFragment implements DateListener, GoalListener {
     private static final String TAG = "ActiveGoalProgressFragment";
@@ -53,6 +54,7 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
 
     // MAIN ACTIVITY callback to distribute events
     GoalListener _cbkGoalListener;
+    GoalView _goalView;
 
     enum ProgressChangeDirection { INCREMENT, DECREMENT };
 
@@ -60,6 +62,7 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_active_goal_progress, container, false);
         init(view);
+
         String date = getArguments().getString(getString(R.string.date_bundle_key));
         _dateTextView = (TextView) view.findViewById(R.id.date_display);
         onDateChanged(date);
@@ -74,17 +77,25 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
         content = (RelativeLayout) view.findViewById(R.id.active_goal_progress_content2);
         _simpleAnim = AnimationUtils.loadAnimation(_context, R.animator.simple_animation);
-
-        setupProgressIndicators(view);
+        _goalView = new GoalView();
+        setupGoalView(_goalView, view);
+        //setupProgressIndicators(view);
         setupIncrButton(view);
         setupDecrButton(view);
     }
 
-    private void setupProgressIndicators(View view) {
-        _progressTextView = (TextView) view.findViewById(R.id.active_goal_current_progress);
-        _targetTextView = (TextView) view.findViewById(R.id.active_goal_target);
-        _progressBar = (ProgressBar) view.findViewById(R.id.active_goal_progress_bar);
+    private void setupGoalView(GoalView gv, View view) {
+        gv.setProgress((TextView) view.findViewById(R.id.active_goal_current_progress));
+        gv.setTarget((TextView) view.findViewById(R.id.active_goal_target));
+        gv.setTargetProgress((ProgressBar) view.findViewById(R.id.active_goal_progress_bar));
+        gv.setUnit((TextView) view.findViewById(R.id.active_goal_unit_text));
     }
+
+    //private void setupProgressIndicators(View view) {
+    //    _progressTextView = (TextView) view.findViewById(R.id.active_goal_current_progress);
+    //    _targetTextView = (TextView) view.findViewById(R.id.active_goal_target);
+    //    _progressBar = (ProgressBar) view.findViewById(R.id.active_goal_progress_bar);
+    //}
 
     private void setupIncrButton(View view) {
         ImageView imageViewIncr = (ImageView) view.findViewById(R.id.active_goal_progress_incr);
@@ -133,7 +144,7 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         if(_activeGoal != null) {
             _activeGoal.setProgress(progress);
             raiseOnGoalProgressChanged(getProgress()); // callback activity
-            updateProgressView();
+            updateGoalView();
         }
     }
 
@@ -151,14 +162,20 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         return 0;
     }
 
-    public void updateProgressView() {
-        double progress = getProgress();
-        double target = getTarget();
-        String strTarget = Util.format(target);
-        String strProgress = Util.format(progress);
-        setTargetTextView(strTarget);
-        setProgressTextView(strProgress);
-        updateProgressBar(target, progress);
+    //public void updateProgressView() {
+    //    double progress = getProgress();
+    //    double target = getTarget();
+    //    String strTarget = Util.format(target);
+    //    String strProgress = Util.format(progress);
+    //    _goalView.setTarget(strTarget);
+    //    _goalView.setProgress(strTarget);
+    //    setTargetTextView(strTarget);
+    //    setProgressTextView(strProgress);
+    //    updateProgressBar(target, progress);
+    //}
+
+    public void updateGoalView() {
+        _goalView.update(_activeGoal);
     }
 
     private void setTargetTextView(String target) {
@@ -282,7 +299,7 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
     @Override
     public void onActiveGoalChanged(Goal goal) {
         _activeGoal = goal;
-        updateProgressView();
+        updateGoalView();
     }
 
     @Override
