@@ -12,20 +12,13 @@
         android:inputType="number"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:text="11111110.00"
+        android:text="@string/default_target"
         android:textSize="30dp"
         android:editable="false"
         android:layout_gravity="center_horizontal"
-        android:layout_above="@+id/separator_progress_to_target"
-        android:layout_alignEnd="@+id/active_goal_target"/>
-
-    <View
-        android:layout_width="250dp"
-        android:layout_height="2dp"
-        android:background="@color/colorAccent"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/separator_progress_to_target"/>
+        android:gravity="right"
+        android:layout_above="@+id/space"
+        android:layout_toStartOf="@+id/active_goal_unit_text"/>
 
     <TextView
         android:id="@+id/active_goal_target"
@@ -33,11 +26,12 @@
         android:layout_height="wrap_content"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:text="999999.00"
+        android:text="@string/default_target"
         android:layout_gravity="center_horizontal"
-        android:layout_below="@+id/separator_progress_to_target"
-        android:layout_centerHorizontal="true"
-        android:textSize="30dp"/>
+        android:textSize="30sp"
+        android:textAlignment="textEnd"
+        android:layout_below="@+id/space"
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/active_goal_unit_text"
@@ -46,9 +40,28 @@
         android:textSize="16dp"
         android:textAlignment="center"
         android:textColor="@color/colorPrimary"
-        android:text="@string/miles"
-        android:textStyle="italic"
+        android:text="@string/metres"
+        android:textStyle="bold|italic"
         android:layout_below="@+id/active_goal_target"
-        android:layout_toEndOf="@+id/active_goal_target"/>
+        android:layout_toEndOf="@+id/active_goal_target"
+        android:gravity="right"/>
+
+    <Space
+        android:layout_width="10px"
+        android:layout_height="10px"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/space"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/default_title"
+        android:textColor="@color/teal700"
+        android:id="@+id/active_goal_title"
+        android:layout_above="@+id/active_goal_current_progress"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:textStyle="italic"/>
 
 </RelativeLayout>

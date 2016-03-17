@@ -22,7 +22,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ABCDEFGH"
+        android:text="@string/default_title"
         android:id="@+id/goal_title"
         android:textColor="@color/teal700"
         android:layout_alignParentTop="true"

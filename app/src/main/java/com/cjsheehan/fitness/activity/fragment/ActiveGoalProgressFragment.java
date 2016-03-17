@@ -89,6 +89,7 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         gv.setTarget((TextView) view.findViewById(R.id.active_goal_target));
         gv.setTargetProgress((ProgressBar) view.findViewById(R.id.active_goal_progress_bar));
         gv.setUnit((TextView) view.findViewById(R.id.active_goal_unit_text));
+        gv.setTitle((TextView) view.findViewById(R.id.active_goal_title));
     }
 
     //private void setupProgressIndicators(View view) {

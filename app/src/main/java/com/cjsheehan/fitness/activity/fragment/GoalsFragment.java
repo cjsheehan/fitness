@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -184,6 +186,57 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         addGoalDialog.show();
     }
 
+    public void addGoalDialogWithUnit() {
+        //LinearLayout layout = new LinearLayout(_context);
+        //layout.setOrientation(LinearLayout.VERTICAL);
+        //
+
+        //addGoalDialog.create();
+        //
+        //addGoalDialog.setPositiveButton("Add",
+        //        new DialogInterface.OnClickListener() {
+        //            public void onClick(DialogInterface dialog, int which) {
+        //                addNewGoal();
+        //            }
+        //        });
+
+        LayoutInflater li = LayoutInflater.from(_context);
+        View promptsView = li.inflate(R.layout.goal_alert_dialog, null);
+        AlertDialog.Builder addGoalDialog = new AlertDialog.Builder(_context);
+        addGoalDialog.setView(promptsView);
+        final EditText editName = (EditText) promptsView.findViewById(R.id.goal_alert_name);
+        final EditText editTarget = (EditText) promptsView.findViewById(R.id.goal_alert_target);
+        final Spinner unitSpinner= (Spinner) promptsView.findViewById(R.id.goal_unit_spinner);
+        editTarget.setRawInputType(Configuration.KEYBOARD_QWERTY);
+
+        addGoalDialog.setNegativeButton(android.R.string.cancel, null);
+        addGoalDialog.setPositiveButton("Add",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        addNewGoal();
+                    }
+                });
+
+        final AlertDialog alertDialog = addGoalDialog.create();
+
+        unitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                ((TextView) parent.getChildAt(0)).setTextColor(ContextCompat.getColor(_context, R.color.colorPrimary));
+                Toast.makeText(_context, "Selected " + parent.getItemAtPosition(position).toString(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+
+        });
+
+        alertDialog.show();
+    }
+
     public GoalValidationCode isGoalValid(String title, String target) {
         GoalValidationCode validationCode = GoalValidation.checkInput(title, target);
         switch (validationCode) {
@@ -327,7 +380,8 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add_goal:
-                addGoalDialog();
+                //addGoalDialog();
+                addGoalDialogWithUnit();
                 return true;
 
             default:

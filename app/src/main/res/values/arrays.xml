@@ -20,4 +20,12 @@
         <item>Kilometres</item>
         <item>Miles</item>
     </string-array>
+
+    <string-array name="units_array_values">
+        <item>steps</item>
+        <item>yds</item>
+        <item>m</item>
+        <item>km</item>
+        <item>mls</item>
+    </string-array>
 </resources>

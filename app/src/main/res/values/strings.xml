@@ -40,7 +40,7 @@
     <string name="metres">m</string>
     <string name="kilometres">km</string>
     <string name="miles">mls</string>
-
-
-
+    <string name="default_target">0.00</string>
+    <string name="default_progress">0.00</string>
+    <string name="default_title">N/A</string>
 </resources>

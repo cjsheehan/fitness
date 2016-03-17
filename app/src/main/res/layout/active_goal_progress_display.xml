@@ -18,9 +18,18 @@
         android:layout_alignParentStart="true"
         android:layout_centerInParent="true"/>
 
+
     <include
         android:id="@+id/active_goal_progress_text"
         layout="@layout/active_goal_progress_text"/>
+    <View
+        android:layout_width="245dp"
+        android:layout_height="2dp"
+        android:background="@color/colorAccent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/separator_progress_to_target"/>
+
 
 
 
