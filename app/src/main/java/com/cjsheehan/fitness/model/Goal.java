@@ -12,9 +12,7 @@ public class Goal implements Serializable {
     private Unit unit;
     private ActiveState _activeState;
 
-    private void setUnit(Unit unit) {
-        this.unit = unit;
-    }
+
     public Goal(String title, int id, double progress, double target, Unit unit, ActiveState _activeState) {
 
         if(target < 1) throw new IllegalArgumentException("ERROR: Goal target should be more than 0");
@@ -86,5 +84,9 @@ public class Goal implements Serializable {
 
     public Unit getUnit() {
         return unit;
+    }
+
+    public void setUnit(Unit unit) {
+        this.unit = unit;
     }
 }

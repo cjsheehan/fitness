@@ -4,6 +4,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.cjsheehan.fitness.model.Goal;
+import com.cjsheehan.fitness.model.UnitConversion;
 import com.cjsheehan.fitness.util.Util;
 
 public class GoalView {
@@ -18,7 +19,7 @@ public class GoalView {
         double target = goal.getTarget();
         String strTarget = Util.format(target);
         String strProgress = Util.format(progress);
-        String strUnit = Util.unitToString(goal.getUnit());
+        String strUnit = UnitConversion.toString(goal.getUnit());
 
 
         if(this.title != null)

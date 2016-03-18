@@ -1,6 +1,16 @@
 package com.cjsheehan.fitness.model;
 
+import android.security.keystore.UserNotAuthenticatedException;
+
 public class UnitConversion {
+
+    // ABBREVIATION
+    public final static String STEP = "step";
+    public final static String YARD = "yd";
+    public final static String METRE = "m";
+    public final static String MILE = "mi";
+    public final static String KILOMETRE = "km";
+
     // YARDS
     private static final double YARDS_PER_METRE = 1.09361;
     private static final double YARDS_PER_KILOMETRE = 1093.61;
@@ -195,5 +205,51 @@ public class UnitConversion {
     private void updateMilesFactors() {
         MILES_PER_STEP = METRES_PER_STEP * MILES_PER_METRE;
         STEPS_PER_MILE = 1 / MILES_PER_STEP;
+    }
+
+
+
+    public static String toString(Unit unit) {
+        String strUnit = null;
+        switch (unit) {
+            case METRE:
+                strUnit = "m";
+                break;
+            case KILOMETRE:
+                strUnit = "km";
+                break;
+            case MILE:
+                strUnit ="mi";
+                break;
+            case YARD:
+                strUnit ="yd";
+                break;
+            case STEP:
+                strUnit ="step";
+                break;
+        }
+        return strUnit;
+    }
+
+    public static Unit toUnit(String strUnit) {
+        Unit unit = Unit.STEP;
+        switch(strUnit) {
+            case METRE:
+                unit = Unit.METRE;
+                break;
+            case KILOMETRE :
+                unit = Unit.KILOMETRE;
+                break;
+            case MILE:
+                unit = Unit.MILE;
+                break;
+            case YARD:
+                unit = Unit.YARD;
+                break;
+            case STEP:
+                unit = Unit.STEP;
+                break;
+        }
+        return unit;
     }
 }

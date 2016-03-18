@@ -5,10 +5,10 @@ public class GoalValidation {
     public static GoalValidationCode checkInput(String title, String target) {
         if(title.isEmpty()) return GoalValidationCode.FAIL_TITLE_IS_EMPTY;
         if(target.isEmpty()) return GoalValidationCode.FAIL_TARGET_IS_EMPTY;
-        int numSteps;
+        double targetDistance;
         try {
-            numSteps = Integer.parseInt(target);
-            if(numSteps < 1) {
+            targetDistance = Double.parseDouble(target);
+            if(targetDistance < 1) {
                 return GoalValidationCode.FAIL_TARGET_LTE0;
             }
         }

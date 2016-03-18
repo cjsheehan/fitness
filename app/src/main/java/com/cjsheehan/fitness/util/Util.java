@@ -47,25 +47,4 @@ public class Util {
     }
 
 
-    public static String unitToString(Unit unit) {
-        String strUnit = null;
-        switch (unit) {
-            case METRE:
-                strUnit = "m";
-            break;
-            case KILOMETRE:
-                strUnit = "km";
-            break;
-            case MILE:
-                strUnit ="mls";
-            break;
-            case YARD:
-                strUnit ="yds";
-            break;
-            case STEP:
-                strUnit ="step";
-            break;
-        }
-        return strUnit;
-    }
 }

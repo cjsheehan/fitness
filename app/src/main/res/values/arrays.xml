@@ -22,10 +22,10 @@
     </string-array>
 
     <string-array name="units_array_values">
-        <item>steps</item>
-        <item>yds</item>
+        <item>step</item>
+        <item>yd</item>
         <item>m</item>
         <item>km</item>
-        <item>mls</item>
+        <item>mi</item>
     </string-array>
 </resources>
