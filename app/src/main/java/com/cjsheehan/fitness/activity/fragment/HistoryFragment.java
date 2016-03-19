@@ -51,24 +51,6 @@ public class HistoryFragment extends BaseFragment {
         //initLoader();
     }
 
-    @Override
-    public void addGoal(Goal goal) {
-        Log.d(TAG, "# addGoal(Goal goal)");
-        // TODO : implement
-    }
-
-    @Override
-    public void removeGoal(Goal goal) {
-        Log.d(TAG, "# removeGoal(Goal goal)");
-        // TODO : implement
-    }
-
-    @Override
-    public void updateGoal(Goal goal) {
-        Log.d(TAG, "# updateGoal(Goal goal)");
-        // TODO : implement
-    }
-
     //@Override
     //protected void addGoalActionReceived(Goal goal) {
     //    historyChartView.addGoal(goal);
