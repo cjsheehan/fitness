@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -123,7 +124,7 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
     public void incrementProgress(ProgressChangeDirection direction) {
         try {
             String incrementStr = _sharedPreferences.getString(getString(R.string.progress_increment_amount), "10");
-            Integer incrementBy = Integer.parseInt(incrementStr);
+            Double incrementBy = Double.parseDouble(incrementStr);
             switch (direction) {
                 case DECREMENT:
                     incrementProgress(-1 * incrementBy);
@@ -205,7 +206,7 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         final EditText editProgressText = new EditText(_context);
         editProgressText.setText(_sharedPreferences.getString(getString(R.string.progress_increment_amount), "10"));
         editProgressText.setSelectAllOnFocus(true);
-        editProgressText.setRawInputType(Configuration.KEYBOARD_QWERTY);
+        editProgressText.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         layout.addView(editProgressText);
 
         // Alert
@@ -236,7 +237,7 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
                         imm.hideSoftInputFromWindow(editProgressText.getWindowToken(), 0);
                         String strProgressAdded = editProgressText.getText().toString();
                         try {
-                            Integer progressAdded = Integer.parseInt(strProgressAdded);
+                            Double progressAdded = Double.parseDouble(strProgressAdded);
                             incrementProgress(progressAdded);
                             Toast.makeText(_context, "Added " + progressAdded + " to progress", Toast.LENGTH_SHORT).show();
                         } catch (NumberFormatException e) {

@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DialogTitle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -256,7 +257,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         //imm.showSoftInput(_agTitleView, InputMethodManager.SHOW_IMPLICIT);
 
         _agTargetView = (EditText) promptsView.findViewById(R.id.goal_alert_target);
-        _agTargetView.setRawInputType(Configuration.KEYBOARD_QWERTY);
+        _agTargetView.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
         final Spinner unitSpinner= (Spinner) promptsView.findViewById(R.id.goal_unit_spinner);
 
@@ -330,7 +331,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         _ugTitleView.setText("" + goalToEdit.getTitle());
         _ugTargetView = (EditText) promptsView.findViewById(R.id.goal_alert_target);
         _ugTargetView.setText("" + goalToEdit.getTarget());
-        _ugTargetView.setRawInputType(Configuration.KEYBOARD_QWERTY);
+        _ugTargetView.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         final Spinner unitSpinner= (Spinner) promptsView.findViewById(R.id.goal_unit_spinner);
         int unitPosition = getPositionFromUnit(goalToEdit.getUnit());
         unitSpinner.setSelection(unitPosition);
