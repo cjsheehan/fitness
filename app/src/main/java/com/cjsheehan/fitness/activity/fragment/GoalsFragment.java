@@ -329,6 +329,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         updateGoalDialogTitle.setText("Edit Goal");
         _ugTitleView = (EditText) promptsView.findViewById(R.id.goal_alert_name);
         _ugTitleView.setText("" + goalToEdit.getTitle());
+        _ugTitleView.setEnabled(false);
         _ugTargetView = (EditText) promptsView.findViewById(R.id.goal_alert_target);
         _ugTargetView.setText("" + goalToEdit.getTarget());
         _ugTargetView.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
