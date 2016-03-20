@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
     private ViewPager _viewPager;
     private int _selectedPagePosition;
     private boolean _isCounterRecording;
-    String _strLength;
+
 
 
     // DATE
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity
         _isCounterRecording = false;
         //setupCalendar();
         setupFloatActBtn();
-        initStrideLength();
+
         //updateDateListeners(_date);
     }
 
@@ -152,19 +152,11 @@ public class MainActivity extends AppCompatActivity
                 setCalendarMenuItemVisibilty();
             }
 
-            if (key.equals(getString(R.string.user_stride_length_key))) {
-                initStrideLength();
-                Toast.makeText(MainActivity.this, "Stride length set to " + _strLength, Toast.LENGTH_SHORT).show();
 
-            }
         }
     }
 
-    private void initStrideLength() {
-        _strLength= _sharedPreferences.getString(getResources().getString(R.string.user_stride_length_key), "1");
-        double length = Double.parseDouble(_strLength);
-        UnitConverter.setMetresPerStep(length);
-    }
+
 
     private void updateDateListeners(String date) {
         for(DateListener dl : _dateListeners) {

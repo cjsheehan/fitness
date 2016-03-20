@@ -40,6 +40,7 @@ public class GoalData {
                 g.setActiveState(ActiveState.ACTIVE);
             } else {
                 g.setActiveState(ActiveState.INACTIVE);
+                g.setProgress(0);
             }
             _dbHelper.updateGoal(g);
         }

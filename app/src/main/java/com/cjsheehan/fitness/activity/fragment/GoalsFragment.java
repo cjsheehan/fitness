@@ -78,12 +78,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
     View _view; // Cached in onCreateView()
 
-
-
-    // Container Activity must implement this interface
-    public interface OnActiveGoalChangedListener {
-        public void onActiveGoalChanged(int position);
-    }
+    String _strLength;
 
     public void selectActiveGoal() {
         if(_goalData != null) {
@@ -104,6 +99,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         init(_view);
         onDateChanged(_date);
         setHasOptionsMenu(true);
+        initStrideLength();
         return view;
     }
 
@@ -545,6 +541,12 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         }
     }
 
+    private void initStrideLength() {
+        _strLength= _sharedPreferences.getString(getResources().getString(R.string.user_stride_length_key), "1");
+        double length = Double.parseDouble(_strLength);
+        UnitConverter.setMetresPerStep(length);
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_add_goal, menu);
@@ -634,6 +636,12 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
                         e.printStackTrace();
                     }
                 }
+            }
+
+            if (key.equals(getString(R.string.user_stride_length_key))) {
+                initStrideLength();
+                Toast.makeText(_context, "Stride length set to " + _strLength, Toast.LENGTH_SHORT).show();
+
             }
         }
     }
