@@ -110,11 +110,6 @@ public class DBHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         String date = goal.getDate();
         String title = goal.getTitle();
-        String query = "SELECT * FROM " + TABLE_GOALS + " WHERE " +
-                COLUMN_DATE + "=\"" + date + "\" " + " AND " +
-                COLUMN_TITLE + "=\"" + title + "\";";
-        Cursor c = db.rawQuery(query, null);
-        c.moveToFirst();
 
         ContentValues values = new ContentValues();
         values.put(COLUMN_TARGET, goal.getTarget());
@@ -125,6 +120,28 @@ public class DBHelper extends SQLiteOpenHelper{
         String whereClause =  COLUMN_DATE + " = ? AND " + COLUMN_TITLE + " = ?";
         String[] whereArgs = new String[] {goal.getDate(), goal.getTitle()};
         int num_rows = db.update(TABLE_GOALS, values, whereClause, whereArgs);
+
+
+        String query = "SELECT * FROM " + TABLE_GOALS + " WHERE " +
+                COLUMN_DATE + "=\"" + date + "\" " + " AND " +
+                COLUMN_TITLE + "=\"" + title + "\";";
+        Cursor c = db.rawQuery(query, null);
+        if(c != null && c.getCount() > 0) {
+            c.moveToFirst();
+            while(!c.isAfterLast()) {
+                String row_title = c.getString(c.getColumnIndex(COLUMN_TITLE));
+                String row_date = c.getString(c.getColumnIndex(COLUMN_DATE));
+                double row_target = c.getDouble(c.getColumnIndex(COLUMN_TARGET));
+                double row_progress = c.getDouble(c.getColumnIndex(COLUMN_PROGRESS));
+                String row_unit = c.getString(c.getColumnIndex(COLUMN_UNIT));
+                String row_active_state = c.getString(c.getColumnIndex(COLUMN_ACTIVESTATE));
+
+                ActiveState state = Util.toState(row_active_state);
+                Unit unit = UnitConversion.toUnit(row_unit);
+                c.moveToNext();
+            }
+        }
+
         db.close();
 
         if(num_rows == 1) {

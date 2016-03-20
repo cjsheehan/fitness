@@ -38,6 +38,7 @@ import com.cjsheehan.fitness.model.UnitConversion;
 import com.cjsheehan.fitness.util.GoalValidation;
 import com.cjsheehan.fitness.util.GoalValidationCode;
 import com.cjsheehan.fitness.util.Util;
+import java.util.List;
 
 import java.io.IOException;
 
@@ -110,12 +111,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         _context = view.getContext();
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
         _dateTextView = (TextView) view.findViewById(R.id.date_display);
-    }
 
-    private void initGoalsForDate(String date) throws IOException {
-        // Get goal data for single date
-        _goalData = new GoalData(_context, date);
-        _goalListAdapter = new GoalListAdapter(_goalData.getAll(), getContext());
         _goalListView = (ListView) _view.findViewById(R.id.goal_list);
 
         _goalListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -123,13 +119,13 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Select
                 Log.d(TAG, "Goal ListView click");
-                int childCount = _goalListView.getChildCount();
-                for (int i = 0; i < childCount; i++) {
+                int count = _goalListView.getCount();
+                for (int i = 0; i < count; i++) {
                     if (position == i) {
                         setGoalActive(position);
-                        _goalListView.getChildAt(i).setBackgroundResource(R.color.colorAccentAlternate);
+                        //_goalListView.getChildAt(i).setBackgroundResource(R.color.colorAccentAlternate);
                     } else {
-                        _goalListView.getChildAt(i).setBackgroundResource(Color.TRANSPARENT);
+                        //_goalListView.getChildAt(i).setBackgroundResource(Color.TRANSPARENT);
                     }
                 }
             }
@@ -147,10 +143,17 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
                 return true;
             }
         });
+    }
 
+    private void initGoalsForDate(String date) throws IOException {
+        // Get goal data for single date
+        _goalData = new GoalData(_context, date);
+        List<Goal> all = _goalData.getAll();
+        _goalListAdapter = new GoalListAdapter(all, getContext());
         _goalListView.setAdapter(_goalListAdapter);
+        _goalListAdapter.notifyDataSetChanged();
+        int childCount = _goalListView.getCount();
         updateActiveView();
-
         //fillGoalData();
     }
 
@@ -171,8 +174,8 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             if(numActive == 0) {
                 setGoalActive(0);
             } else if (numActive == 1) {
-                // OK, do nothing
-                setGoalActive(0);
+                int activeIdx = _goalData.getActiveIdx();
+                setGoalActive(activeIdx);
             } else if (numActive > 1) {
                 Toast.makeText(_context, "ERROR : too many active goals, contact admin", Toast.LENGTH_SHORT).show();
             }
@@ -470,10 +473,6 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
                 msg += ", goal already exists";
                 Log.d(TAG, msg);
                 Toast.makeText(_context, msg, Toast.LENGTH_SHORT).show();
-            case FAIL_GOAL_NOT_EXIST:
-                msg += ", goal does NOT exist";
-                Log.d(TAG, msg);
-                Toast.makeText(_context, msg, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -520,16 +519,27 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
     public void setGoalActive(int position) {
         if (_goalData.get(position).getActiveState() != ActiveState.ACTIVE) {
+            transferProgress(_goalData.getActive(), _goalData.get(position));
             _goalData.setActive(position);
             _goalListAdapter.notifyDataSetChanged();
             raiseActiveGoalChanged(_goalData.getActive());
             Toast.makeText(_context, _goalData.getActive().getTitle() + " is now active", Toast.LENGTH_SHORT).show();
         } else {
-            // Commented out as hack : call to select it at init is repeatedly called due to
-            // MainACtivity onCreate being called between tab slides
-            //Toast.makeText(_context, "Goal is already active", Toast.LENGTH_SHORT).show();
             _goalListAdapter.notifyDataSetChanged();
             raiseActiveGoalChanged(_goalData.getActive());
+        }
+    }
+
+    private void transferProgress(Goal source, Goal target) {
+        if(source != null && target != null) {
+            double sourceProgress = source.getProgress();
+            Unit sourceUnit = source.getUnit();
+            Unit targetUnit = target.getUnit();
+            double targetProgress = UnitConversion.convert(sourceProgress, sourceUnit, targetUnit);
+            source.setProgress(0);
+            _goalData.update(source);
+            target.setProgress(target.getProgress() + targetProgress);
+            _goalData.update(target);
         }
     }
 

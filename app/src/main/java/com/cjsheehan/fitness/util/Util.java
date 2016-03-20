@@ -53,7 +53,7 @@ public class Util {
     }
 
     public static ActiveState toState(String state) {
-        if(state.equals(ACTIVE))
+        if(state.equalsIgnoreCase(ACTIVE))
             return ActiveState.ACTIVE;
         else
             return ActiveState.INACTIVE;

@@ -32,23 +32,23 @@ public class UnitConversion {
     private static final double MILES_PER_KILOMETRE = 1 / KILOMETRE_PER_MILE;
 
     // STEPS
-    private double STEPS_PER_METRE = 0.762; // COMMONLY USED FACTOR;
-    private double METRES_PER_STEP = 1 / STEPS_PER_METRE;
+    private static double STEPS_PER_METRE = 0.762; // COMMONLY USED FACTOR;
+    private static double METRES_PER_STEP = 1 / STEPS_PER_METRE;
 
-    private double YARDS_PER_STEP = METRES_PER_STEP * YARDS_PER_METRE;
-    private double STEPS_PER_YARD = 1 / YARDS_PER_STEP;
+    private static double YARDS_PER_STEP = METRES_PER_STEP * YARDS_PER_METRE;
+    private static double STEPS_PER_YARD = 1 / YARDS_PER_STEP;
 
-    private double KILOMETRES_PER_STEP = METRES_PER_STEP * KILOMETRES_PER_METRE;
-    private double STEPS_PER_KILOMETRE = 1 / KILOMETRES_PER_STEP;
+    private static double KILOMETRES_PER_STEP = METRES_PER_STEP * KILOMETRES_PER_METRE;
+    private static double STEPS_PER_KILOMETRE = 1 / KILOMETRES_PER_STEP;
 
-    private double MILES_PER_STEP = METRES_PER_STEP * MILES_PER_METRE;
-    private double STEPS_PER_MILE = 1 / MILES_PER_STEP;
+    private static double MILES_PER_STEP = METRES_PER_STEP * MILES_PER_METRE;
+    private static double STEPS_PER_MILE = 1 / MILES_PER_STEP;
 
     public UnitConversion (double metresPerStep) {
         setMetresPerStep(metresPerStep);
     }
 
-    public double convert(double input, Unit unitFrom, Unit unitTo) {
+    public static double convert(double input, Unit unitFrom, Unit unitTo) {
         double output = 0;
         switch (unitFrom) {
             case METRE:
@@ -72,7 +72,7 @@ public class UnitConversion {
 
 
 
-    public double stepsPer(Unit unit) {
+    public static double stepsPer(Unit unit) {
         double factor = 0;
         switch (unit) {
             case STEP:
@@ -94,7 +94,7 @@ public class UnitConversion {
         return factor;
     }
 
-    public double yardsPer(Unit convertTo) {
+    public static double yardsPer(Unit convertTo) {
         double factor = 0;
         switch (convertTo) {
             case STEP:
@@ -116,7 +116,7 @@ public class UnitConversion {
         return factor;
     }
 
-    public double metresPer(Unit convertTo) {
+    public static double metresPer(Unit convertTo) {
         double factor = 0;
         switch (convertTo) {
             case STEP:
@@ -138,7 +138,7 @@ public class UnitConversion {
         return factor;
     }
 
-    public double kilometresPer(Unit convertTo) {
+    public static double kilometresPer(Unit convertTo) {
         double factor = 0;
         switch (convertTo) {
             case STEP:
@@ -160,7 +160,7 @@ public class UnitConversion {
         return factor;
     }
 
-    public double milesPer(Unit convertTo) {
+    public static double milesPer(Unit convertTo) {
         double factor = 0;
         switch (convertTo) {
             case STEP:
@@ -182,7 +182,7 @@ public class UnitConversion {
         return factor;
     }
 
-    public void setMetresPerStep(double factor) {
+    public static void setMetresPerStep(double factor) {
         if(factor <= 0)
             throw new IllegalArgumentException("metres per step factor must be > 0");
         STEPS_PER_METRE = factor;
@@ -192,17 +192,17 @@ public class UnitConversion {
         updateMilesFactors();
     }
 
-    private void updateYardsFactors() {
+    private static void updateYardsFactors() {
         YARDS_PER_STEP = METRES_PER_STEP * YARDS_PER_METRE;
         STEPS_PER_YARD = 1 / YARDS_PER_STEP;
     }
 
-    private void updateKilometresFactors() {
+    private static void updateKilometresFactors() {
         KILOMETRES_PER_STEP = METRES_PER_STEP * KILOMETRES_PER_METRE;
         STEPS_PER_KILOMETRE = 1 / KILOMETRES_PER_STEP;
     }
 
-    private void updateMilesFactors() {
+    private static void updateMilesFactors() {
         MILES_PER_STEP = METRES_PER_STEP * MILES_PER_METRE;
         STEPS_PER_MILE = 1 / MILES_PER_STEP;
     }

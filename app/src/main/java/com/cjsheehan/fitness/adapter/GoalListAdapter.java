@@ -1,6 +1,8 @@
 package com.cjsheehan.fitness.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cjsheehan.fitness.R;
+import com.cjsheehan.fitness.model.ActiveState;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.view.GoalView;
 
@@ -51,6 +54,13 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
         }
 
         Goal active = goals.get(position);
+
+        if (active.getActiveState() == ActiveState.ACTIVE) {
+            view.setBackgroundResource(R.color.colorAccentAlternate);
+        } else {
+            view.setBackgroundResource(Color.TRANSPARENT);
+        }
+
         _goalView.update(active);
         return view;
     }

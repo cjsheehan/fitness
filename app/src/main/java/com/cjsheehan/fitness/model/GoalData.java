@@ -90,24 +90,8 @@ public class GoalData {
     public List<Goal> getAllByDate(String date) {
         _goals = _dbHelper.getGoalsByDate(date);
         int size = _goals.size();
-        if(size == 1) {
+        if(size == 1 && _goals.get(0).getActiveState() == ActiveState.INACTIVE) {
             setActive(0);
-        } else if (size > 1) {
-            // Check if only 1 is active
-            List<Integer> activeIdxs = new ArrayList<>();
-            for (int i = 0; i < _goals.size() ; i++) {
-                if(_goals.get(i).getActiveState() == ActiveState.ACTIVE) {
-                    activeIdxs.add(i);
-                }
-            }
-
-            if(activeIdxs.size() == 1) {
-                // OK
-            } else if(activeIdxs.size() == 0) {
-                setActive(0);
-            } else if(activeIdxs.size() > 1) {
-                throw new ArrayIndexOutOfBoundsException("Number of Active goals > 1");
-            }
         }
 
         return _goals;
