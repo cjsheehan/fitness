@@ -77,7 +77,7 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
         content = (RelativeLayout) view.findViewById(R.id.active_goal_progress_content2);
         _simpleAnim = AnimationUtils.loadAnimation(_context, R.animator.simple_animation);
-        _goalView = new GoalView();
+        _goalView = new GoalView(_context);
         setupGoalView(_goalView, view);
         //setupProgressIndicators(view);
         setupIncrButton(view);
@@ -192,21 +192,6 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         int targetAsInt = Util.toInt(target);
         _progressBar.setMax(targetAsInt);
         _progressBar.setProgress(progressAsInt);
-    }
-
-    @Override
-    public void addGoal(Goal goal) {
-
-    }
-
-    @Override
-    public void removeGoal(Goal goal) {
-
-    }
-
-    @Override
-    public void updateGoal(Goal goal) {
-
     }
 
     public void editProgressDialog() {

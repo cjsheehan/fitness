@@ -4,11 +4,16 @@ import android.app.Activity;
 import android.content.Intent;
 
 import com.cjsheehan.fitness.R;
+import com.cjsheehan.fitness.model.ActiveState;
 import com.cjsheehan.fitness.model.Unit;
 
 import java.text.DecimalFormat;
 
 public class Util {
+
+    private static final String ACTIVE = "active";
+    private static final String INACTIVE = "inactive";
+
     public static String formatTo2dp(double number) {
         DecimalFormat to2dp = new DecimalFormat("#.##");
         return to2dp.format(number);
@@ -44,6 +49,20 @@ public class Util {
 
     public static String toString(int number) {
         return formatTo0dp(number);
+    }
+
+    public static ActiveState toState(String state) {
+        if(state.equals(ACTIVE))
+            return ActiveState.ACTIVE;
+        else
+            return ActiveState.INACTIVE;
+    }
+
+    public static String toString(ActiveState state) {
+        if(state == ActiveState.ACTIVE)
+            return ACTIVE;
+        else
+            return INACTIVE;
     }
 
 

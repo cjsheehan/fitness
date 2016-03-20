@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity
 
     private Animation _simpleAnim;
     private MenuItem _calendarMenuItem;
-    private String _date;
+
     private GoalsFragment _goalsFragment;
     //private ProgressListAdapter _adapter;
     //private List<Progress> _progress;
@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity
 
 
     // DATE
+    private String _date;
     private Calendar _calendar;
     List<DateListener> _dateListeners;
     private String _dateFormat = "dd MMMM yyyy";
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity
         _isCounterRecording = false;
         //setupCalendar();
         setupFloatActBtn();
-        updateDateListeners(_date);
+        //updateDateListeners(_date);
     }
 
     private void initCalendarMenuItem(MenuItem calendarMenuItem) {
@@ -132,7 +133,6 @@ public class MainActivity extends AppCompatActivity
     private void setupDate() {
         _calendar = Calendar.getInstance();
         _date = _dateFormatter.format(_calendar.getTime());
-        updateDateListeners(_date);
     }
 
     private void setupSharedPreferences() {

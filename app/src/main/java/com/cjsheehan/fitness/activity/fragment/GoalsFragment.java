@@ -8,7 +8,6 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DialogTitle;
@@ -21,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,6 +27,7 @@ import android.widget.Toast;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.adapter.GoalListAdapter;
+import com.cjsheehan.fitness.db.DbStatus;
 import com.cjsheehan.fitness.event.date.DateListener;
 import com.cjsheehan.fitness.event.goal.GoalListener;
 import com.cjsheehan.fitness.model.ActiveState;
@@ -38,36 +37,46 @@ import com.cjsheehan.fitness.model.Unit;
 import com.cjsheehan.fitness.model.UnitConversion;
 import com.cjsheehan.fitness.util.GoalValidation;
 import com.cjsheehan.fitness.util.GoalValidationCode;
+import com.cjsheehan.fitness.util.Util;
+
+import java.io.IOException;
 
 public class GoalsFragment extends BaseFragment implements DateListener, GoalListener {
 
 
     private static final String TAG = "BaseGoalsFragment";
     // Vars for adding new goal
-    private TextView _newGoalTitle;
-    private EditText _newGoalTarget;
-    private Unit _newGoalUnit = Unit.STEP;
+    private TextView _agTitleView;
+    private EditText _agTargetView;
+    String _agTitleStr;
+    String _agTargetStr;
+    private Unit _agUnit = Unit.STEP;
 
     // Vars for editing existing goal
-    private TextView _editExistingGoalTitle;
-    private EditText _editExistingGoalTarget;
-    private Unit _editExistingGoalUnit = Unit.STEP;
-    private int _positionOfGoalToEdit = -1;
+    private TextView _ugTitleView;
+    private EditText _ugTargetView;
+    String _ugTitleStr;
+    String _ugTargetStr;
+    private Unit _ugUnit = Unit.STEP;
+    private int _ugPos = -1;
 
-
-    private Context context;
+    // Goal handlers
     private GoalData _goalData;
     private GoalListAdapter _goalListAdapter;
     private ListView _goalListView;
-    private TextView txtMessage;
-    private FloatingActionButton _fab;
+
     Context _context;
     private SharedPreferences _sharedPreferences;
     private TextView _dateTextView;
     Activity _activity;
 
-
+    // Callback when view is updated
     GoalListener _cbkGoalListener;
+    private String _date;
+
+    View _view; // Cached in onCreateView()
+
+
 
     // Container Activity must implement this interface
     public interface OnActiveGoalChangedListener {
@@ -87,10 +96,11 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_goals, container, false);
+        _view = view;
         _dateTextView = (TextView) view.findViewById(R.id.date_display);
-        String date = getArguments().getString(getString(R.string.date_bundle_key));
-        onDateChanged(date);
-        init(view);
+        _date = getArguments().getString(getString(R.string.date_bundle_key));
+        init(_view);
+        onDateChanged(_date);
         setHasOptionsMenu(true);
         return view;
     }
@@ -100,51 +110,29 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         _context = view.getContext();
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
         _dateTextView = (TextView) view.findViewById(R.id.date_display);
-        // TODO : Need to get goals from repo
-        //goalRepository = new GoalRepository(context);
-        //txtMessage = (TextView) view.findViewById(R.id.goals_message);
-
-        initGoalData(view);
-        //initLoader();
-        //registerReceivers();
     }
 
-    @Override
-    public void addGoal(Goal goal) {
-
-    }
-
-    @Override
-    public void removeGoal(Goal goal) {
-
-    }
-
-    @Override
-    public void updateGoal(Goal goal) {
-
-    }
-
-    private void initGoalData(View view) {
-        _goalData = new GoalData(getContext());
+    private void initGoalsForDate(String date) throws IOException {
+        // Get goal data for single date
+        _goalData = new GoalData(_context, date);
         _goalListAdapter = new GoalListAdapter(_goalData.getAll(), getContext());
-        _goalListView = (ListView) view.findViewById(R.id.goal_list);
+        _goalListView = (ListView) _view.findViewById(R.id.goal_list);
 
         _goalListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Select
-            Log.d(TAG, "Goal ListView click");
-            int childCount = _goalListView.getChildCount();
-            for (int i = 0; i < childCount; i++) {
-                if (position == i) {
-                    setGoalActive(position);
-                    _goalListView.getChildAt(i).setBackgroundResource(R.color.colorAccentAlternate);
-                } else {
-                    _goalListView.getChildAt(i).setBackgroundResource(Color.TRANSPARENT);
+                Log.d(TAG, "Goal ListView click");
+                int childCount = _goalListView.getChildCount();
+                for (int i = 0; i < childCount; i++) {
+                    if (position == i) {
+                        setGoalActive(position);
+                        _goalListView.getChildAt(i).setBackgroundResource(R.color.colorAccentAlternate);
+                    } else {
+                        _goalListView.getChildAt(i).setBackgroundResource(Color.TRANSPARENT);
+                    }
                 }
             }
-            Goal goal = _goalListAdapter.getItem(position);
-        }
         });
 
         _goalListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -152,7 +140,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
                 if (true == _sharedPreferences.getBoolean(getString(R.string.enable_edit_goal_key), false)) {
                     //editGoalDialog(position);
-                    editGoalDialogWithUnit(position);
+                    updateGoalDialog(position);
                 } else {
                     Toast.makeText(_context, "To edit goals, please enable the feature in settings", Toast.LENGTH_SHORT).show();
                 }
@@ -161,45 +149,89 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         });
 
         _goalListView.setAdapter(_goalListAdapter);
+        updateActiveView();
+
+        //fillGoalData();
     }
+
+    private void updateActiveView() {
+        if(_goalData.size() == 0) {
+            Toast.makeText(_context, "INFO : no goals active, please add a goal", Toast.LENGTH_SHORT).show();
+        } else if(_goalData.size() == 1) {
+            if(_goalData.countActive() == 0) {
+                _goalData.setActive(0);
+            }
+            _goalListView.performItemClick(
+                    _goalListView.getChildAt(0), 0, _goalListAdapter.getItemId(0));
+            _goalListAdapter.notifyDataSetChanged();
+            raiseActiveGoalChanged(_goalData.getActive());
+        } else if (_goalData.size() > 1) {
+            int activeIdx = _goalData.getActiveIdx();
+            if (activeIdx >= 0) {
+                _goalListView.performItemClick(
+                        _goalListView.getChildAt(activeIdx), activeIdx, _goalListAdapter.getItemId(activeIdx));
+                _goalListAdapter.notifyDataSetChanged();
+                raiseActiveGoalChanged(_goalData.getActive());
+            } else {
+                Toast.makeText(_context, "ERROR : problem with active goals, contact admin", Toast.LENGTH_SHORT).show();
+            }
+            Toast.makeText(_context, "ERROR : too many active goals, contact admin", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //private void checkActiveState() {
+    //    if(!isStateValid()) {
+    //        if (_goalData.size() == 1) {
+    //            // only 1 goal, make it active
+    //            setGoalActive(0);
+    //        }
+    //        checkActiveState();
+    //        _goalListAdapter.notifyDataSetChanged();
+    //        Toast.makeText(_context, "ERROR : number of active goals is invalid, contact administrator", Toast.LENGTH_SHORT).show();
+    //    } else {
+    //        if(_goalData.size() > 0) {
+    //            int activeIdx = _goalData.getActiveIdx();
+    //            // Update listview
+    //            _goalListView.performItemClick(
+    //                    _goalListView.getChildAt(activeIdx), activeIdx, _goalListAdapter.getItemId(activeIdx));
+    //        }
+    //    }
+    //}
+
+    //public boolean isStateValid() {
+    //    boolean isValid = false;
+    //    // Check 1 is active
+    //    int numGoalsForDate = _goalData.size();
+    //    int numActive = 0;
+    //    if (numGoalsForDate == 0) {
+    //        // No Goals, use default or prompt user
+    //        isValid = true;
+    //    } else if (numGoalsForDate > 0) {
+    //        // Goals found in repo, validate
+    //        numActive = _goalData.countActive();
+    //
+    //        if (numActive == 1) {
+    //            isValid = true;
+    //        } else if (numActive > 1) {
+    //            // ERROR, should only be 1 active
+    //            String error = "ERROR: Number of active goals " + numActive + ", is >=1";
+    //            Log.e(TAG, error);
+    //            Toast.makeText(_context, error, Toast.LENGTH_SHORT).show();
+    //
+    //        } else if (numActive == 0) {
+    //            // ERROR, should be 1 goal active for any date
+    //            String error = "ERROR: No active goals found in " + numActive + " goals found for date: " + _date;
+    //            Log.e(TAG, error);
+    //            Toast.makeText(_context, error, Toast.LENGTH_SHORT).show();
+    //        }
+    //    } else if (numGoalsForDate == 1) {
+    //        // Goals found in repo, validate
+    //        numActive = _goalData.countActive();
+    //    }
+    //    return isValid;
+    //}
 
     public void addGoalDialog() {
-        LinearLayout layout = new LinearLayout(_context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        // Goal Name
-        final EditText editName = new EditText(_context);
-        editName.setHint("Name");
-        layout.addView(editName);
-
-        // Goal Target
-        final EditText editTarget = new EditText(_context);
-        editTarget.setHint("Number of Steps");
-        editTarget.setRawInputType(Configuration.KEYBOARD_QWERTY);
-        layout.addView(editTarget);
-
-        // Cache
-        _newGoalTitle = editName;
-        _newGoalTarget = editTarget;
-
-        AlertDialog.Builder addGoalDialog = new AlertDialog.Builder(_context);
-        addGoalDialog.setNegativeButton(android.R.string.cancel, null);
-        addGoalDialog.setIcon(R.drawable.ic_trophie_green);
-        addGoalDialog.setTitle("Add New Goal");
-        addGoalDialog.setView(layout);
-        addGoalDialog.create();
-
-        addGoalDialog.setPositiveButton("Add",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        addNewGoal();
-                    }
-                });
-
-        addGoalDialog.show();
-    }
-
-    public void addGoalDialogWithUnit() {
         LayoutInflater li = LayoutInflater.from(_context);
         View promptsView = li.inflate(R.layout.goal_alert_dialog, null);
         AlertDialog.Builder addGoalDialog = new AlertDialog.Builder(_context);
@@ -207,21 +239,26 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
         // Initialise the dialog widgets
         DialogTitle newGoalDialogTitle = (DialogTitle) promptsView.findViewById(R.id.goal_alert_title);
-        newGoalDialogTitle.setText("Edit Goal");
-        final EditText newGoalTitle = (EditText) promptsView.findViewById(R.id.goal_alert_name);
-        final EditText newGoalTarget = (EditText) promptsView.findViewById(R.id.goal_alert_target);
+        newGoalDialogTitle.setText("Add new goal");
+        _agTitleView = (EditText) promptsView.findViewById(R.id.goal_alert_name);
+        //_agTitleView.requestFocus();
+        //InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        //imm.showSoftInput(_agTitleView, InputMethodManager.SHOW_IMPLICIT);
+
+        _agTargetView = (EditText) promptsView.findViewById(R.id.goal_alert_target);
+        _agTargetView.setRawInputType(Configuration.KEYBOARD_QWERTY);
+
         final Spinner unitSpinner= (Spinner) promptsView.findViewById(R.id.goal_unit_spinner);
-        newGoalTarget.setRawInputType(Configuration.KEYBOARD_QWERTY);
 
         // Cache
-        _newGoalTitle = newGoalTitle;
-        _newGoalTarget = newGoalTarget;
+        _agTitleStr = _agTitleView.getText().toString();
+        _agTargetStr = _agTargetView.getText().toString();
 
         addGoalDialog.setNegativeButton(android.R.string.cancel, null);
         addGoalDialog.setPositiveButton("Add",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        addNewGoal();
+                        addGoalFromDialog();
                     }
                 });
 
@@ -232,7 +269,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 ((TextView) parent.getChildAt(0)).setTextColor(ContextCompat.getColor(_context, R.color.colorPrimary));
-                _newGoalUnit = UnitConversion.toUnit(parent.getItemAtPosition(position).toString());
+                _agUnit = UnitConversion.toUnit(parent.getItemAtPosition(position).toString());
             }
 
             @Override
@@ -263,67 +300,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         return validationCode;
     }
 
-
-
-    public void editGoalDialog(final int position) {
-        if (_goalData.get(position).getActiveState() == ActiveState.ACTIVE) {
-            Toast.makeText(_context, "Cannot edit active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Goal selectedGoal = _goalData.get(position);
-
-        LinearLayout layout = new LinearLayout(_context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        // Goal Name
-        final EditText goalTitle = new EditText(_context);
-        goalTitle.setText(selectedGoal.getTitle());
-        layout.addView(goalTitle);
-
-        // Goal Target
-        final EditText goalTarget = new EditText(_context);
-        goalTarget.setText("" + selectedGoal.getTarget());
-        goalTarget.setRawInputType(Configuration.KEYBOARD_QWERTY);
-        layout.addView(goalTarget);
-
-        // Cache
-        _newGoalTitle = goalTitle;
-        _newGoalTarget = goalTarget;
-
-        // Alert
-        AlertDialog.Builder editGoalDialog = new AlertDialog.Builder(_context);
-        editGoalDialog.setNegativeButton(android.R.string.cancel, null);
-        editGoalDialog.setNeutralButton(getString(R.string.delete_label),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        removeGoal(position);
-                    }
-                });
-        // Icon
-        editGoalDialog.setIcon(R.drawable.ic_trophie_green);
-
-        // Setting Dialog Title
-        editGoalDialog.setTitle("Edit Goal");
-
-        editGoalDialog.setView(layout);
-        editGoalDialog.create();
-
-        editGoalDialog.setPositiveButton("Edit",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        if (editGoal(position)) {
-                            Toast.makeText(_context, "Edited Goal", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-        // Showing Alert Message
-        editGoalDialog.show();
-    }
-
-    public void editGoalDialogWithUnit(final int position) {
+    public void updateGoalDialog(final int position) {
         if (_goalData.get(position).getActiveState() == ActiveState.ACTIVE) {
             Toast.makeText(_context, "Cannot edit active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
             return;
@@ -333,51 +310,51 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
         LayoutInflater li = LayoutInflater.from(_context);
         View promptsView = li.inflate(R.layout.goal_alert_dialog, null);
-        AlertDialog.Builder editGoalDialog = new AlertDialog.Builder(_context);
-        editGoalDialog.setView(promptsView);
+        AlertDialog.Builder updateGoalDialog = new AlertDialog.Builder(_context);
+        updateGoalDialog.setView(promptsView);
 
         // Initialise the dialog widgets
-        DialogTitle editGoalDialogTitle = (DialogTitle) promptsView.findViewById(R.id.goal_alert_title);
-        editGoalDialogTitle.setText("Edit Goal");
-        final EditText editName = (EditText) promptsView.findViewById(R.id.goal_alert_name);
-        editName.setText("" + goalToEdit.getTitle());
-        final EditText editTarget = (EditText) promptsView.findViewById(R.id.goal_alert_target);
-        editTarget.setText("" + goalToEdit.getTarget());
-        editTarget.setRawInputType(Configuration.KEYBOARD_QWERTY);
+        DialogTitle updateGoalDialogTitle = (DialogTitle) promptsView.findViewById(R.id.goal_alert_title);
+        updateGoalDialogTitle.setText("Edit Goal");
+        _ugTitleView = (EditText) promptsView.findViewById(R.id.goal_alert_name);
+        _ugTitleView.setText("" + goalToEdit.getTitle());
+        _ugTargetView = (EditText) promptsView.findViewById(R.id.goal_alert_target);
+        _ugTargetView.setText("" + goalToEdit.getTarget());
+        _ugTargetView.setRawInputType(Configuration.KEYBOARD_QWERTY);
         final Spinner unitSpinner= (Spinner) promptsView.findViewById(R.id.goal_unit_spinner);
-          goalToEdit.getUnit();
-        int unitPosition = getPosition(goalToEdit.getUnit());
+        int unitPosition = getPositionFromUnit(goalToEdit.getUnit());
         unitSpinner.setSelection(unitPosition);
 
-        // Cache
-        _editExistingGoalTitle = editName;
-        _editExistingGoalTarget = editTarget;
+        // Cache data from view
+        _ugTitleStr = _ugTitleView.getText().toString();
+        _ugTargetStr = _ugTargetView.getText().toString();
+        _ugUnit = goalToEdit.getUnit();
 
-        editGoalDialog.setNegativeButton(android.R.string.cancel, null);
-        editGoalDialog.setNeutralButton(getString(R.string.delete_label),
+        updateGoalDialog.setNegativeButton(android.R.string.cancel, null);
+        updateGoalDialog.setNeutralButton(getString(R.string.delete_label),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         removeGoal(position);
                     }
                 });
-        editGoalDialog.setPositiveButton("Edit",
+        updateGoalDialog.setPositiveButton("Edit",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
-                        if (editGoal(position)) {
+                        if (updateGoalFromDialog(position)) {
                             Toast.makeText(_context, "Edited Goal", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
 
-        final AlertDialog alertDialog = editGoalDialog.create();
+        final AlertDialog alertDialog = updateGoalDialog.create();
 
         unitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 ((TextView) parent.getChildAt(0)).setTextColor(ContextCompat.getColor(_context, R.color.colorPrimary));
-                _editExistingGoalUnit = UnitConversion.toUnit(parent.getItemAtPosition(position).toString());
+                _ugUnit = UnitConversion.toUnit(parent.getItemAtPosition(position).toString());
             }
 
             @Override
@@ -388,10 +365,10 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         });
 
         // Showing Alert Message
-        editGoalDialog.show();
+        updateGoalDialog.show();
     }
 
-    private int getPosition(Unit unit) {
+    private int getPositionFromUnit(Unit unit) {
         String[] unit_selectable = getResources().getStringArray(R.array.units_array_values);
         String strUni = UnitConversion.toString(unit);
         int position = -1;
@@ -403,49 +380,97 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         }
         return position;
     }
+    //
+    //private Unit getUnitFromPosition(int position) {
+    //    String[] unit_selectable = getResources().getStringArray(R.array.units_array_values);
+    //
+    //    Unit unit = null;
+    //    for (int i = 0; i < unit_selectable.length ; i++) {
+    //
+    //        if(strUni.equals()) {
+    //            unit = UnitConversion.toUnit(unit_selectable[i]);
+    //            break;
+    //        }
+    //    }
+    //    return position;
+    //}
 
-    public boolean addGoal(int position) {
-        String strTitle = _newGoalTitle.getText().toString();
-        String strTarget = _newGoalTarget.getText().toString();
+    //public boolean addGoal() {
+    //    String strTitle = _agTitleView.getText().toString();
+    //    String strTarget = _agTargetView.getText().toString();
+    //
+    //    // Only edit inactive, valid goals
+    //    if (isGoalValid(strTitle, strTarget) == GoalValidationCode.OK) {
+    //        Unit unit = _agUnit;
+    //        ActiveState state = ActiveState.INACTIVE;
+    //        double target = Double.parseDouble(strTarget);
+    //        double progress = 0.0;
+    //        Goal newGoal = new Goal(strTitle, 0, progress, target, unit, state);
+    //        _goalData.add(newGoal);
+    //        _goalListAdapter.notifyDataSetChanged();
+    //        return true;
+    //    }
+    //    return false;
+    //}
+
+
+    private boolean updateGoalFromDialog(int position) {
         // Only edit inactive, valid goals
         if (_goalData.get(position).getActiveState() == ActiveState.ACTIVE) {
             Toast.makeText(_context, "Cannot edit active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
-        } else if (isGoalValid(strTitle, strTarget) == GoalValidationCode.OK) {
-            _goalData.get(position).setTitle(strTitle);
-            _goalData.get(position).setTarget(Double.parseDouble(strTarget));
-            _goalData.get(position).setUnit(_newGoalUnit);
+        } else if (isGoalValid(_ugTitleStr, _ugTargetStr) == GoalValidationCode.OK) {
+            _ugPos = position;
+            _goalData.get(position).setTitle(_ugTitleStr);
+            _goalData.get(position).setTarget(Double.parseDouble(_ugTargetStr));
+            _goalData.get(position).setUnit(_ugUnit);
             _goalListAdapter.notifyDataSetChanged();
+            _ugPos = -1;
             return true;
         }
         return false;
     }
 
-
-    private boolean editGoal(int position) {
-        String goalTitle = _editExistingGoalTitle.getText().toString();
-        String goalTarget = _editExistingGoalTarget.getText().toString();
-
-        // Only edit inactive, valid goals
-        if (_goalData.get(position).getActiveState() == ActiveState.ACTIVE) {
-            Toast.makeText(_context, "Cannot edit active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
-        } else if (isGoalValid(goalTitle, goalTarget) == GoalValidationCode.OK) {
-            _positionOfGoalToEdit = position;
-            _goalData.get(position).setTitle(goalTitle);
-            _goalData.get(position).setTarget(Double.parseDouble(goalTarget));
-            _goalData.get(position).setUnit(_editExistingGoalUnit);
-            _goalListAdapter.notifyDataSetChanged();
-            _positionOfGoalToEdit = -1;
-            return true;
+    public void addGoalFromDialog() {
+        _agTitleStr = _agTitleView.getText().toString();
+        _agTargetStr = _agTargetView.getText().toString();
+        if (isGoalValid(_agTitleStr, _agTargetStr) == GoalValidationCode.OK) {
+            addGoal(_agTitleStr, _date, Double.parseDouble(_agTargetStr), _agUnit);
+            return;
         }
-        return false;
+
+        _agTitleView.setText("");
+        _agTargetView.setText("");
     }
 
-    public void addNewGoal() {
-        String goalTitle = _newGoalTitle.getText().toString();
-        String goalTarget = _newGoalTarget.getText().toString();
+    public void addGoal(String title, String date, double target, Unit unit) {
+        Goal goal = new Goal(title, date, 0, 0, target, unit, ActiveState.INACTIVE);
+        DbStatus status = _goalData.add(goal);
+        if(DbStatus.OK == status) {
+            updateActiveView();
+            _goalListAdapter.notifyDataSetChanged();
+            Toast.makeText(_context, "Added " + goal.getTitle(), Toast.LENGTH_SHORT).show();
+        } else {
+            handleDbStatus("ERROR : Failed to add goal", status);
+        }
 
-        if (isGoalValid(goalTitle, goalTarget) == GoalValidationCode.OK) {
-            Goal goal = new Goal(goalTitle, 0, 0, Double.parseDouble(goalTarget), _newGoalUnit, ActiveState.INACTIVE);
+    }
+
+    private void handleDbStatus(String msg, DbStatus status) {
+        switch (status) {
+            case FAIL_GOAL_EXISTS:
+                msg += ", goal already exists";
+                Log.d(TAG, msg);
+                Toast.makeText(_context, msg, Toast.LENGTH_SHORT).show();
+            case FAIL_GOAL_NOT_EXIST:
+                msg += ", goal does NOT exist";
+                Log.d(TAG, msg);
+                Toast.makeText(_context, msg, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void testAddGoals() {
+        if (isGoalValid(_agTitleStr, _agTargetStr) == GoalValidationCode.OK) {
+            Goal goal = new Goal(_agTitleStr, _date, 0, 0, Double.parseDouble(_agTargetStr), _agUnit, ActiveState.INACTIVE);
             _goalData.add(goal);
             _goalListAdapter.notifyDataSetChanged();
             if (_goalData.size() == 1) {
@@ -455,8 +480,23 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             return;
         }
 
-        _newGoalTitle.setText("");
-        _newGoalTarget.setText("");
+        _agTitleView.setText("");
+        _agTargetView.setText("");
+    }
+
+    private void fillGoalData() {
+        Goal [] goalData = new Goal[] {
+                new Goal("High", _date, 0, 0, 20000, Unit.STEP, ActiveState.ACTIVE),
+                new Goal("High", _date, 0, 0, 3, Unit.MILE, ActiveState.INACTIVE),
+                //new Goal("Low", _date, 0, 0, 10.5, Unit.KILOMETRE, ActiveState.INACTIVE),
+        };
+
+        for(Goal g : goalData) {
+            _agTitleStr = g.getTitle();
+            _agTargetStr = Util.format(g.getTarget());
+            _agUnit = g.getUnit();
+            testAddGoals();
+        }
     }
 
     public void removeGoal(int position) {
@@ -476,7 +516,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             raiseActiveGoalChanged(_goalData.getActive());
             Toast.makeText(_context, _goalData.getActive().getTitle() + " is now active", Toast.LENGTH_SHORT).show();
         } else {
-            // Commented out as hack call to select ite at init is repeatedly called due to
+            // Commented out as hack : call to select it at init is repeatedly called due to
             // MainACtivity onCreate being called between tab slides
             //Toast.makeText(_context, "Goal is already active", Toast.LENGTH_SHORT).show();
         }
@@ -492,7 +532,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         switch (item.getItemId()) {
             case R.id.menu_add_goal:
                 //addGoalDialog();
-                addGoalDialogWithUnit();
+                addGoalDialog();
                 return true;
 
             default:
@@ -504,8 +544,15 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
     @Override
     public void onDateChanged(String date) {
-        if(_dateTextView != null)
-            _dateTextView.setText(date);
+        _date = date;
+        if(_dateTextView != null) {
+            _dateTextView.setText(_date);
+        }
+        try {
+            initGoalsForDate(_date);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

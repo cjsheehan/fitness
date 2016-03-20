@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="User Profile">
+        android:title="User Data">
+
+        <EditTextPreference
+            android:defaultValue="1"
+            android:inputType="numberDecimal"
+            android:key="@string/user_stride_length_key"
+            android:title="Length of stride (metres)"
+            android:summary="1"/>
 
         <EditTextPreference
             android:defaultValue="1"

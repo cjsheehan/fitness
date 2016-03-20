@@ -3,24 +3,31 @@ package com.cjsheehan.fitness.model;
 import android.content.Context;
 import android.util.Log;
 
+import com.cjsheehan.fitness.db.DBHelper;
+import com.cjsheehan.fitness.db.DbStatus;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 
 public class GoalData {
-
     private static final String TAG = "GoalData";
     private List<Goal> _goals;
     private Goal _active;
+    // Db
+    DBHelper _dbHelper;
+    Context _context;
 
-    public GoalData(Context context) {
-        //super(context);
-        //this.repository = new DbGoal(context);
-        // TODO : db access
-        _goals = new ArrayList<>();
-        _goals = fillGoalList();
+    public GoalData(Context context, String date) throws IOException {
+        _context = context;
+        _dbHelper = new DBHelper(_context);
+
+        // Get all goals for date
+        getAllByDate(date);
         _active = getActive();
-    }
+}
 
     public int size() {
         return _goals.size();
@@ -28,12 +35,13 @@ public class GoalData {
 
     public void setActive(int idx) {
         for (int i = 0; i < _goals.size() ; i++) {
+            Goal g = _goals.get(i);
             if (i == idx) {
-                _active = _goals.get(i);
-                _goals.get(i).setActiveState(ActiveState.ACTIVE);
+                g.setActiveState(ActiveState.ACTIVE);
             } else {
-                _goals.get(i).setActiveState(ActiveState.INACTIVE);
+                g.setActiveState(ActiveState.INACTIVE);
             }
+            _dbHelper.updateGoal(g);
         }
     }
 
@@ -55,40 +63,78 @@ public class GoalData {
         return -1;
     }
 
-    public void add(Goal goal) {
-        Log.d(TAG, "Entered : create(Goal goal()");
-        // TODO : implement GoalData.create(Goal goal)
-        _goals.add(goal);
+    public int countActive() {
+        int count = 0;
+        for (int i = 0; i < _goals.size(); i++) {
+            if (_goals.get(i).getActiveState() == ActiveState.ACTIVE)
+                count++;
+        }
+        return count;
+    }
+
+    public DbStatus add(Goal goal) {
+        if(countActive() < 1) {
+            goal.setActiveState(ActiveState.ACTIVE);
+        }
+        DbStatus dbstatus = _dbHelper.insertGoal(goal);
+        if(dbstatus == DbStatus.OK)
+            _goals.add(goal);
+
+        return dbstatus;
     }
 
     public List<Goal> getAll() {
-        Log.d(TAG, "Entered : read()");
-        // TODO : implement GoalData.read()
-        //int idx = _goals.indexOf(goal);
-        //if(idx >= 0)
-        //    _goals.get(idx) = goal;
         return _goals;
+    }
 
+    public List<Goal> getAllByDate(String date) {
+        _goals = _dbHelper.getGoalsByDate(date);
+        int size = _goals.size();
+        if(size == 1) {
+            setActive(0);
+        } else if (size > 1) {
+            // Check if only 1 is active
+            List<Integer> activeIdxs = new ArrayList<>();
+            for (int i = 0; i < _goals.size() ; i++) {
+                if(_goals.get(i).getActiveState() == ActiveState.ACTIVE) {
+                    activeIdxs.add(i);
+                }
+            }
+
+            if(activeIdxs.size() == 1) {
+                // OK
+            } else if(activeIdxs.size() == 0) {
+                setActive(0);
+            } else if(activeIdxs.size() > 1) {
+                throw new ArrayIndexOutOfBoundsException("Number of Active goals > 1");
+            }
+        }
+
+        return _goals;
+    }
+
+    public List<Goal> setDate(String date) {
+        _goals = getAllByDate(date);
+        return _goals;
     }
 
     public Goal get(int idx) {
-        // TODO : implement GoalData.read()
-        //int idx = _goals.indexOf(goal);
         if(idx >= 0)
            return _goals.get(idx);
         return null;
-
     }
 
-    private List<Goal> fillGoalList() {
-
-        List<Goal> data = new ArrayList<>();
-
-        data.add(new Goal("High", 0, 500, 10000, Unit.STEP, ActiveState.INACTIVE));
-        data.add(new Goal("Medium", 0, 500, 600.5, Unit.MILE, ActiveState.ACTIVE));
-        data.add(new Goal("Low", 0, 500, 99999, Unit.KILOMETRE, ActiveState.INACTIVE));
-        return data;
-    }
+    //
+    //private List<Goal> fillGoalList() {
+    //
+    //    List<Goal> data = new ArrayList<>();
+    //    String date = Calendar.getInstance().
+    //
+    //    data.add(new Goal("High", _date, 0, 7000, 10000, Unit.STEP, ActiveState.INACTIVE));
+    //    data.add(new Goal("Medium", _date, 0, 500, 600.50, Unit.MILE, ActiveState.ACTIVE));
+    //    data.add(new Goal("Low", _date, 0, 500, 99999, Unit.KILOMETRE, ActiveState.INACTIVE));
+    //    return data;
+    //}
 
     //public Goal read(Goal goal) {
     //    Log.d(TAG, "Entered : read(Goal goal)");
@@ -105,8 +151,6 @@ public class GoalData {
     }
 
     public void remove(Goal goal) {
-        Log.d(TAG, "Entered : delete(Goal goal)");
-        // TODO : implement GoalData.delete(Goal goal)
         if (_goals.remove(goal)) {
             Log.d(TAG, "Deleted goal : " + goal.getTitle());
         } else {
@@ -115,7 +159,6 @@ public class GoalData {
     }
 
     public void remove(int idx) {
-        // TODO : implement GoalData.delete(Goal goal)
         String title = _goals.get(idx).getTitle();
         if (idx < _goals.size()) {
             Log.d(TAG, "Deleted goal : " + title);

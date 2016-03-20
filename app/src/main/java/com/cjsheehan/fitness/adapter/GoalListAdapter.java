@@ -33,7 +33,7 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
-        _goalView = new GoalView();
+        _goalView = new GoalView(getContext());
         if (view == null) {
             // This a new view we inflate the new layout
             _inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

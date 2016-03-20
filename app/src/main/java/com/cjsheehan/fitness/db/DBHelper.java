@@ -21,7 +21,6 @@ import java.util.Map;
 
 
 public class DBHelper extends SQLiteOpenHelper{
-
     private static final int DATABASE_VERSION= 1;
     private static final String DATABASE_NAME = "myKeepFit.db3";
 
@@ -60,7 +59,12 @@ public class DBHelper extends SQLiteOpenHelper{
     }
 
     //Add new goal to db
-    public void insertGoal(Goal goal) {
+    public DbStatus insertGoal(Goal goal) {
+        // Check if goal exists
+        if(isExisting(goal))
+            return DbStatus.FAIL_GOAL_EXISTS;
+
+
         String strUnit =  UnitConversion.toString(goal.getUnit());
         String strState = Util.toString(goal.getActiveState());
 
@@ -75,10 +79,30 @@ public class DBHelper extends SQLiteOpenHelper{
 
         db.insert(TABLE_GOALS, null, values);
         db.close();
+        return DbStatus.OK;
+    }
+
+    public boolean isExisting(Goal goal) {
+        String title = goal.getTitle();
+        String date = goal.getDate();
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_GOALS + " WHERE " +
+                COLUMN_DATE + "=\"" + date + "\" " + " AND " +
+                COLUMN_TITLE + "=\"" + title + "\";";
+        Cursor c = db.rawQuery(query, null);
+        boolean isExisting = false;
+        if(c.getCount() > 0) {
+            isExisting = true;
+        }
+        db.close();
+        return isExisting;
     }
 
     //Add new goal to db
-    public void updateGoal(Goal goal) {
+    public DbStatus updateGoal(Goal goal) {
+        if(!isExisting(goal))
+            return DbStatus.FAIL_GOAL_NOT_EXIST;
+
         String strUnit =  UnitConversion.toString(goal.getUnit());
         String strState = goal.getActiveState().toString();
 
@@ -87,25 +111,35 @@ public class DBHelper extends SQLiteOpenHelper{
         String date = goal.getDate();
         String title = goal.getTitle();
         String query = "SELECT * FROM " + TABLE_GOALS + " WHERE " +
-                COLUMN_DATE + "=\"" + date +
-                COLUMN_TITLE + "=\"" + title + "\";" ;
+                COLUMN_DATE + "=\"" + date + "\" " + " AND " +
+                COLUMN_TITLE + "=\"" + title + "\";";
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
 
         ContentValues values = new ContentValues();
-        values.put(COLUMN_TITLE, goal.getTitle());
-        values.put(COLUMN_DATE, goal.getDate());
         values.put(COLUMN_TARGET, goal.getTarget());
         values.put(COLUMN_PROGRESS, goal.getProgress());
         values.put(COLUMN_UNIT, strUnit);
         values.put(COLUMN_ACTIVESTATE, strState);
 
-        db.insert(TABLE_GOALS, null, values);
+        String whereClause =  COLUMN_DATE + " = ? AND " + COLUMN_TITLE + " = ?";
+        String[] whereArgs = new String[] {goal.getDate(), goal.getTitle()};
+        int num_rows = db.update(TABLE_GOALS, values, whereClause, whereArgs);
         db.close();
+
+        if(num_rows == 1) {
+            return DbStatus.OK;
+        } else if (num_rows == 0){
+            return DbStatus.FAIL_GOAL_NOT_EXIST;
+        } else if(num_rows > 1) {
+            return DbStatus.FAIL_MORE_THAN_ONE_GOAL;
+        }
+
+        return DbStatus.FAIL_UNKNOWN;
     }
 
     public List<Goal> getGoalsByDate(String date) {
-        SQLiteDatabase db = getWritableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_GOALS + " WHERE " + COLUMN_DATE + "=\"" + date + "\";";
         Cursor c = db.rawQuery(query, null);
         List<Goal> goals = new ArrayList<>();
@@ -139,7 +173,7 @@ public class DBHelper extends SQLiteOpenHelper{
     }
 
     public Map<String, List<Goal>> getAllGoals() {
-        SQLiteDatabase db = getWritableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_GOALS + "\";";
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();

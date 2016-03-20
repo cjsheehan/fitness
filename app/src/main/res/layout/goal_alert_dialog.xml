@@ -35,6 +35,7 @@
             <android.support.v7.widget.DialogTitle
                 android:id="@+id/goal_alert_title"
                 style="?android:attr/textAppearanceLarge"
+                android:inputType="textNoSuggestions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -67,7 +68,7 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/goal_alert_name"
-        android:inputType="text"
+        android:inputType="textNoSuggestions"
         android:hint="Name"/>
 
 
@@ -95,8 +96,5 @@
             android:textAlignment="textStart"
             />
 
-
     </LinearLayout>
-
-
 </LinearLayout>
