@@ -23,7 +23,7 @@ public class UnitConverter {
 
     // KILOMETRES
     private static double KILOMETRE_TO_YARD = 1093.6133;
-    private static double KILOMETRE_TO_METRE = 0.001;
+    private static double KILOMETRE_TO_METRE = 1000;
     private static double KILOMETRE_TO_MILE = 0.621371192;
     private static double KILOMETRE_TO_STEP = 1312.33595801;
 
@@ -42,9 +42,9 @@ public class UnitConverter {
     private static double STEP_TO_METRES = 0.762; // COMMONLY USED FACTOR;
 
 
-    public UnitConverter (double step_length_in_metres) {
-        setMetresPerStep(step_length_in_metres);
-    }
+    //public UnitConverter (double step_length_in_metres) {
+    //    setMetresPerStep(step_length_in_metres);
+    //}
 
     public static double convert(double input, Unit unitFrom, Unit unitTo) {
         double output = 0;
@@ -191,18 +191,18 @@ public class UnitConverter {
     }
 
     private static void updateYardsFactors() {
-        YARD_TO_STEP = METRE_TO_STEP * YARD_TO_METRE;
-        STEP_TO_YARD = 1 / YARD_TO_STEP;
+        STEP_TO_YARD = STEP_TO_METRE * METRE_TO_YARD;
+        YARD_TO_STEP = 1 / STEP_TO_YARD;
     }
 
     private static void updateKilometresFactors() {
-        KILOMETRE_TO_STEP = METRE_TO_STEP * KILOMETRE_TO_METRE;
-        STEP_TO_KILOMETRE = 1 / KILOMETRE_TO_STEP;
+        STEP_TO_KILOMETRE = STEP_TO_METRE * METRE_TO_KILOMETRE;
+        KILOMETRE_TO_STEP = 1 / STEP_TO_KILOMETRE;
     }
 
     private static void updateMilesFactors() {
-        MILE_TO_STEP = METRE_TO_STEP * MILE_TO_METRE;
-        STEP_TO_MILE = 1 / MILE_TO_STEP;
+        STEP_TO_MILE = STEP_TO_METRE * METRE_TO_MILE;
+        MILE_TO_STEP = 1 / STEP_TO_MILE;
     }
 
 

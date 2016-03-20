@@ -4,11 +4,11 @@
         android:title="User Data">
 
         <EditTextPreference
-            android:defaultValue="1"
+            android:defaultValue="0.762"
             android:inputType="numberDecimal"
             android:key="@string/user_stride_length_key"
             android:title="Length of stride (metres)"
-            android:summary="1"/>
+            android:summary="0.762"/>
 
         <CheckBoxPreference
             android:defaultValue="false"

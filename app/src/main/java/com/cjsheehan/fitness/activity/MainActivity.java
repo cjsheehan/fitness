@@ -25,6 +25,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.activity.fragment.ActiveGoalProgressFragment;
@@ -35,6 +36,7 @@ import com.cjsheehan.fitness.activity.fragment.SettingsFragment;
 import com.cjsheehan.fitness.event.date.DateListener;
 import com.cjsheehan.fitness.event.goal.GoalListener;
 import com.cjsheehan.fitness.model.Goal;
+import com.cjsheehan.fitness.model.UnitConverter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity
     private ViewPager _viewPager;
     private int _selectedPagePosition;
     private boolean _isCounterRecording;
+    String _strLength;
 
 
     // DATE
@@ -99,6 +102,7 @@ public class MainActivity extends AppCompatActivity
         _isCounterRecording = false;
         //setupCalendar();
         setupFloatActBtn();
+        initStrideLength();
         //updateDateListeners(_date);
     }
 
@@ -146,9 +150,20 @@ public class MainActivity extends AppCompatActivity
         public void onSharedPreferenceChanged(SharedPreferences spref, String key) {
             if (key.equals(getString(R.string.enable_test_mode_key))) {
                 setCalendarMenuItemVisibilty();
+            }
+
+            if (key.equals(getString(R.string.user_stride_length_key))) {
+                initStrideLength();
+                Toast.makeText(MainActivity.this, "Stride length set to " + _strLength, Toast.LENGTH_SHORT).show();
 
             }
         }
+    }
+
+    private void initStrideLength() {
+        _strLength= _sharedPreferences.getString(getResources().getString(R.string.user_stride_length_key), "1");
+        double length = Double.parseDouble(_strLength);
+        UnitConverter.setMetresPerStep(length);
     }
 
     private void updateDateListeners(String date) {
