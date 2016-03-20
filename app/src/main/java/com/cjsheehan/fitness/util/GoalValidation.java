@@ -8,7 +8,7 @@ public class GoalValidation {
         double targetDistance;
         try {
             targetDistance = Double.parseDouble(target);
-            if(targetDistance < 1) {
+            if(targetDistance <= 0) {
                 return GoalValidationCode.FAIL_TARGET_LTE0;
             }
         }

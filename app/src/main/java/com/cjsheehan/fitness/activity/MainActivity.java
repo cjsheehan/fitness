@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
+
     private void updateDateListeners(String date) {
         for(DateListener dl : _dateListeners) {
             dl.onDateChanged(date);

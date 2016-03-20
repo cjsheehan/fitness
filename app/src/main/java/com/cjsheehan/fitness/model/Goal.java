@@ -15,7 +15,7 @@ public class Goal implements Serializable {
 
     public Goal(String title, String date, int id, double progress, double target, Unit unit, ActiveState _activeState) {
 
-        if(target < 1) throw new IllegalArgumentException("ERROR: Goal target should be more than 0");
+        if(target <= 0) throw new IllegalArgumentException("ERROR: Goal target should be more than 0");
         if(id < 0) throw new IllegalArgumentException("ERROR: ID must be greater than 0");
         this.title = title;
         this.date = date;
@@ -27,7 +27,7 @@ public class Goal implements Serializable {
     }
 
     public Goal(String title, String date, double target, double progress, Unit unit, ActiveState _activeState) {
-        if(target < 1) throw new IllegalArgumentException("ERROR: Goal target should be more than 0");
+        if(target <= 0) throw new IllegalArgumentException("ERROR: Goal target should be more than 0");
         this.title = title;
         this.date = date;
         this.target = target;

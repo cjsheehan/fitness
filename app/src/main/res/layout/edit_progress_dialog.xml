@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/edit_progress_dialog_dialog"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="9dip"
+    android:paddingBottom="3dip"
+    android:paddingStart="3dip"
+    android:paddingEnd="1dip">
+
+    <LinearLayout android:id="@+id/edit_progress_dialog_top_panel"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:minHeight="54dip"
+                  android:orientation="vertical">
+        <LinearLayout android:id="@+id/edit_progress_dialog_title_template"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:orientation="horizontal"
+                      android:gravity="center_vertical"
+                      android:layout_marginTop="6dip"
+                      android:layout_marginBottom="9dip"
+                      android:layout_marginStart="10dip"
+                      android:layout_marginEnd="10dip">
+            <ImageView android:id="@+id/edit_progress_dialog_icon"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_gravity="top"
+                       android:paddingTop="6dip"
+                       android:paddingEnd="10dip"
+                       android:src="@drawable/ic_icon_walk_green" />
+
+            <android.support.v7.widget.DialogTitle
+                android:id="@+id/edit_progress_dialog_title"
+                style="?android:attr/textAppearanceLarge"
+                android:inputType="textNoSuggestions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAlignment="viewStart"
+                android:text="Add progress"/>
+        </LinearLayout>
+        <ImageView android:id="@+id/edit_progress_dialog_titleDivider"
+                   android:layout_width="match_parent"
+                   android:layout_height="1dip"
+                   android:visibility="gone"
+                   android:scaleType="fitXY"
+                   android:gravity="fill_horizontal"
+                   android:src="@android:drawable/divider_horizontal_dark" />
+        <!-- If the client uses a customTitle, it will be added here. -->
+    </LinearLayout>
+
+    <FrameLayout android:id="@+id/edit_progress_dialog_customPanel"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1">
+        <FrameLayout android:id="@+id/edit_progress_dialog_custom"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:paddingTop="5dip"
+                     android:paddingBottom="5dip" />
+    </FrameLayout>
+
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/edit_progress_dialog_name"
+        android:inputType="textNoSuggestions"
+        android:hint="Name"/>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <EditText
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_progress_dialog_progress"
+            android:inputType="numberDecimal"
+            android:hint="Distance"
+            />
+
+        <Spinner
+            android:id="@+id/edit_progress_unit_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/units_array_values"
+            android:textAlignment="textStart"
+            />
+
+    </LinearLayout>
+</LinearLayout>
