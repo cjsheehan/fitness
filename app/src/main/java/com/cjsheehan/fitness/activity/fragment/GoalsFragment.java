@@ -34,7 +34,7 @@ import com.cjsheehan.fitness.model.ActiveState;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.GoalData;
 import com.cjsheehan.fitness.model.Unit;
-import com.cjsheehan.fitness.model.UnitConversion;
+import com.cjsheehan.fitness.model.UnitConverter;
 import com.cjsheehan.fitness.util.GoalValidation;
 import com.cjsheehan.fitness.util.GoalValidationCode;
 import com.cjsheehan.fitness.util.Util;
@@ -68,6 +68,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
     Context _context;
     private SharedPreferences _sharedPreferences;
+    private SharedPreferences.OnSharedPreferenceChangeListener _settingsListener;
     private TextView _dateTextView;
     Activity _activity;
 
@@ -143,6 +144,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
                 return true;
             }
         });
+        setupSharedPreferences();
     }
 
     private void initGoalsForDate(String date) throws IOException {
@@ -281,7 +283,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 ((TextView) parent.getChildAt(0)).setTextColor(ContextCompat.getColor(_context, R.color.colorPrimary));
-                _agUnit = UnitConversion.toUnit(parent.getItemAtPosition(position).toString());
+                _agUnit = UnitConverter.toUnit(parent.getItemAtPosition(position).toString());
             }
 
             @Override
@@ -366,7 +368,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 ((TextView) parent.getChildAt(0)).setTextColor(ContextCompat.getColor(_context, R.color.colorPrimary));
-                _ugUnit = UnitConversion.toUnit(parent.getItemAtPosition(position).toString());
+                _ugUnit = UnitConverter.toUnit(parent.getItemAtPosition(position).toString());
             }
 
             @Override
@@ -382,7 +384,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
     private int getPositionFromUnit(Unit unit) {
         String[] unit_selectable = getResources().getStringArray(R.array.units_array_values);
-        String strUni = UnitConversion.toString(unit);
+        String strUni = UnitConverter.toString(unit);
         int position = -1;
         for (int i = 0; i < unit_selectable.length ; i++) {
            if(strUni.equals(unit_selectable[i])) {
@@ -535,7 +537,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             double sourceProgress = source.getProgress();
             Unit sourceUnit = source.getUnit();
             Unit targetUnit = target.getUnit();
-            double targetProgress = UnitConversion.convert(sourceProgress, sourceUnit, targetUnit);
+            double targetProgress = UnitConverter.convert(sourceProgress, sourceUnit, targetUnit);
             source.setProgress(0);
             _goalData.update(source);
             target.setProgress(target.getProgress() + targetProgress);
@@ -610,6 +612,34 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
     protected void raiseActiveGoalChanged(Goal goal) {
         _cbkGoalListener.onActiveGoalChanged(goal); // callback main activity to disrtibute event
+    }
+
+    private void setupSharedPreferences() {
+        _settingsListener = new OnSettingsChangedListener();
+        _sharedPreferences.registerOnSharedPreferenceChangeListener(_settingsListener);
+    }
+
+    private class OnSettingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences spref, String key) {
+            if (key.equals(getString(R.string.enable_delete_all_history))) {
+
+                boolean shouldDelete = spref.getBoolean(key, false);
+                if(shouldDelete) {
+                    deleteAllHistory();
+                    Toast.makeText(_context, "Deleted all history", Toast.LENGTH_SHORT).show();
+                    try {
+                        initGoalsForDate(_date);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private void deleteAllHistory() {
+        _goalData.deleteAllHistory();
     }
 
 }

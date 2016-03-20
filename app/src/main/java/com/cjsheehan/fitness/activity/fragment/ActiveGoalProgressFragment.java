@@ -176,7 +176,9 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
     //}
 
     public void updateGoalView() {
-        _goalView.update(_activeGoal);
+        if(_activeGoal != null && _goalView != null) {
+            _goalView.update(_activeGoal);
+        }
     }
 
     private void setTargetTextView(String target) {

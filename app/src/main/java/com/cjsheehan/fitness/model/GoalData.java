@@ -160,4 +160,8 @@ public class GoalData {
             Log.d(TAG, "Cannot delete goal : " + title);
         }
     }
+
+    public void deleteAllHistory() {
+        _dbHelper.removeAll();
+    }
 }

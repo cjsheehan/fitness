@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.model.Goal;
-import com.cjsheehan.fitness.model.UnitConversion;
+import com.cjsheehan.fitness.model.UnitConverter;
 import com.cjsheehan.fitness.util.Util;
 
 public class GoalView {
@@ -27,7 +27,7 @@ public class GoalView {
         double target = goal.getTarget();
         String strTarget = Util.format(target);
         String strProgress = Util.format(progress);
-        String strUnit = UnitConversion.toString(goal.getUnit());
+        String strUnit = UnitConverter.toString(goal.getUnit());
 
 
         if(this.title != null)

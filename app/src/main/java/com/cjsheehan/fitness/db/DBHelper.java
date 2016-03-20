@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.cjsheehan.fitness.model.ActiveState;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.Unit;
-import com.cjsheehan.fitness.model.UnitConversion;
+import com.cjsheehan.fitness.model.UnitConverter;
 import com.cjsheehan.fitness.util.Util;
 
 import java.io.IOException;
@@ -32,6 +32,18 @@ public class DBHelper extends SQLiteOpenHelper{
     public static final String COLUMN_UNIT= "unit";
     public static final String COLUMN_ACTIVESTATE = "activestate";
     public static final String COLUMN_DATE= "date";
+    public static final String CREATE_GOALS_TABLE =
+        "CREATE TABLE IF NOT EXISTS " + TABLE_GOALS + "(" +
+        COLUMN_TITLE  + " TEXT NOT NULL, " +
+        COLUMN_DATE + " TEXT NOT NULL, " +
+        COLUMN_TARGET + " REAL, " +
+        COLUMN_PROGRESS + " REAL, " +
+        COLUMN_UNIT + " TEXT, " +
+        COLUMN_ACTIVESTATE + " TEXT, " +
+        "PRIMARY KEY( " + COLUMN_TITLE + ", " + COLUMN_DATE + ")" +
+            ");";
+
+    private static final String DROP_GOALS_TABLE = "DROP TABLE IF EXISTS " + TABLE_GOALS;
 
 
     public DBHelper(Context context) throws IOException {
@@ -41,21 +53,15 @@ public class DBHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String table_query = "CREATE TABLE IF NOT EXISTS " + TABLE_GOALS + "(" +
-                COLUMN_TITLE  + " TEXT NOT NULL, " +
-                COLUMN_DATE + " TEXT NOT NULL, " +
-                COLUMN_TARGET + " REAL, " +
-                COLUMN_PROGRESS + " REAL, " +
-                COLUMN_UNIT + " TEXT, " +
-                COLUMN_ACTIVESTATE + " TEXT, " +
-                "PRIMARY KEY( " + COLUMN_TITLE + ", " + COLUMN_DATE + ")" +
-                ");";
-
         try {
-            db.execSQL(table_query);
+            db.execSQL(CREATE_GOALS_TABLE);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void onStart() {
+
     }
 
     //Add new goal to db
@@ -65,7 +71,7 @@ public class DBHelper extends SQLiteOpenHelper{
             return DbStatus.FAIL_GOAL_EXISTS;
 
 
-        String strUnit =  UnitConversion.toString(goal.getUnit());
+        String strUnit =  UnitConverter.toString(goal.getUnit());
         String strState = Util.toString(goal.getActiveState());
 
         ContentValues values = new ContentValues();
@@ -103,7 +109,7 @@ public class DBHelper extends SQLiteOpenHelper{
         if(!isExisting(goal))
             return DbStatus.FAIL_GOAL_NOT_EXIST;
 
-        String strUnit =  UnitConversion.toString(goal.getUnit());
+        String strUnit =  UnitConverter.toString(goal.getUnit());
         String strState = goal.getActiveState().toString();
 
         // Retrieve goal with matching date and name
@@ -137,7 +143,7 @@ public class DBHelper extends SQLiteOpenHelper{
                 String row_active_state = c.getString(c.getColumnIndex(COLUMN_ACTIVESTATE));
 
                 ActiveState state = Util.toState(row_active_state);
-                Unit unit = UnitConversion.toUnit(row_unit);
+                Unit unit = UnitConverter.toUnit(row_unit);
                 c.moveToNext();
             }
         }
@@ -173,7 +179,7 @@ public class DBHelper extends SQLiteOpenHelper{
                 String row_active_state = c.getString(c.getColumnIndex(COLUMN_ACTIVESTATE));
 
                 ActiveState state = Util.toState(row_active_state);
-                Unit unit = UnitConversion.toUnit(row_unit);
+                Unit unit = UnitConverter.toUnit(row_unit);
 
                 try {
                     Goal goal = new Goal(row_title, row_date, 0, row_progress, row_target, unit, state);
@@ -207,7 +213,7 @@ public class DBHelper extends SQLiteOpenHelper{
             String row_active_state = c.getString(c.getColumnIndex(COLUMN_ACTIVESTATE));
 
             ActiveState state = Util.toState(row_active_state);
-            Unit unit = UnitConversion.toUnit(row_unit);
+            Unit unit = UnitConverter.toUnit(row_unit);
 
             try {
                 Goal goal = new Goal(row_title, row_date, 0, row_progress, row_target, unit, state);
@@ -225,9 +231,9 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public void removeAll() {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GOALS + "\";");
+        db.execSQL(DROP_GOALS_TABLE);
+        db.execSQL(CREATE_GOALS_TABLE);
         db.close();
-        onCreate(db);
     }
 
 

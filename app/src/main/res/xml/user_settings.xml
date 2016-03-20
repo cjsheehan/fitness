@@ -10,12 +10,10 @@
             android:title="Length of stride (metres)"
             android:summary="1"/>
 
-        <EditTextPreference
-            android:defaultValue="1"
-            android:inputType="numberDecimal"
-            android:key="@string/user_stride_length_key"
-            android:title="Length of stride (metres)"
-            android:summary="1"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/enable_edit_goal_key"
+            android:title="Delete all recorded goal history"/>
 
     </PreferenceCategory>
 
@@ -54,12 +52,6 @@
             android:summary="Test Mode enables fast creation of user fitness data for test purposes"
             android:title="Enable test mode"/>
 
-        <CheckBoxPreference
-            android:defaultValue="enable_allow_overwrite_default"
-            android:dependency="@string/enable_test_mode_key"
-            android:key="@string/allow_overwrite_key"
-            android:summary="Allow test mode data to overwrite existing user data"
-            android:title="Allow Overwrite"/>
 
     </PreferenceCategory>
 
