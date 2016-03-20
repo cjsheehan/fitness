@@ -156,7 +156,8 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
     private void updateActiveView() {
         if(_goalData.size() == 0) {
-            Toast.makeText(_context, "INFO : no goals active, please add a goal", Toast.LENGTH_SHORT).show();
+            _goalData.add(Util.getDefaultGoal(_date));
+            updateActiveView();
         } else if(_goalData.size() == 1) {
             if(_goalData.countActive() == 0) {
                 _goalData.setActive(0);
@@ -166,16 +167,24 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             _goalListAdapter.notifyDataSetChanged();
             raiseActiveGoalChanged(_goalData.getActive());
         } else if (_goalData.size() > 1) {
-            int activeIdx = _goalData.getActiveIdx();
-            if (activeIdx >= 0) {
-                _goalListView.performItemClick(
-                        _goalListView.getChildAt(activeIdx), activeIdx, _goalListAdapter.getItemId(activeIdx));
-                _goalListAdapter.notifyDataSetChanged();
-                raiseActiveGoalChanged(_goalData.getActive());
-            } else {
-                Toast.makeText(_context, "ERROR : problem with active goals, contact admin", Toast.LENGTH_SHORT).show();
+            int numActive =  _goalData.countActive();
+            if(numActive == 0) {
+                setGoalActive(0);
+            } else if (numActive == 1) {
+                // OK, do nothing
+                setGoalActive(0);
+            } else if (numActive > 1) {
+                Toast.makeText(_context, "ERROR : too many active goals, contact admin", Toast.LENGTH_SHORT).show();
             }
-            Toast.makeText(_context, "ERROR : too many active goals, contact admin", Toast.LENGTH_SHORT).show();
+            //int activeIdx = _goalData.getActiveIdx();
+            //if (activeIdx >= 0) {
+            //    _goalListView.performItemClick(
+            //            _goalListView.getChildAt(activeIdx), activeIdx, _goalListAdapter.getItemId(activeIdx));
+            //    _goalListAdapter.notifyDataSetChanged();
+            //    raiseActiveGoalChanged(_goalData.getActive());
+            //} else {
+            //    Toast.makeText(_context, "ERROR : problem with active goals, contact admin", Toast.LENGTH_SHORT).show();
+            //}
         }
     }
 
@@ -519,6 +528,8 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             // Commented out as hack : call to select it at init is repeatedly called due to
             // MainACtivity onCreate being called between tab slides
             //Toast.makeText(_context, "Goal is already active", Toast.LENGTH_SHORT).show();
+            _goalListAdapter.notifyDataSetChanged();
+            raiseActiveGoalChanged(_goalData.getActive());
         }
     }
 
@@ -550,6 +561,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         }
         try {
             initGoalsForDate(_date);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -563,6 +575,8 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
     @Override
     public void onGoalProgressChanged(double progress) {
         if(_goalData != null) {
+            int idx = _goalData.getActiveIdx();
+            _goalData.updateProgress(progress, idx);
             _goalData.getActive().setProgress(progress);
             // Update view
             _goalListAdapter.notifyDataSetChanged();

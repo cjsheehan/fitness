@@ -43,4 +43,11 @@
     <string name="default_target">0.00</string>
     <string name="default_progress">0.00</string>
     <string name="default_title">N/A</string>
+
+
+    <!-- Default Goal -->
+    <string name="default_goal_title">Default</string>
+    <string name="default_goal_target">10000</string>
+    <string name="default_goal_unit">steps</string>
+
 </resources>

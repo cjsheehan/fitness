@@ -146,8 +146,17 @@ public class GoalData {
 
     public void update(Goal goal) {
         int idx = _goals.indexOf(goal);
-        if (idx >= 0)
+        if (idx >= 0) {
             _goals.set(idx, goal);
+            //_dbHelper.updateGoal(goal);
+        }
+    }
+
+    public void updateProgress(double progress, int idx) {
+        if (idx >= 0) {
+            _goals.get(idx).setProgress(progress);
+            _dbHelper.updateGoal(_goals.get(idx));
+        }
     }
 
     public void remove(Goal goal) {

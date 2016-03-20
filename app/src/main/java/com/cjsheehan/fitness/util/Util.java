@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import com.cjsheehan.fitness.R;
 import com.cjsheehan.fitness.model.ActiveState;
+import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.Unit;
 
 import java.text.DecimalFormat;
@@ -63,6 +64,10 @@ public class Util {
             return ACTIVE;
         else
             return INACTIVE;
+    }
+
+    public static Goal getDefaultGoal(String date) {
+        return new Goal("Default", date, 0, 0, 10000, Unit.STEP, ActiveState.ACTIVE);
     }
 
 
