@@ -70,5 +70,14 @@ public class Util {
         return new Goal("Default", date, 0, 0, 10000, Unit.STEP, ActiveState.ACTIVE);
     }
 
+    //public static String getPastDate(String dateNow, int daysPast) {
+    //    return "";
+    //}
+    //
+    //
+    //public static long getPastDate(String dateNow, int daysPast) {
+    //    return 1;
+    //}
+
 
 }

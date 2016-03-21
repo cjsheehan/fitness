@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="horizontal">
+
+    <RadioGroup
+        android:id="@+id/rdb_period"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:checkedButton="@+id/rdb_week">
+
+        <RadioButton
+            android:id="@+id/rdb_week"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimary"
+            android:checked="true"
+            android:text="week"/>
+
+
+        <RadioButton
+            android:id="@+id/rdb_month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="month"/>
+
+        <RadioButton
+            android:id="@+id/rdb_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="other"/>
+    </RadioGroup>
+
+</LinearLayout>
