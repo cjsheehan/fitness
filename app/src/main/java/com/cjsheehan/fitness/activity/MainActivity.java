@@ -268,7 +268,11 @@ public class MainActivity extends AppCompatActivity
                 _goalListeners.add((GoalListener) fragment);
                 break;
             case HISTORY:
+                bundle = new Bundle();
+                bundle.putString(getString(R.string.date_bundle_key), _date);
                 fragment = new HistoryFragment();
+                fragment.setArguments(bundle);
+                _dateListeners.add((DateListener) fragment);
                 break;
         }
         return fragment;

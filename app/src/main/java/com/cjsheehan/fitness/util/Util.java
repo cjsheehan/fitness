@@ -102,24 +102,24 @@ public class Util {
 
     public static List<String> getDates(String fromDate, String toDate) {
         List<String> dates = new ArrayList<>();
-        Date frmtDateFrom = null;
+        Date fDateFrom = null;
         try {
-            frmtDateFrom = DATE_FORMATTER.parse(fromDate);
+            fDateFrom = DATE_FORMATTER.parse(fromDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        Date frmtDateTo = null;
+        Date fDateTo = null;
         try {
-            frmtDateFrom = DATE_FORMATTER.parse(toDate);
+            fDateTo = DATE_FORMATTER.parse(toDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        if(frmtDateFrom != null && frmtDateTo != null) {
+        if(fDateFrom != null && fDateTo != null) {
             Calendar cal = Calendar.getInstance();
-            cal.setTime(frmtDateFrom);
-            while (cal.getTime().before(frmtDateTo)) {
+            cal.setTime(fDateFrom);
+            while (cal.getTime().before(fDateTo)) {
                 cal.add(Calendar.DATE, 1);
                 String strDate = DATE_FORMATTER.format(cal.getTime());
                 dates.add(strDate);
