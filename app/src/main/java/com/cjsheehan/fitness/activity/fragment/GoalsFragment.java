@@ -151,7 +151,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         // Get goal data for single date
         _goalData = new GoalData(_context, date);
         List<Goal> all = _goalData.getAll();
-        _goalListAdapter = new GoalListAdapter(all, getContext());
+        _goalListAdapter = new GoalListAdapter(all, getContext(), false);
         _goalListView.setAdapter(_goalListAdapter);
         _goalListAdapter.notifyDataSetChanged();
         int childCount = _goalListView.getCount();
@@ -193,57 +193,6 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         }
     }
 
-    //private void checkActiveState() {
-    //    if(!isStateValid()) {
-    //        if (_goalData.size() == 1) {
-    //            // only 1 goal, make it active
-    //            setGoalActive(0);
-    //        }
-    //        checkActiveState();
-    //        _goalListAdapter.notifyDataSetChanged();
-    //        Toast.makeText(_context, "ERROR : number of active goals is invalid, contact administrator", Toast.LENGTH_SHORT).show();
-    //    } else {
-    //        if(_goalData.size() > 0) {
-    //            int activeIdx = _goalData.getActiveIdx();
-    //            // Update listview
-    //            _goalListView.performItemClick(
-    //                    _goalListView.getChildAt(activeIdx), activeIdx, _goalListAdapter.getItemId(activeIdx));
-    //        }
-    //    }
-    //}
-
-    //public boolean isStateValid() {
-    //    boolean isValid = false;
-    //    // Check 1 is active
-    //    int numGoalsForDate = _goalData.size();
-    //    int numActive = 0;
-    //    if (numGoalsForDate == 0) {
-    //        // No Goals, use default or prompt user
-    //        isValid = true;
-    //    } else if (numGoalsForDate > 0) {
-    //        // Goals found in repo, validate
-    //        numActive = _goalData.countActive();
-    //
-    //        if (numActive == 1) {
-    //            isValid = true;
-    //        } else if (numActive > 1) {
-    //            // ERROR, should only be 1 active
-    //            String error = "ERROR: Number of active goals " + numActive + ", is >=1";
-    //            Log.e(TAG, error);
-    //            Toast.makeText(_context, error, Toast.LENGTH_SHORT).show();
-    //
-    //        } else if (numActive == 0) {
-    //            // ERROR, should be 1 goal active for any date
-    //            String error = "ERROR: No active goals found in " + numActive + " goals found for date: " + _date;
-    //            Log.e(TAG, error);
-    //            Toast.makeText(_context, error, Toast.LENGTH_SHORT).show();
-    //        }
-    //    } else if (numGoalsForDate == 1) {
-    //        // Goals found in repo, validate
-    //        numActive = _goalData.countActive();
-    //    }
-    //    return isValid;
-    //}
 
     public void addGoalDialog() {
         LayoutInflater li = LayoutInflater.from(_context);
@@ -499,7 +448,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         Goal [] goalData = new Goal[] {
                 new Goal("High", _date, 0, 0, 20000, Unit.STEP, ActiveState.ACTIVE),
                 new Goal("High", _date, 0, 0, 3, Unit.MILE, ActiveState.INACTIVE),
-                //new Goal("Low", _date, 0, 0, 10.5, Unit.KILOMETRE, ActiveState.INACTIVE),
+                //new Goal("Low", _dateFrom, 0, 0, 10.5, Unit.KILOMETRE, ActiveState.INACTIVE),
         };
 
         for(Goal g : goalData) {

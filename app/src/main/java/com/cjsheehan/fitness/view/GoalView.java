@@ -13,6 +13,7 @@ import com.cjsheehan.fitness.util.Util;
 public class GoalView {
     private final Context context;
     private TextView title;
+    private TextView date;
     private TextView target;
     private TextView progress;
     private TextView unit;
@@ -32,6 +33,9 @@ public class GoalView {
 
         if(this.title != null)
             this.title.setText(goal.getTitle());
+
+        if(this.date != null)
+            this.date.setText(goal.getDate());
 
         if(this.target != null)
              this.target.setText(strTarget);
@@ -80,5 +84,9 @@ public class GoalView {
 
     public void setUnit(TextView unit) {
         this.unit = unit;
+    }
+
+    public void setDate(TextView date) {
+        this.date = date;
     }
 }

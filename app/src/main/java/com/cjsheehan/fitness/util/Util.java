@@ -88,18 +88,27 @@ public class Util {
 
     public static List<String> getDates(String toDate, int numDays, Order order) {
         Date fmtToDate = null;
-
+        Calendar cal = Calendar.getInstance();
         try {
             fmtToDate = DATE_FORMATTER.parse(toDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        CALENDAR.setTime(fmtToDate);
-        CALENDAR.add(Calendar.DATE, (-1 * numDays));
-        String fromDate = DATE_FORMATTER.format(CALENDAR.getTime());
-        List<String> dates = getDates(fromDate, toDate, order);
+        List<String> dates = new ArrayList<>();
+        dates.add(toDate);
+        if(cal != null && fmtToDate != null) {
+            cal.setTime(fmtToDate);
+            cal.add(Calendar.DATE, (-1 * numDays));
+            String fromDate = DATE_FORMATTER.format(cal.getTime());
+            dates.addAll(getDates(fromDate, toDate, order));
+        }
         return dates;
+    }
+
+    public static String getDateFrom(int daysFromNow) {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, daysFromNow);
+        return DATE_FORMATTER.format(cal.getTime());
     }
 
     public static String getDateToday() {

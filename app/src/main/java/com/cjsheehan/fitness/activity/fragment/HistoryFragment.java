@@ -10,9 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cjsheehan.fitness.R;
@@ -23,23 +25,27 @@ import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.GoalData;
 import com.cjsheehan.fitness.model.conversion.HistoryData;
 import com.cjsheehan.fitness.util.Util;
+import com.cjsheehan.fitness.view.GoalView;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.List;
 
 
 public class HistoryFragment extends BaseFragment implements DateListener {
     private static final String TAG = "HistoryFragment";
     private Context _context;
-    RadioGroup _periodRadioGroup;
-    SeekBar _periodSeeker;
-    String _date;
+    private RadioGroup _periodRadioGroup;
+    private SeekBar _periodSeeker;
+    private TextView _periodView;
+    private String _dateFrom;
+    private String _fromLabel, _toLabel;
+    private String _dateTo;
     List<String> _dates;
-    private static final int WEEK = 7;
-    private static final int MONTH = 28;
-    private static final int YEAR = 365;
+    private static final int WEEK = 7 + 1;
+    private static final int MONTH = 28 + 1;
+    private static final int YEAR = 365 + 1;
     private View _view;
+    private GoalView _goalView;
 
     private enum Period {WEEK, MONTH, OTHER}
     Period _period = Period.WEEK;
@@ -66,12 +72,14 @@ public class HistoryFragment extends BaseFragment implements DateListener {
     @Override
     protected void init(View view) {
         _context = view.getContext();
-        _date = Util.getDateToday();
+        _dateFrom = Util.getDateToday();
         _periodSeeker = (SeekBar) view.findViewById(R.id.period_seeker);
         _periodRadioGroup = (RadioGroup) view.findViewById(R.id.rdb_period);
         RadioButton checkedRadioButton = (RadioButton) _periodRadioGroup.findViewById(_periodRadioGroup.getCheckedRadioButtonId());
         int checkedId = _periodRadioGroup.getCheckedRadioButtonId();
+        _periodView = (TextView) view.findViewById(R.id.history_period_label);
         _goalListView = (ListView) _view.findViewById(R.id.history_list);
+        _goalListView.setOnItemClickListener(null);
         handlePeriodRadioButton(_periodRadioGroup, checkedId, true);
 
         _periodRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -97,13 +105,24 @@ public class HistoryFragment extends BaseFragment implements DateListener {
 
                 int days = getDaysFromSeeker();
                 Toast.makeText(_context, "Range :" + days + " days", Toast.LENGTH_SHORT).show();
-                _dates = Util.getDates(_date, days, Util.Order.REVERSE);
+                _dates = Util.getDates(_dateFrom, days, Util.Order.REVERSE);
                 initHistory(_dates);
             }
         });
 
+        _goalView = new GoalView(_context);
+        setupGoalView(_goalView, view);
+
+    }
 
 
+    private void setupGoalView(GoalView gv, View view) {
+        gv.setProgress((TextView) view.findViewById(R.id.active_goal_current_progress));
+        gv.setTarget((TextView) view.findViewById(R.id.active_goal_target));
+        gv.setTargetProgress((ProgressBar) view.findViewById(R.id.active_goal_progress_bar));
+        gv.setUnit((TextView) view.findViewById(R.id.active_goal_unit_text));
+        gv.setTitle((TextView) view.findViewById(R.id.history_item_title));
+        gv.setDate((TextView) view.findViewById(R.id.history_item_date));
     }
 
     private void handlePeriodRadioButton(RadioGroup rGroup, int checkedId, boolean isQuiet) {
@@ -115,7 +134,7 @@ public class HistoryFragment extends BaseFragment implements DateListener {
                     _periodSeeker.setEnabled(false);
                     if(!isQuiet)
                         Toast.makeText(_context, "Range : " + WEEK + " days", Toast.LENGTH_SHORT).show();
-                    _dates = Util.getDates(_date, WEEK, Util.Order.REVERSE);
+                    _dates = Util.getDates(_dateFrom, WEEK, Util.Order.REVERSE);
                     initHistory(_dates);
                 }
                 break;
@@ -123,8 +142,8 @@ public class HistoryFragment extends BaseFragment implements DateListener {
                 if (isChecked) {
                     _periodSeeker.setEnabled(false);
                     if(!isQuiet)
-                    Toast.makeText(_context, "Range : " + MONTH + " days", Toast.LENGTH_SHORT).show();
-                    _dates = Util.getDates(_date, MONTH, Util.Order.REVERSE);
+                        Toast.makeText(_context, "Range : " + MONTH + " days", Toast.LENGTH_SHORT).show();
+                    _dates = Util.getDates(_dateFrom, MONTH, Util.Order.REVERSE);
                     initHistory(_dates);
                 }
                 break;
@@ -132,7 +151,9 @@ public class HistoryFragment extends BaseFragment implements DateListener {
                 if (isChecked) {
                     _periodSeeker.setEnabled(true);
                     int days = getDaysFromSeeker();
-                    _dates = Util.getDates(_date, days, Util.Order.REVERSE);
+                    if(!isQuiet)
+                        Toast.makeText(_context, "Range : " + days + " days", Toast.LENGTH_SHORT).show();
+                    _dates = Util.getDates(_dateFrom, days + 1, Util.Order.REVERSE);
                     initHistory(_dates);
                 }
                 break;
@@ -146,10 +167,23 @@ public class HistoryFragment extends BaseFragment implements DateListener {
         return (int) days;
     }
 
+    private void setDateLabels(List<String> dates) {
+        _fromLabel = Util.getDateFrom(-1);
+
+        if(dates.size() > 1) {
+            _toLabel = _dates.get(_dates.size() - 1);
+        } else if (dates.size() == 1) {
+            _toLabel = _dateFrom;
+        } else {
+            _fromLabel = "";
+            _toLabel = "";
+        }
+    }
+
 
     @Override
     public void onDateChanged(String date) {
-        //_date = date;
+        //_dateFrom = date;
     }
 
     private void initHistory(List<String> dates) {
@@ -163,9 +197,12 @@ public class HistoryFragment extends BaseFragment implements DateListener {
         for(Goal g : _historyDisplay) {
             g.setActiveState(ActiveState.INACTIVE);
         }
-        _goalListAdapter = new GoalListAdapter(_historyDisplay, getContext());
+
+        _goalListAdapter = new GoalListAdapter(_historyDisplay, getContext(), true);
         _goalListView.setAdapter(_goalListAdapter);
         _goalListAdapter.notifyDataSetChanged();
+        setDateLabels(dates);
+        _periodView.setText(_toLabel + " - " + _fromLabel);
     }
 
     @Override

@@ -11,7 +11,10 @@
         android:layout_below="@+id/period_selector"
         android:layout_alignStart="@+id/period_selector"
         android:layout_marginTop="8dp"
-        android:layout_alignEnd="@+id/period_selector"/>
+        android:layout_alignEnd="@+id/period_selector"
+        android:progress="15"
+        android:elevation="4dp"
+        android:layout_marginBottom="8dp"/>
 
     <include
         android:id="@+id/period_selector"
@@ -20,20 +23,18 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"/>
+        android:layout_below="@+id/history_period_label"
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Period :"
-        android:id="@+id/textView"
+        android:text="25 December 2016   to   25 December 2016"
+        android:id="@+id/history_period_label"
+        android:textColor="@color/colorAccent"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="4dp"/>
+        android:layout_margin="8dp"/>
 
 
 </RelativeLayout>

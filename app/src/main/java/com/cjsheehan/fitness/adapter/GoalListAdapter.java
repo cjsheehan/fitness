@@ -26,11 +26,13 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
     protected LayoutInflater _inflater;
     Goal _activeGoal;
     GoalView _goalView;
+    boolean _showDate;
 
-    public GoalListAdapter(List<Goal> goals, Context context) {
+    public GoalListAdapter(List<Goal> goals, Context context, boolean showDate) {
         super(context, R.layout.goal_list_item);
         this.goals = goals;
         this.context = context;
+        _showDate = showDate;
     }
 
 
@@ -43,6 +45,8 @@ public class GoalListAdapter extends ArrayAdapter<Goal> {
             view = _inflater.inflate(R.layout.goal_progress_list_item, parent, false);
             // Now we can fill the layout with the right values
             _goalView.setTitle((TextView) view.findViewById(R.id.goal_title));
+            if(_showDate)
+                _goalView.setDate((TextView) view.findViewById(R.id.goal_date));
             _goalView.setProgress((TextView) view.findViewById(R.id.goal_progress));
             _goalView.setTarget((TextView) view.findViewById(R.id.goal_target));
             _goalView.setTargetProgress((ProgressBar) view.findViewById(R.id.goal_progress_bar));
