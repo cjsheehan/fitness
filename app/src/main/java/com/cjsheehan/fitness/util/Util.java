@@ -86,7 +86,7 @@ public class Util {
         return new Goal("Default", date, 0, 0, 10000, Unit.STEP, ActiveState.ACTIVE);
     }
 
-    public static List<String> getDates(String toDate, int numDays) {
+    public static List<String> getDates(String toDate, int numDays, Order order) {
         Date fmtToDate = null;
 
         try {
@@ -98,7 +98,7 @@ public class Util {
         CALENDAR.setTime(fmtToDate);
         CALENDAR.add(Calendar.DATE, (-1 * numDays));
         String fromDate = DATE_FORMATTER.format(CALENDAR.getTime());
-        List<String> dates = getDates(fromDate, toDate);
+        List<String> dates = getDates(fromDate, toDate, order);
         return dates;
     }
 
@@ -107,18 +107,32 @@ public class Util {
         return DATE_FORMATTER.format(cal.getTime());
     }
 
-    public static List<String> getDates(String fromDate, String toDate) {
+    public enum Order { FORWARD, REVERSE };
+
+    private static List<String> getDates(String fromDate, String toDate, Order order) {
+
+        String chronFrom, chronTo;
+
+        if(order == Order.FORWARD) {
+            chronFrom = fromDate;
+            chronTo = toDate;
+        } else {
+            chronFrom = toDate;
+            chronTo = fromDate;
+        }
+
+
         List<String> dates = new ArrayList<>();
         Date fDateFrom = null;
         try {
-            fDateFrom = DATE_FORMATTER.parse(fromDate);
+            fDateFrom = DATE_FORMATTER.parse(chronFrom);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         Date fDateTo = null;
         try {
-            fDateTo = DATE_FORMATTER.parse(toDate);
+            fDateTo = DATE_FORMATTER.parse(chronTo);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -126,11 +140,20 @@ public class Util {
         if(fDateFrom != null && fDateTo != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(fDateFrom);
-            while (cal.getTime().before(fDateTo)) {
-                cal.add(Calendar.DATE, 1);
-                String strDate = DATE_FORMATTER.format(cal.getTime());
-                dates.add(strDate);
+            if(order == Order.FORWARD) {
+                while (cal.getTime().before(fDateTo)) {
+                    cal.add(Calendar.DATE, 1);
+                    String strDate = DATE_FORMATTER.format(cal.getTime());
+                    dates.add(strDate);
+                }
+            } else {
+                while (cal.getTime().after(fDateTo)) {
+                    cal.add(Calendar.DATE, -1);
+                    String strDate = DATE_FORMATTER.format(cal.getTime());
+                    dates.add(strDate);
+                }
             }
+
         }
         return dates;
     }

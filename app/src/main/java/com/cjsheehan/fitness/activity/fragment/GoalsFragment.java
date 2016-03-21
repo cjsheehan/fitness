@@ -602,7 +602,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
     public void populateDb() {
         String endDate = Util.getDateToday();
-        List<String> dates = Util.getDates(endDate, 50);
+        List<String> dates = Util.getDates(endDate, 50, Util.Order.FORWARD);
         List<Goal> newGoals = new ArrayList<>();
         for(String date : dates) {
             List<Goal> newGoalsForDate = Util.genGoals(date, Util.RNG.nextInt(4) + 1);

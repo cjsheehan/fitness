@@ -97,7 +97,7 @@ public class HistoryFragment extends BaseFragment implements DateListener {
 
                 int days = getDaysFromSeeker();
                 Toast.makeText(_context, "Range :" + days + " days", Toast.LENGTH_SHORT).show();
-                _dates = Util.getDates(_date, days);
+                _dates = Util.getDates(_date, days, Util.Order.REVERSE);
                 initHistory(_dates);
             }
         });
@@ -115,7 +115,7 @@ public class HistoryFragment extends BaseFragment implements DateListener {
                     _periodSeeker.setEnabled(false);
                     if(!isQuiet)
                         Toast.makeText(_context, "Range : " + WEEK + " days", Toast.LENGTH_SHORT).show();
-                    _dates = Util.getDates(_date, WEEK);
+                    _dates = Util.getDates(_date, WEEK, Util.Order.REVERSE);
                     initHistory(_dates);
                 }
                 break;
@@ -124,7 +124,7 @@ public class HistoryFragment extends BaseFragment implements DateListener {
                     _periodSeeker.setEnabled(false);
                     if(!isQuiet)
                     Toast.makeText(_context, "Range : " + MONTH + " days", Toast.LENGTH_SHORT).show();
-                    _dates = Util.getDates(_date, MONTH);
+                    _dates = Util.getDates(_date, MONTH, Util.Order.REVERSE);
                     initHistory(_dates);
                 }
                 break;
@@ -132,7 +132,7 @@ public class HistoryFragment extends BaseFragment implements DateListener {
                 if (isChecked) {
                     _periodSeeker.setEnabled(true);
                     int days = getDaysFromSeeker();
-                    _dates = Util.getDates(_date, days);
+                    _dates = Util.getDates(_date, days, Util.Order.REVERSE);
                     initHistory(_dates);
                 }
                 break;
