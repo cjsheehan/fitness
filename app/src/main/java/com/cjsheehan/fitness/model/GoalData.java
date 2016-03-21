@@ -27,7 +27,7 @@ public class GoalData {
         // Get all goals for date
         getAllByDate(date);
         _active = getActive();
-}
+    }
 
     public int size() {
         return _goals.size();
@@ -164,5 +164,12 @@ public class GoalData {
 
     public void deleteAllHistory() {
         _dbHelper.removeAll();
+    }
+
+    public void populate(List<Goal> goals) {
+        deleteAllHistory();
+        for(Goal g : goals) {
+            add(g);
+        }
     }
 }

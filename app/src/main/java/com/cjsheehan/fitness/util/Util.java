@@ -17,13 +17,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 public class Util {
 
     public static final String DATE_FORMAT = "dd MMMM yyyy";
     public static DateFormat DATE_FORMATTER = new SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH);
     private final static int DAY_IN_MS = 86400000;
-
+    public static Random RNG = new Random();
+    private static final Unit[] unitArr = new Unit[]{Unit.STEP, Unit.YARD, Unit.METRE, Unit.KILOMETRE, Unit.MILE};
+    private static Calendar CALENDAR = Calendar.getInstance();
 
     private static final String ACTIVE = "active";
     private static final String INACTIVE = "inactive";
@@ -84,7 +87,6 @@ public class Util {
     }
 
     public static List<String> getDates(String toDate, int numDays) {
-        Calendar cal = Calendar.getInstance();
         Date fmtToDate = null;
 
         try {
@@ -93,11 +95,16 @@ public class Util {
             e.printStackTrace();
         }
 
-        cal.setTime(fmtToDate);
-        cal.add(Calendar.DATE, (-1 * numDays));
-        String fromDate = DATE_FORMATTER.format(cal.getTime());
+        CALENDAR.setTime(fmtToDate);
+        CALENDAR.add(Calendar.DATE, (-1 * numDays));
+        String fromDate = DATE_FORMATTER.format(CALENDAR.getTime());
         List<String> dates = getDates(fromDate, toDate);
         return dates;
+    }
+
+    public static String getDateToday() {
+        Calendar cal = Calendar.getInstance();
+        return DATE_FORMATTER.format(cal.getTime());
     }
 
     public static List<String> getDates(String fromDate, String toDate) {
@@ -123,11 +130,34 @@ public class Util {
                 cal.add(Calendar.DATE, 1);
                 String strDate = DATE_FORMATTER.format(cal.getTime());
                 dates.add(strDate);
-                System.out.println(cal.getTime());
             }
         }
         return dates;
     }
+
+    private static final double MAX_TARGET = 1000;
+    private static final double MAX_PROGRESS = MAX_TARGET * 1.3;
+
+    public static List<Goal> genGoals(String date, int howMany) {
+        List<Goal> goals = new ArrayList<>();
+        RandomString rs = new RandomString(6);
+        for (int i = 0; i < howMany; i++) {
+            String title = rs.nextString(RNG);
+            double target = MAX_TARGET * RNG.nextDouble();
+            double progress = MAX_PROGRESS * RNG.nextDouble();
+            Unit unit = unitArr[RNG.nextInt(unitArr.length)];
+            ActiveState state = ActiveState.INACTIVE;
+            if(i == 0)
+                state = ActiveState.ACTIVE;
+            else
+                progress = 0.00;
+            Goal g = new Goal(title, date, target, progress, unit, state);
+            goals.add(g);
+        }
+        return goals;
+    }
+
+
 
 
 

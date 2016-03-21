@@ -39,6 +39,9 @@ import com.cjsheehan.fitness.model.UnitConverter;
 import com.cjsheehan.fitness.util.GoalValidation;
 import com.cjsheehan.fitness.util.GoalValidationCode;
 import com.cjsheehan.fitness.util.Util;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import java.io.IOException;
@@ -558,8 +561,22 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add_goal:
-                //addGoalDialog();
                 addGoalDialog();
+                return true;
+
+            case R.id.random_populate:
+                populateDb() ;
+                return true;
+
+            case R.id.delete_history:
+                deleteAllHistory();
+                _date = Util.getDateToday();
+                Toast.makeText(_context, "Deleted all history", Toast.LENGTH_SHORT).show();
+                try {
+                    initGoalsForDate(_date);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return true;
 
             default:
@@ -578,6 +595,23 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         try {
             initGoalsForDate(_date);
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void populateDb() {
+        String endDate = Util.getDateToday();
+        List<String> dates = Util.getDates(endDate, 50);
+        List<Goal> newGoals = new ArrayList<>();
+        for(String date : dates) {
+            List<Goal> newGoalsForDate = Util.genGoals(date, Util.RNG.nextInt(4) + 1);
+            newGoals.addAll(newGoalsForDate);
+        }
+        _goalData.populate(newGoals);
+
+        try {
+            initGoalsForDate(_date);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -623,23 +657,13 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         _sharedPreferences.registerOnSharedPreferenceChangeListener(_settingsListener);
     }
 
+    private void deleteAllHistory() {
+        _goalData.deleteAllHistory();
+    }
+
     private class OnSettingsChangedListener implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences spref, String key) {
-            if (key.equals(getString(R.string.enable_delete_all_history))) {
-
-                boolean shouldDelete = spref.getBoolean(key, false);
-                if(shouldDelete) {
-                    deleteAllHistory();
-                    Toast.makeText(_context, "Deleted all history", Toast.LENGTH_SHORT).show();
-                    try {
-                        initGoalsForDate(_date);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
             if (key.equals(getString(R.string.user_stride_length_key))) {
                 initStrideLength();
                 Toast.makeText(_context, "Stride length set to " + _strLength, Toast.LENGTH_SHORT).show();
@@ -648,8 +672,6 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         }
     }
 
-    private void deleteAllHistory() {
-        _goalData.deleteAllHistory();
-    }
+
 
 }

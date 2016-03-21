@@ -94,12 +94,6 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         gv.setTitle((TextView) view.findViewById(R.id.active_goal_title));
     }
 
-    //private void setupProgressIndicators(View view) {
-    //    _progressTextView = (TextView) view.findViewById(R.id.active_goal_current_progress);
-    //    _targetTextView = (TextView) view.findViewById(R.id.active_goal_target);
-    //    _progressBar = (ProgressBar) view.findViewById(R.id.active_goal_progress_bar);
-    //}
-
     private void setupIncrButton(View view) {
         ImageView imageViewIncr = (ImageView) view.findViewById(R.id.active_goal_progress_incr);
         imageViewIncr.setOnClickListener(new View.OnClickListener() {
@@ -165,79 +159,10 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         return 0;
     }
 
-    //public void updateProgressView() {
-    //    double progress = getProgress();
-    //    double target = getTarget();
-    //    String strTarget = Util.format(target);
-    //    String strProgress = Util.format(progress);
-    //    _goalView.setTarget(strTarget);
-    //    _goalView.setProgress(strTarget);
-    //    setTargetTextView(strTarget);
-    //    setProgressTextView(strProgress);
-    //    updateProgressBar(target, progress);
-    //}
-
     public void updateGoalView() {
         if(_activeGoal != null && _goalView != null) {
             _goalView.update(_activeGoal);
         }
-    }
-
-    public void editProgressDialog1() {
-
-        LinearLayout layout = new LinearLayout(_context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        // Progress to Target
-        final EditText editProgressText = new EditText(_context);
-        editProgressText.setText(_sharedPreferences.getString(getString(R.string.progress_increment_amount), "10"));
-        editProgressText.setSelectAllOnFocus(true);
-        editProgressText.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        layout.addView(editProgressText);
-
-        // Alert
-        final AlertDialog.Builder editProgressDialog = new AlertDialog.Builder(_context);
-
-        // Icon
-        editProgressDialog.setIcon(R.drawable.ic_icon_walk_green);
-
-        // Setting Dialog Title
-        editProgressDialog.setTitle("Add Goal Progress");
-
-        editProgressDialog.setView(layout);
-        editProgressDialog.create();
-
-        editProgressDialog.setNegativeButton(android.R.string.cancel,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(editProgressText.getWindowToken(), 0);
-                        dialog.cancel();
-                    }
-                });
-
-        editProgressDialog.setPositiveButton("Add",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(editProgressText.getWindowToken(), 0);
-                        String strProgressAdded = editProgressText.getText().toString();
-                        try {
-                            Double progressAdded = Double.parseDouble(strProgressAdded);
-                            incrementProgress(progressAdded);
-                            Toast.makeText(_context, "Added " + progressAdded + " to progress", Toast.LENGTH_SHORT).show();
-                        } catch (NumberFormatException e) {
-                            Toast.makeText(_context, "Input a number please", Toast.LENGTH_SHORT).show();
-                            editProgressDialog1();
-                        }
-                    }
-                });
-
-        // Showing Alert Message
-        editProgressDialog.show();
-        editProgressText.requestFocus();
-        InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 
     public void editProgressDialog() {
@@ -323,7 +248,6 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_change_unit, menu);
         inflater.inflate(R.menu.menu_add_progress, menu);
     }
 
@@ -332,10 +256,6 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
         switch (item.getItemId()) {
             case R.id.menu_add_progress:
                 editProgressDialog();
-                return true;
-
-            case R.id.menu_change_unit:
-                Toast.makeText(_context, "Change Unit", Toast.LENGTH_SHORT).show();
                 return true;
 
             default:
@@ -379,7 +299,7 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
     }
 
     protected void raiseOnGoalProgressChanged(double progress) {
-        _cbkGoalListener.onGoalProgressChanged(progress); // callback main activity to disrtibute event
+        _cbkGoalListener.onGoalProgressChanged(progress); // callback main activity to distribute event
     }
 
     private int getPositionFromUnit(Unit unit) {

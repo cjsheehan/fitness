@@ -10,11 +10,6 @@
             android:title="Length of stride (metres)"
             android:summary="0.762"/>
 
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/enable_edit_goal_key"
-            android:title="Delete all recorded goal history"/>
-
     </PreferenceCategory>
 
     <PreferenceCategory
