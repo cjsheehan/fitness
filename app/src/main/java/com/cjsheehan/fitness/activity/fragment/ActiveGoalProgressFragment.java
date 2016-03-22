@@ -139,6 +139,8 @@ public class ActiveGoalProgressFragment extends BaseFragment implements DateList
 
     public void setProgress(double progress) {
         if(_activeGoal != null) {
+            if(progress <= 0)
+                progress = 0;
             _activeGoal.setProgress(progress);
             raiseOnGoalProgressChanged(getProgress()); // callback activity
             updateGoalView();
