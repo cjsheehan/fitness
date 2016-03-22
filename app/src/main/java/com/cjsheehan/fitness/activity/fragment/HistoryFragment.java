@@ -23,11 +23,15 @@ import com.cjsheehan.fitness.event.date.DateListener;
 import com.cjsheehan.fitness.model.ActiveState;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.GoalData;
+import com.cjsheehan.fitness.model.Unit;
+import com.cjsheehan.fitness.model.UnitConverter;
 import com.cjsheehan.fitness.model.conversion.HistoryData;
 import com.cjsheehan.fitness.util.Util;
 import com.cjsheehan.fitness.view.GoalView;
 
 import java.io.IOException;
+import java.lang.annotation.Target;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -46,18 +50,63 @@ public class HistoryFragment extends BaseFragment implements DateListener {
     private static final int YEAR = 365 + 1;
     private View _view;
     private GoalView _goalView;
+    private static final Unit[] _unitArr = new Unit[]{Unit.STEP, Unit.YARD, Unit.METRE, Unit.KILOMETRE, Unit.MILE};
+    private int _unitIndex = _unitArr.length + 1;  // This can go _unitArr.size + 1, in which case ot uses the recorded history unit
+    private Unit _refUnit = null;
 
     private enum Period {WEEK, MONTH, OTHER}
     Period _period = Period.WEEK;
 
     // Goal handlers
-    private GoalData _goalData;
     private GoalListAdapter _goalListAdapter;
     private ListView _goalListView;
     HistoryData _historyData;
     List<Goal> _historyRef;
     List<Goal> _historyDisplay;
 
+
+    private void handleUnitChange() {
+        if(_unitIndex >= _unitArr.length) {
+            _unitIndex = 0;
+        } else {
+            _unitIndex++;
+        }
+
+        _refUnit = null;
+        if(_unitIndex < _unitArr.length)
+            _refUnit = _unitArr[_unitIndex];
+
+        changeDisplayUnit();
+
+    }
+
+    private void changeDisplayUnit() {
+
+        for (int i = 0; i < _historyDisplay.size(); i++) {
+            if (_refUnit != null) {
+                Unit unitFrom = _historyRef.get(i).getUnit();
+                double targetFrom = _historyRef.get(i).getTarget();
+                double progressFrom = _historyRef.get(i).getProgress();
+
+                double targetTo = UnitConverter.convert(targetFrom, unitFrom, _refUnit);
+                double progressTo = UnitConverter.convert(progressFrom, unitFrom, _refUnit);
+
+                _historyDisplay.get(i).setUnit(_refUnit);
+                _historyDisplay.get(i).setProgress(progressTo);
+                _historyDisplay.get(i).setTarget(targetTo);
+            } else {
+                // Reset to original
+                Unit unitTo = _historyRef.get(i).getUnit();
+                double targetTo = _historyRef.get(i).getTarget();
+                double progressTo = _historyRef.get(i).getProgress();
+
+                _historyDisplay.get(i).setUnit(unitTo);
+                _historyDisplay.get(i).setProgress(progressTo);
+                _historyDisplay.get(i).setTarget(targetTo);
+            }
+        }
+        _goalListAdapter.notifyDataSetChanged();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -132,8 +181,6 @@ public class HistoryFragment extends BaseFragment implements DateListener {
             case R.id.rdb_week:
                 if (isChecked) {
                     _periodSeeker.setEnabled(false);
-                    if(!isQuiet)
-                        Toast.makeText(_context, "Range : " + WEEK + " days", Toast.LENGTH_SHORT).show();
                     _dates = Util.getDates(_dateFrom, WEEK, Util.Order.REVERSE);
                     initHistory(_dates);
                 }
@@ -141,8 +188,6 @@ public class HistoryFragment extends BaseFragment implements DateListener {
             case R.id.rdb_month:
                 if (isChecked) {
                     _periodSeeker.setEnabled(false);
-                    if(!isQuiet)
-                        Toast.makeText(_context, "Range : " + MONTH + " days", Toast.LENGTH_SHORT).show();
                     _dates = Util.getDates(_dateFrom, MONTH, Util.Order.REVERSE);
                     initHistory(_dates);
                 }
@@ -151,8 +196,6 @@ public class HistoryFragment extends BaseFragment implements DateListener {
                 if (isChecked) {
                     _periodSeeker.setEnabled(true);
                     int days = getDaysFromSeeker();
-                    if(!isQuiet)
-                        Toast.makeText(_context, "Range : " + days + " days", Toast.LENGTH_SHORT).show();
                     _dates = Util.getDates(_dateFrom, days + 1, Util.Order.REVERSE);
                     initHistory(_dates);
                 }
@@ -193,9 +236,13 @@ public class HistoryFragment extends BaseFragment implements DateListener {
             e.printStackTrace();
         }
         _historyRef = _historyData.getAll();
-        _historyDisplay = _historyData.getAll();
-        for(Goal g : _historyDisplay) {
+        _historyDisplay = new ArrayList<>();
+
+        for(Goal g : _historyRef) {
             g.setActiveState(ActiveState.INACTIVE);
+            Goal copy = Goal.copy(g);
+            copy.setActiveState(ActiveState.INACTIVE);
+            _historyDisplay.add(copy);
         }
 
         _goalListAdapter = new GoalListAdapter(_historyDisplay, getContext(), true);
@@ -204,6 +251,8 @@ public class HistoryFragment extends BaseFragment implements DateListener {
         setDateLabels(dates);
         _periodView.setText(_toLabel + " - " + _fromLabel);
     }
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -215,7 +264,7 @@ public class HistoryFragment extends BaseFragment implements DateListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_change_unit:
-                Toast.makeText(_context, "Change Unit", Toast.LENGTH_SHORT).show();
+                handleUnitChange();
                 return true;
 
             default:

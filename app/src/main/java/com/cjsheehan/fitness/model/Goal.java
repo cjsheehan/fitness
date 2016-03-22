@@ -91,4 +91,8 @@ public class Goal implements Serializable {
     public void setUnit(Unit unit) {
         this.unit = unit;
     }
+
+    public static Goal copy(Goal goal) {
+        return new Goal(goal.getTitle(), goal.getDate(), goal.getTarget(), goal.getProgress(), goal.getUnit(), goal.getActiveState());
+    }
 }
