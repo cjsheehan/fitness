@@ -379,6 +379,8 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
 
     private boolean updateGoalFromDialog(int position) {
+        _ugTargetStr = _ugTargetView.getText().toString();
+
         // Only edit inactive, valid goals
         if (_goalData.get(position).getActiveState() == ActiveState.ACTIVE) {
             Toast.makeText(_context, "Cannot edit active goal, please activate another goal first", Toast.LENGTH_SHORT).show();
