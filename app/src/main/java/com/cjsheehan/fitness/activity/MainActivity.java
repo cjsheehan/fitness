@@ -37,6 +37,7 @@ import com.cjsheehan.fitness.event.date.DateListener;
 import com.cjsheehan.fitness.event.goal.GoalListener;
 import com.cjsheehan.fitness.model.Goal;
 import com.cjsheehan.fitness.model.UnitConverter;
+import com.cjsheehan.fitness.util.Util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -206,10 +207,13 @@ public class MainActivity extends AppCompatActivity
 
 
     private void setCalendarMenuItemVisibilty() {
-        if(isTestModeEnabled())
+        if(isTestModeEnabled()) {
             _calendarMenuItem.setVisible(true);
-        else
+        } else {
             _calendarMenuItem.setVisible(false);
+            _date = Util.getDateToday();
+            updateDateListeners(_date);
+        }
     }
 
     private void setupViewPager(ViewPager viewPager) {
