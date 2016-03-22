@@ -85,7 +85,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
     String _strLength;
 
     public void selectActiveGoal() {
-        if(_goalData != null) {
+        if (_goalData != null) {
             int activeIdx = _goalData.getActiveIdx();
             if (activeIdx >= 0) {
                 _goalListView.performItemClick(_goalListView.getChildAt(activeIdx), activeIdx, _goalListAdapter.getItemId(activeIdx));
@@ -160,11 +160,11 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
     }
 
     private void updateActiveView() {
-        if(_goalData.size() == 0) {
+        if (_goalData.size() == 0) {
             _goalData.add(Util.getDefaultGoal(_date));
             updateActiveView();
-        } else if(_goalData.size() == 1) {
-            if(_goalData.countActive() == 0) {
+        } else if (_goalData.size() == 1) {
+            if (_goalData.countActive() == 0) {
                 _goalData.setActive(0);
             }
             _goalListView.performItemClick(
@@ -172,14 +172,22 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             _goalListAdapter.notifyDataSetChanged();
             raiseActiveGoalChanged(_goalData.getActive());
         } else if (_goalData.size() > 1) {
-            int numActive =  _goalData.countActive();
-            if(numActive == 0) {
+            int numActive = _goalData.countActive();
+            if (numActive == 0) {
                 setGoalActive(0);
             } else if (numActive == 1) {
                 int activeIdx = _goalData.getActiveIdx();
                 setGoalActive(activeIdx);
             } else if (numActive > 1) {
-                Toast.makeText(_context, "ERROR : too many active goals, contact admin", Toast.LENGTH_SHORT).show();
+                List<Goal> goals = _goalData.getAll();
+                for (Goal g : goals) {
+                    g.setActiveState(ActiveState.INACTIVE);
+                }
+                _goalData.setActive(0);
+
+                if (_goalData.countActive() > 1) {
+                    Toast.makeText(_context, "ERROR : too many active goals, contact admin", Toast.LENGTH_SHORT).show();
+                }
             }
             //int activeIdx = _goalData.getActiveIdx();
             //if (activeIdx >= 0) {
@@ -211,7 +219,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         _agTargetView = (EditText) promptsView.findViewById(R.id.goal_alert_target);
         _agTargetView.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
-        final Spinner unitSpinner= (Spinner) promptsView.findViewById(R.id.goal_unit_spinner);
+        final Spinner unitSpinner = (Spinner) promptsView.findViewById(R.id.goal_unit_spinner);
 
         // Cache
         _agTitleStr = _agTitleView.getText().toString();
@@ -285,7 +293,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         _ugTargetView = (EditText) promptsView.findViewById(R.id.goal_alert_target);
         _ugTargetView.setText("" + goalToEdit.getTarget());
         _ugTargetView.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        final Spinner unitSpinner= (Spinner) promptsView.findViewById(R.id.goal_unit_spinner);
+        final Spinner unitSpinner = (Spinner) promptsView.findViewById(R.id.goal_unit_spinner);
         int unitPosition = getPositionFromUnit(goalToEdit.getUnit());
         unitSpinner.setSelection(unitPosition);
 
@@ -336,11 +344,11 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         String[] unit_selectable = getResources().getStringArray(R.array.units_array_values);
         String strUni = UnitConverter.toString(unit);
         int position = -1;
-        for (int i = 0; i < unit_selectable.length ; i++) {
-           if(strUni.equals(unit_selectable[i])) {
-               position = i;
-               break;
-           }
+        for (int i = 0; i < unit_selectable.length; i++) {
+            if (strUni.equals(unit_selectable[i])) {
+                position = i;
+                break;
+            }
         }
         return position;
     }
@@ -411,7 +419,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
     public void addGoal(String title, String date, double target, Unit unit) {
         Goal goal = new Goal(title, date, 0, 0, target, unit, ActiveState.INACTIVE);
         DbStatus status = _goalData.add(goal);
-        if(DbStatus.OK == status) {
+        if (DbStatus.OK == status) {
             updateActiveView();
             _goalListAdapter.notifyDataSetChanged();
             Toast.makeText(_context, "Added " + goal.getTitle(), Toast.LENGTH_SHORT).show();
@@ -447,13 +455,13 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
     }
 
     private void fillGoalData() {
-        Goal [] goalData = new Goal[] {
+        Goal[] goalData = new Goal[]{
                 new Goal("High", _date, 0, 0, 20000, Unit.STEP, ActiveState.ACTIVE),
                 new Goal("High", _date, 0, 0, 3, Unit.MILE, ActiveState.INACTIVE),
                 //new Goal("Low", _dateFrom, 0, 0, 10.5, Unit.KILOMETRE, ActiveState.INACTIVE),
         };
 
-        for(Goal g : goalData) {
+        for (Goal g : goalData) {
             _agTitleStr = g.getTitle();
             _agTargetStr = Util.format(g.getTarget());
             _agUnit = g.getUnit();
@@ -485,7 +493,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
     }
 
     private void transferProgress(Goal source, Goal target) {
-        if(source != null && target != null) {
+        if (source != null && target != null) {
             double sourceProgress = source.getProgress();
             Unit sourceUnit = source.getUnit();
             Unit targetUnit = target.getUnit();
@@ -498,7 +506,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
     }
 
     private void initStrideLength() {
-        _strLength= _sharedPreferences.getString(getResources().getString(R.string.user_stride_length_key), "1");
+        _strLength = _sharedPreferences.getString(getResources().getString(R.string.user_stride_length_key), "1");
         double length = Double.parseDouble(_strLength);
         UnitConverter.setMetresPerStep(length);
     }
@@ -516,7 +524,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
                 return true;
 
             case R.id.random_populate:
-                populateDb() ;
+                populateDb();
                 return true;
 
             case R.id.delete_history:
@@ -540,7 +548,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
     @Override
     public void onDateChanged(String date) {
         _date = date;
-        if(_dateTextView != null) {
+        if (_dateTextView != null) {
             _dateTextView.setText(_date);
         }
         try {
@@ -555,7 +563,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
         String endDate = Util.getDateToday();
         List<String> dates = Util.getDates(endDate, 50, Util.Order.FORWARD);
         List<Goal> newGoals = new ArrayList<>();
-        for(String date : dates) {
+        for (String date : dates) {
             List<Goal> newGoalsForDate = Util.genGoals(date, Util.RNG.nextInt(4) + 1);
             newGoals.addAll(newGoalsForDate);
         }
@@ -575,7 +583,7 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
 
     @Override
     public void onGoalProgressChanged(double progress) {
-        if(_goalData != null) {
+        if (_goalData != null) {
             int idx = _goalData.getActiveIdx();
             _goalData.updateProgress(progress, idx);
             _goalData.getActive().setProgress(progress);
@@ -622,7 +630,6 @@ public class GoalsFragment extends BaseFragment implements DateListener, GoalLis
             }
         }
     }
-
 
 
 }
